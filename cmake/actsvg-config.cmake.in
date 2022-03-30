@@ -1,0 +1,17 @@
+# Set up the helper functions/macros.
+@PACKAGE_INIT@
+
+# Set up some simple variables for using the package.
+set( actsvg_VERSION "@PROJECT_VERSION@" )
+set_and_check( actsvg_INCLUDE_DIR
+   "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@" )
+set_and_check( actsvg_CMAKE_DIR "@PACKAGE_CMAKE_INSTALL_CMAKEDIR@" )
+
+# Print a standard information message about the package being found.
+include( FindPackageHandleStandardArgs )
+find_package_handle_standard_args( actsvg REQUIRED_VARS
+   CMAKE_CURRENT_LIST_FILE
+   VERSION_VAR actsvg_VERSION )
+
+# Include the file listing all the imported targets and options.
+include( "${actsvg_CMAKE_DIR}/actsvg-config-targets.cmake" )
