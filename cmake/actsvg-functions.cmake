@@ -31,6 +31,30 @@ function( actsvg_add_library fullname basename )
 
 endfunction( actsvg_add_library )
 
+
+# Helper function for setting up the actsvg executables.
+#
+# The actsvg executables are *not* installed with the project, as they are only
+# used for testing / benchmarking the code. Clients of actsvg do not need them.
+#
+# Usage: actsvg_add_executable( foo bar.cpp
+#                               LINK_LIBRARIES actsvg::core )
+#
+function( actsvg_add_executable name )
+
+   # Parse the function's options.
+   cmake_parse_arguments( ARG "" "" "LINK_LIBRARIES" ${ARGN} )
+
+   # Create the executable.
+   set( exe_name "actsvg_${name}" )
+   add_executable( ${exe_name} ${ARG_UNPARSED_ARGUMENTS} )
+   if( ARG_LINK_LIBRARIES )
+      target_link_libraries( ${exe_name} PRIVATE ${ARG_LINK_LIBRARIES} )
+   endif()
+
+endfunction( actsvg_add_executable )
+
+
 # Helper function for setting up the actsvg tests.
 #
 # Usage: actsvg_add_test( core source1.cpp source2.cpp

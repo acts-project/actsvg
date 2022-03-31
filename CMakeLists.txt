@@ -35,8 +35,21 @@ if ( ACTSVG_BUILD_META )
    add_subdirectory(meta)
 endif()
 
-option(ACTSVG_BUILD_EXAMPLES "Build the example applications of ACTSVG" FALSE )
+option(ACTSVG_BUILD_EXAMPLES "Build the example applications of ACTSVG" TRUE )
 if ( ACTSVG_BUILD_EXAMPLES )
+   # Setup boost for the examples 
+   set(_actsvg_boost_version 1.71.0)
+   option(ACTSVG_SETUP_BOOST "Explicitly set up Boost for the project" ON)
+   option(ACTSVG_USE_SYSTEM_BOOST "Use a system-provided boost" ON)
+   if (ACTSVG_SETUP_BOOST)
+      if (ACTSVG_USE_SYSTEM_BOOST)
+        find_package(Boost ${_actsvg_boost_version} REQUIRED COMPONENTS program_options)
+      else()
+           add_subdirectory(extern/boost)
+      endif()
+ endif()
+ 
+   # Add the examples
    add_subdirectory(examples)
 endif()
 
@@ -44,6 +57,12 @@ option(ACTSVG_BUILD_TESTING "Build the (unit) tests of ACTSVG" TRUE )
 
 if (ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
    add_subdirectory(data)
+endif()
+
+# Set up the test(s).
+include( CTest )
+if( ACTSVG_BUILD_TESTING )
+  add_subdirectory( tests )
 endif()
 
 # Set up GoogleTest.
@@ -58,12 +77,6 @@ if( ACTSVG_SETUP_GOOGLETEST )
    else()
       add_subdirectory( extern/googletest )
    endif()
-endif()
-
-# Set up the test(s).
-include( CTest )
-if( ACTSVG_BUILD_TESTING )
-  add_subdirectory( tests )
 endif()
 
 # Set up the packaging of the project.
