@@ -10,7 +10,7 @@
 #include <gtest/gtest.h>
 
 #include "actsvg/actsvg.hpp"
-#include "data/odd_pixel_barrel.hpp"
+#include "actsvg/data/odd_pixel_barrel.hpp"
 
 #include <array>
 #include <vector>

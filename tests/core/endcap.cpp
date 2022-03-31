@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "actsvg/actsvg.hpp"
-#include "data/odd_pixel_ec.hpp"
+#include "actsvg/data/odd_pixel_ec.hpp"
 
 using namespace actsvg;
 
@@ -72,7 +72,7 @@ TEST(endcap, x_y_view) {
 
     svg::file ec_file;
     ec_file._height = 800;
-    ec_file._width = 1600;
+    ec_file._width = 800;
 
     // Draw the surfaces
     style::fill module_color{{28, 156, 168}};
@@ -126,7 +126,7 @@ TEST(endcap, x_y_view_grid) {
 
     svg::file ec_file;
     ec_file._height = 800;
-    ec_file._width = 1600;
+    ec_file._width = 800;
 
     // Draw the surfaces
     style::fill module_color{{28, 156, 168}};

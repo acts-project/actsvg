@@ -27,9 +27,24 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY
 list( APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" )
 include( actsvg-functions )
 
+# Core library component
 add_subdirectory(core)
 
+option(ACTSVG_BUILD_META "Build the meta level interface of ACTSVG" TRUE )
+if ( ACTSVG_BUILD_META )
+   add_subdirectory(meta)
+endif()
+
+option(ACTSVG_BUILD_EXAMPLES "Build the example applications of ACTSVG" FALSE )
+if ( ACTSVG_BUILD_EXAMPLES )
+   add_subdirectory(examples)
+endif()
+
 option(ACTSVG_BUILD_TESTING "Build the (unit) tests of ACTSVG" TRUE )
+
+if (ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
+   add_subdirectory(data)
+endif()
 
 # Set up GoogleTest.
 option( ACTSVG_SETUP_GOOGLETEST

@@ -7,4 +7,4 @@ actsvg_add_test( core
   "svg.cpp"
   "text.cpp"
   "views.cpp"
-LINK_LIBRARIES GTest::gtest_main actsvg::core )
+LINK_LIBRARIES GTest::gtest_main actsvg::core actsvg::data)
