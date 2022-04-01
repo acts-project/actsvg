@@ -15,6 +15,6 @@ This library has itself no dependency, simply for unittesting it relies on `goog
 <tr>
 <td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/basic_rectangle.svg" width=200></td>
 <td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/basic_trapezoid.svg" width=200></td>
-<td></td>
+<td width=200></td>
 </tr>
 </table>
