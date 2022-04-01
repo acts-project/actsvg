@@ -12,4 +12,9 @@ This library has itself no dependency, simply for unittesting it relies on `goog
 <td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_xy.svg" width=200></td>
 <td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_grid_xy.svg" width=200></td>
 </tr>
+<tr>
+<td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/basic_rectangle.svg" width=200></td>
+<td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/basic_trapezoid.svg" width=200></td>
+<td></td>
+</tr>
 </table>
