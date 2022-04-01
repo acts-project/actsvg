@@ -2,7 +2,16 @@
 
 An SVG based C++17 plotting library for ACTS detectors, surfaces and relations.
 
-This library has itself no dependency, simply for unittesting it relies on `googletest`.
+This library has itself no dependency, simply for unittesting it relies on `googletest`. For the applications and examples, additionally `Boost` is used.
+
+## Core module
+
+This module has the entire definition and plotting functionality. 
+
+## Meta module
+
+This module acts as a translation layer between the caller libraries (etc. `ACTS`, `detray`) and core library.
+It allows to create `proto` objects for detectors that can then be used for plotting using the `Core` library.
 
 ## Sample SVGs that can be produced
 
