@@ -8,8 +8,8 @@ This library has itself no dependency, simply for unittesting it relies on `goog
 
 <table>
 <tr>
-<img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_barrel_xy.svg" width=300>
-<img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_xy.svg" width=300>
-<img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_grid_xy.svg" width=300>
+<td><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_barrel_xy.svg" width=200></td>
+<td><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_xy.svg" width=200></td>
+<td><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_grid_xy.svg" width=200></td>
 </tr>
 </table>
