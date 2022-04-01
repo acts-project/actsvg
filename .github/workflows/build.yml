@@ -1,0 +1,39 @@
+name: Builds
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+      - 'release/**'
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Initialize Workspace
+      run: cd $GITHUB_WORKSPACE
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/build
+
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{runner.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE -DACTSVG_USE_SYSTEM_BOOST=Off
+
+    - name: Build
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: cmake --build . --config Release
+
+    - name: Unit Tests
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: ctest -C Release
