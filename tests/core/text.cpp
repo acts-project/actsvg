@@ -18,7 +18,7 @@ using namespace actsvg;
 
 TEST(text, unconnected_text) {
 
-    svg::object t = draw::text(10, 10, "t0", {"text"});
+    svg::object t = draw::text({10, 10}, "t0", {"text"});
 
     std::cout << t << std::endl;
 

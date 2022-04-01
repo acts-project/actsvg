@@ -58,6 +58,8 @@ int main(int argc, char* argv[]) {
 
     style::stroke stroke_style({r, g, b});
 
+    style::stroke stroke_black = style::stroke();
+
     // Make a rectangle shape
     //
     std::vector<point3> rectangle = {{-100., -200., 0.},
@@ -66,17 +68,58 @@ int main(int argc, char* argv[]) {
                                      {-100., 200., 0.}};
     auto rectangle_2d = x_y_view(rectangle);
 
+    // rectangle svg object
     auto rectangle_svg =
         draw::polygon(rectangle_2d, "r0", fill_style, stroke_style);
     svg::file rectangle_file;
-    rectangle_file._objects.push_back(rectangle_svg);
+    rectangle_file.add_object(rectangle_svg);
 
-    auto x_y_axes_svg = draw::x_y_axes({-150, 150}, {-250, 250});
-    rectangle_file._objects.insert(rectangle_file._objects.begin(),
-                                   x_y_axes_svg.begin(), x_y_axes_svg.end());
+    auto x_y_a =
+        draw::x_y_axes({-150, 150}, {-250, 250}, stroke_black, "x", "y");
+    rectangle_file.add_object(x_y_a);
+
+    // measure labeling
+    auto measure_marker = style::marker({"|<"});
+    auto measure_hlx = draw::measure({0, 210}, {100., 210}, stroke_black,
+                                     measure_marker, "hx");
+    auto measure_hly = draw::measure({110, 0}, {110., 200}, stroke_black,
+                                     measure_marker, "hy");
+    rectangle_file.add_object(measure_hly);
+    rectangle_file.add_object(measure_hlx);
 
     std::ofstream rectangle_stream;
     rectangle_stream.open("basic_rectangle.svg");
     rectangle_stream << rectangle_file;
     rectangle_stream.close();
+
+    // Make a trapezoid shape
+    std::vector<point3> trapezoid = {{-50., -200., 0.},
+                                     {50., -200., 0.},
+                                     {100., 200., 0.},
+                                     {-100, 200., 0.}};
+
+    auto trapezoid_2d = x_y_view(trapezoid);
+
+    // rectangle svg object
+    auto trapezoid_svg =
+        draw::polygon(trapezoid_2d, "to", fill_style, stroke_style);
+    svg::file trapezoid_file;
+    trapezoid_file.add_object(trapezoid_svg);
+    trapezoid_file.add_object(x_y_a);
+
+    auto measure_hlx_min = draw::measure({0, -210}, {50., -210}, stroke_black,
+                                     measure_marker, "hx_min");
+
+    auto measure_hlx_max = draw::measure({0, 210}, {100., 210}, stroke_black,
+                                     measure_marker, "hx_max");
+
+    trapezoid_file.add_object(measure_hlx_min);
+    trapezoid_file.add_object(measure_hlx_max);
+    trapezoid_file.add_object(measure_hly);
+
+    std::ofstream trapezoid_stream;
+    trapezoid_stream.open("basic_trapezoid.svg");
+    trapezoid_stream << trapezoid_file;
+    trapezoid_stream.close();
+
 }

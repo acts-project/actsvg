@@ -96,14 +96,14 @@ TEST(endcap, x_y_view) {
         modules.push_back(module);
         std::string module_txt = "Module " + std::to_string(m);
         std::string center_txt =
-            "Center (" + std::to_string(module._barycenter[0]);
-        center_txt += __c + std::to_string(module._barycenter[1]);
+            "Center (" + std::to_string(module._real_barycenter[0]);
+        center_txt += __c + std::to_string(module._real_barycenter[1]);
         center_txt += ")";
         std::vector<std::string> text = {"Module " + std::to_string(m),
                                          "Center "};
 
         auto ctext =
-            draw::connected_text(module._barycenter[0], module._barycenter[1],
+            draw::connected_text(module._real_barycenter,
                                  t_id, {module_txt, center_txt}, style::font(),
                                  style::transform(), module);
         labels.push_back(ctext);
@@ -176,8 +176,8 @@ TEST(endcap, x_y_view_grid) {
     std::map<size_t, std::vector<size_t>> connection_map;
     for (auto [ig, g] : utils::enumerate(grid_sectors)) {
         for (auto [is, s] : utils::enumerate(modules)) {
-            scalar dx = g._barycenter[0] - s._barycenter[0];
-            scalar dy = g._barycenter[1] - s._barycenter[1];
+            scalar dx = g._real_barycenter[0] - s._real_barycenter[0];
+            scalar dy = g._real_barycenter[1] - s._real_barycenter[1];
             if (std::sqrt(dx * dx + dy * dy) < close_by) {
                 connection_map[ig].push_back(is);
             }

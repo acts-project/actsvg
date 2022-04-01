@@ -17,6 +17,13 @@
 namespace actsvg
 {
 
+    /** The view convert 3D point collections as given from
+     * the geometry output, and convert them into 2D contours that can be displayed.
+     * 
+     * @note Given the mathemtatical negative orientation of the x/y system in SVG,
+     * it will flip the y coordinate accordingly.
+     * 
+     */
     namespace views
     {
 
@@ -45,7 +52,8 @@ namespace actsvg
                 c.reserve(vertices_.size());
                 for (const auto &v : vertices_)
                 {
-                    c.push_back({v[0], v[1]});
+                    // flip y coordinate */
+                    c.push_back({v[0], -v[1]});
                 }
                 return c;
             }
@@ -72,7 +80,7 @@ namespace actsvg
                 for (const auto &v : vertices_)
                 {
                     scalar r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
-                    c.push_back({v[2], r});
+                    c.push_back({v[2], -r});
                 }
                 return c;
             }
@@ -107,7 +115,7 @@ namespace actsvg
                 {
                     scalar phi = std::atan2(v[1], v[0]);
                     phi_values.push_back(phi);
-                    c.push_back({v[2], phi});
+                    c.push_back({v[2], -phi});
                 }
                 // Run the phi detection and protection
                 if (_protect_phi)
@@ -158,7 +166,7 @@ namespace actsvg
                         r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
                     }
                     scalar phi = std::atan2(v[1], v[0]);
-                    c.push_back({v[2], r * phi});
+                    c.push_back({v[2], -r * phi});
                 }
                 return c;
             }

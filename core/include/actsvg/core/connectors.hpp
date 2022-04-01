@@ -67,8 +67,8 @@ static void connect_objects(
                         style::rgb_attr(tog._fill._fc._rgb);
 
                     // Record them
-                    tog._animations.push_back(grid_on);
-                    tog._animations.push_back(grid_off);
+                    tog._sub_objects.push_back(grid_on);
+                    tog._sub_objects.push_back(grid_off);
                 }
             }
         }

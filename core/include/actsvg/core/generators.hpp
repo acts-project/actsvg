@@ -48,6 +48,8 @@ namespace actsvg
          * @param start_phi is the start for the arc generation
          * @param end_phi is the end of the arc generation
          * @param unsigned int lseg is the number of segments to approximate the arc
+         * 
+         * @note this contour generation performs the y flip
          *
          **/
         inline std::vector<point2> sector_contour(scalar inner_r, scalar outer_r,
@@ -70,12 +72,12 @@ namespace actsvg
             for (auto iphi : inner_phi)
             {
                 sector_vertices.push_back({inner_r * std::cos(iphi),
-                                           inner_r * std::sin(iphi)});
+                                           -inner_r * std::sin(iphi)});
             }
             for (auto ophi : outer_phi)
             {
                 sector_vertices.push_back({outer_r * std::cos(ophi),
-                                           outer_r * std::sin(ophi)});
+                                           -outer_r * std::sin(ophi)});
             }
             return sector_vertices;
         }

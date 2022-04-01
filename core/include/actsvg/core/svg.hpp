@@ -45,15 +45,29 @@ struct object {
 
     std::map<std::string, std::string> _attribute_map;
 
-    std::vector<object> _animations;
+    std::vector<object> _sub_objects;
 
-    std::array<scalar, 2> _barycenter = {0., 0.};
+    std::array<scalar, 2> _real_barycenter = {0., 0.};
 
     std::array<scalar, 2> _x_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
 
     std::array<scalar, 2> _y_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
+
+    /** Add a sub object and respect the min/max range
+     *
+     * @param o_ is the object in question
+     **/
+    void add_object(const svg::object &o_) {
+        // Add the object
+        _sub_objects.push_back(o_);
+        // Re-measure, x/y ranges include transforms already
+        _x_range = {std::min(_x_range[0], o_._x_range[0]),
+                    std::max(_x_range[1], o_._x_range[1])};
+        _y_range = {std::min(_y_range[0], o_._y_range[0]),
+                    std::max(_y_range[1], o_._y_range[1])};
+    }
 
     friend std::ostream &operator<<(std::ostream &os_, const object &o_);
 };
@@ -72,13 +86,13 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
         os_ << __blk << key << "=\"" << value << "\"";
     }
     // This is done return
-    if (o_._animations.empty() and o_._field.empty()) {
+    if (o_._sub_objects.empty() and o_._field.empty()) {
         os_ << __er;
         return os_;
     }
 
     os_ << __r;
-    for (const auto &a : o_._animations) {
+    for (const auto &a : o_._sub_objects) {
         os_ << a;
     }
     if (not o_._field.empty()) {
@@ -87,7 +101,7 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
         } else {
             for (const auto fl : o_._field) {
                 os_ << "<tspan x=\"";
-                os_ << o_._barycenter[0] << "\"";
+                os_ << o_._real_barycenter[0] << "\"";
                 os_ << " dy=\"" << o_._field_span << "\">";
                 os_ << fl;
                 os_ << "</tspan>" << __nl;
@@ -96,46 +110,6 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
     }
     // Close-out
     os_ << __el << o_._tag << __r;
-    return os_;
-}
-
-/** An svg group
- *
- * This is mainly meant to group and transform objects
- **/
-struct group {
-    std::vector<object> _objects;
-
-    std::string _id = "";
-
-    std::vector<object> _animations;
-
-    style::transform _tr;
-
-    friend std::ostream &operator<<(std::ostream &os_, const group &g_);
-};
-
-/** Stream operator with @param os_ the output stream and @param g_ the streamed
- * group object */
-inline std::ostream &operator<<(std::ostream &os_, const group &g_) {
-    if (not g_._objects.empty()) {
-        os_ << "<g";
-        // Write the identifier tag
-        if (not g_._id.empty()) {
-            os_ << "id=\"" << g_._id << "\"";
-        }
-        os_ << __er;
-        // Transform
-        auto tr_attr = g_._tr.attr();
-        if (not tr_attr.empty()) {
-            os_ << "transform = \"" << tr_attr << "\"";
-        }
-        // Write the objects
-        for (auto o : g_._objects) {
-            os_ << o;
-        }
-        os_ << "</g>'\n'";
-    }
     return os_;
 }
 
@@ -161,8 +135,15 @@ struct file {
     scalar _height = 800;
 
     std::vector<object> _objects = {};
-    std::vector<object> _connections = {};
-    std::vector<group> _groups = {};
+
+    /** Add an object and respect the min/max range
+     *
+     * @param o_ is the object in question
+     **/
+    void add_object(const svg::object &o_) {
+        // Add the object
+        _objects.push_back(o_);
+    }
 
     friend std::ostream &operator<<(std::ostream &os_, const file &f_);
 };
