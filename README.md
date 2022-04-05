@@ -11,9 +11,12 @@ This module has the entire definition and plotting functionality.
 ## Meta module
 
 This module acts as a translation layer between the caller libraries (etc. `ACTS`, `detray`) and core library.
-It allows to create `proto` objects for detectors that can then be used for plotting using the `Core` library.
+It allows to create `proto` objects for detectors that can then be used for plotting using the `core` module.
+This module does also contain a dedicated `display` area that prepares some standard sheets, a view examples can be placed below.
 
 ## Sample SVGs that can be produced
+
+A view stand-alone files that are produced by the `googletest` based unit testing.
 
 <table>
 <tr>
@@ -27,3 +30,7 @@ It allows to create `proto` objects for detectors that can then be used for plot
 <td width=200></td>
 </tr>
 </table>
+
+An example for an andcap sheet:
+
+<img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_endcap_sheet_module_info.svg" width=600/>
