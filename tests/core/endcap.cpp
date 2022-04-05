@@ -22,12 +22,12 @@ using trapezoid = std::array<std::array<scalar, 3u>, 4u>;
 
 std::vector<trapezoid> generate_endcap_modules() {
     std::vector<trapezoid> modules;
-    size_t number_of_modules = test::odd_pixel_ec.size() / 4u;
+    size_t number_of_modules = data::odd_pixel_ec.size() / 4u;
     modules.reserve(number_of_modules);
     for (size_t im = 0; im < number_of_modules; ++im) {
         modules.push_back(
-            {test::odd_pixel_ec[4 * im], test::odd_pixel_ec[4 * im + 1],
-             test::odd_pixel_ec[4 * im + 2], test::odd_pixel_ec[4 * im + 3]});
+            {data::odd_pixel_ec[4 * im], data::odd_pixel_ec[4 * im + 1],
+             data::odd_pixel_ec[4 * im + 2], data::odd_pixel_ec[4 * im + 3]});
     }
     return modules;
 }
@@ -102,10 +102,9 @@ TEST(endcap, x_y_view) {
         std::vector<std::string> text = {"Module " + std::to_string(m),
                                          "Center "};
 
-        auto ctext =
-            draw::connected_text(module._real_barycenter,
-                                 t_id, {module_txt, center_txt}, style::font(),
-                                 style::transform(), module);
+        auto ctext = draw::connected_text(
+            module._real_barycenter, t_id, {module_txt, center_txt},
+            style::font(), style::transform(), module);
         labels.push_back(ctext);
     }
 
@@ -172,20 +171,27 @@ TEST(endcap, x_y_view_grid) {
         draw::r_phi_grid(r_values, phi_values, grid_color, grid_stroke);
 
     // Create the connection map here' simply with some tolerances
-    scalar close_by = 75.;
-    std::map<size_t, std::vector<size_t>> connection_map;
+    scalar close_by_r = 75.;
+    scalar close_by_phi = 0.1;
+
+    std::vector<std::vector<size_t>> associations;
     for (auto [ig, g] : utils::enumerate(grid_sectors)) {
+        std::vector<size_t> sector_associations;
         for (auto [is, s] : utils::enumerate(modules)) {
-            scalar dx = g._real_barycenter[0] - s._real_barycenter[0];
-            scalar dy = g._real_barycenter[1] - s._real_barycenter[1];
-            if (std::sqrt(dx * dx + dy * dy) < close_by) {
-                connection_map[ig].push_back(is);
+            // phi matching only
+            scalar g_phi = std::atan2(g._real_barycenter[1], g._real_barycenter[0]);
+            scalar s_phi = std::atan2(s._real_barycenter[1], s._real_barycenter[0]);
+            if (std::abs(g_phi-s_phi) < 0.25 or std::abs(g_phi-s_phi) > (2 * M_PI - 0.25) ){
+                sector_associations.push_back(is);
+                std::cout << is << ",";
             }
         };
+        associations.push_back(sector_associations);
+        std::cout << std::endl;
     }
 
     // Build the connectors
-    connectors::connect_objects(grid_sectors, modules, connection_map);
+    connectors::connect_objects(grid_sectors, modules, associations);
 
     // Add the surfaces
     ec_file._objects.insert(ec_file._objects.end(), modules.begin(),

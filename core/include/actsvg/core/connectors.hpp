@@ -26,10 +26,10 @@ namespace connectors {
  **/
 static void connect_objects(
     std::vector<svg::object> &sources_, std::vector<svg::object> &targets_,
-    std::map<size_t, std::vector<size_t>> &s_t_connections,
+    const std::vector< std::vector<size_t> > &s_t_connections,
     const std::array<std::string, 2u> &on_off_ = {"mouseover", "mouseout"}) {
 
-    for (auto [s, ts] : s_t_connections) {
+    for (auto [s, ts] : utils::enumerate(s_t_connections)) {
         if (s < sources_.size()) {
             auto sog = sources_[s];
             // Continue if you do not have a source identification

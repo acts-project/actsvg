@@ -48,6 +48,10 @@ static svg::object polygon(
     // Write attributes and measure object size, length
     std::string svg_points_string;
     for (auto [x, y] : polygon_) {
+        // Add to the real barycenter (without display scaling)
+        p._real_barycenter[0] += x;
+        p._real_barycenter[1] += y;
+        // Add display scaling
         x *= sx;
         y *= sy;
         // Record min/max for the view point
@@ -55,9 +59,6 @@ static svg::object polygon(
                       std::max(p._x_range[1], x + tx)};
         p._y_range = {std::min(p._y_range[0], y + ty),
                       std::max(p._y_range[1], y + ty)};
-        // Add them up
-        p._real_barycenter[0] += x;
-        p._real_barycenter[1] += y;
         // Convert to string attributes
         svg_points_string += std::to_string(x);
         svg_points_string += ",";
@@ -67,7 +68,6 @@ static svg::object polygon(
     // Re-normalize the barycenter
     p._real_barycenter[0] /= polygon_.size();
     p._real_barycenter[1] /= polygon_.size();
-    p._real_barycenter[1] *= -1;
     // Fill the points attributes
     p._attribute_map["points"] = svg_points_string;
     // Attach fill, stroke & transform attributes and apply
@@ -333,7 +333,8 @@ static svg::object measure(const point2 &start_, const point2 &end_,
                            const style::stroke &stroke_ = style::stroke(),
                            const style::marker &marker_ = style::marker({"|<"}),
                            const std::string &label_ = "",
-                           const style::font &font_ = style::font()) {
+                           const style::font &font_ = style::font(),
+                           int side_x_ = 1, int side_y_ = 1) {
 
     // Measure group here we go
     svg::object measure_group;
@@ -358,8 +359,8 @@ static svg::object measure(const point2 &start_, const point2 &end_,
     if (not label_.empty()){
         scalar size = marker_._size;
 
-        scalar x_off = 2 * std::abs(std::sin(theta)) * size;
-        scalar y_off = -2 * std::abs(std::cos(theta)) * size;
+        scalar x_off = side_x_ * 2 * std::abs(std::sin(theta)) * size;
+        scalar y_off = -side_y_ * 2 * std::abs(std::cos(theta)) * size;        
 
         scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
         scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;
@@ -426,7 +427,7 @@ static svg::object x_y_axes(const std::array<scalar, 2> &x_range_,
     if (not y_label_.empty()) {
         scalar size = markers_[1][1]._size;
         auto ylab =
-            text({-size, -y_range_[1] - 2 * size}, "t1", {y_label_}, font_);
+            text({-size, y_range_[1] + 2 * size}, "t1", {y_label_}, font_);
         axes.add_object(ylab);
     }
 

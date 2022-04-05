@@ -13,6 +13,8 @@
 
 #include "grid.hpp"
 #include "actsvg/core/style.hpp"
+#include "actsvg/proto/surface.hpp"
+#include "actsvg/styles/defaults.hpp"
 
 namespace actsvg {
 
@@ -40,17 +42,18 @@ struct volume {
     /// Auxiliary information 
     std::vector<std::string> _info = {};
 
-    /// The contained surfaces 
-    std::vector<point3_container> _surfaces = {};
-    style::fill _surface_fill;
-    style::stroke _surface_stroke;
+    /// The contained surfaces & their templates
+    std::vector<surface<point3_container>> _surfaces = {};
+
+    /// This is the template surfaces for surface sheet displays
+    std::vector<unsigned int> _templates = {};
+    std::vector<surface<point3_container>> _template_surfaces = {};
+    
+    /// The portals 
+    std::vector<surface<point3_container>> _portals = {};
+
     /// The associated surface grid 
     grid _surface_grid;
-
-    /// The portals 
-    std::vector<point3_container> _portals = {};
-    style::fill _portals_fill;
-    style::stroke _portals_stroke;
 
 };
 

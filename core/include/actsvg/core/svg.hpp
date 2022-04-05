@@ -133,6 +133,7 @@ struct file {
 
     scalar _width = 800;
     scalar _height = 800;
+    scalar _border = 10;
 
     std::vector<object> _objects = {};
 
@@ -169,8 +170,12 @@ inline std::ostream &operator<<(std::ostream &os_, const file &f_) {
     viewBox[2] = 1.2 * (x_range[1] - x_range[0]);
     viewBox[3] = 1.2 * (y_range[1] - y_range[0]);
 
-    viewBox[0] = x_range[0] - 0.1 * viewBox[2];
-    viewBox[1] = y_range[0] - 0.1 * viewBox[3];
+    // Include a fixed size border
+    viewBox[0] = (x_range[0] - 0.1 * viewBox[2]) - f_._border;
+    viewBox[1] = (y_range[0] - 0.1 * viewBox[3]) - f_._border;
+    viewBox[2] += f_._border;
+    viewBox[3] += f_._border;
+
 
     if (f_._add_html) {
         os_ << f_._html_head;

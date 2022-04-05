@@ -185,12 +185,18 @@ struct transform {
      * @tparam object_type the type of the object
      *
      * @param o_ [in,out] the object in question
+     * 
+     * @note is applies the transform to the x range
      **/
     template <typename object_type>
     void attach_attributes(object_type &o_) const {
         auto transform_attribute = attr();
         if (not transform_attribute.empty()) {
             o_._attribute_map["transform"] = transform_attribute;
+            scalar tx = _tr[0];
+            scalar ty = _tr[1];
+            o_._x_range = { o_._x_range[0] + tx, o_._x_range[1] + tx };
+            o_._y_range = { o_._y_range[0] + ty, o_._y_range[1] + ty };
         }
     }
 };

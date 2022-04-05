@@ -39,14 +39,15 @@ namespace proto {
 
         /** These are the grid associations, when runnign through 
          * 
+         *  size_t i = 0;
          *  for (auto: _edges_1) 
          *      for (auto: _edges_0) 
-         *        auto assoc = _associations[1][0];
+         *        auto assoc = _associations[i++];
          * 
          * The entries of the association point to the index in the surface
          * container of the volume
          **/
-        std::vector<std::vector<std::vector<unsigned int>>> _associations = {};
+        std::vector<std::vector<size_t>> _associations = {};
         
     };
 

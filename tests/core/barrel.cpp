@@ -24,12 +24,12 @@ using rectangle = std::array<std::array<scalar, 3u>, 4u>;
 std::vector<rectangle> generate_barrel_modules()
 {
     std::vector<rectangle> modules;
-    size_t number_of_modules = test::odd_pixel_barrel.size() / 4u;
+    size_t number_of_modules = data::odd_pixel_barrel.size() / 4u;
     modules.reserve(number_of_modules);
     for (size_t im = 0; im < number_of_modules; ++im)
     {
-        modules.push_back({test::odd_pixel_barrel[4 * im], test::odd_pixel_barrel[4 * im + 1],
-                           test::odd_pixel_barrel[4 * im + 2], test::odd_pixel_barrel[4 * im + 3]});
+        modules.push_back({data::odd_pixel_barrel[4 * im], data::odd_pixel_barrel[4 * im + 1],
+                           data::odd_pixel_barrel[4 * im + 2], data::odd_pixel_barrel[4 * im + 3]});
     }
     return modules;
 }

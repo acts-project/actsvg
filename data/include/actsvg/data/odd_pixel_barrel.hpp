@@ -16,7 +16,7 @@ namespace actsvg
 
     /// This file is generated from the Open Data detector and
     /// depicts one Pixel barrel layer
-    namespace test
+    namespace data
     {
 
         std::vector<std::array<scalar, 3u>> odd_pixel_barrel =
