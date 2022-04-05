@@ -17,6 +17,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install Dependencies
+       run: sudo apt-get install libboost-all-dev
+
     - name: Initialize Workspace
       run: cd $GITHUB_WORKSPACE
 
