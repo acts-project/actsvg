@@ -69,6 +69,18 @@ struct object {
                     std::max(_y_range[1], o_._y_range[1])};
     }
 
+    /** Add a sub object and respect the min/max range
+     *
+     * @param oc_ is the object container to be added
+     **/
+    template <typename object_container>
+    void add_objects(const object_container &oc_) {
+        // Add the object
+        for (const auto& o : oc_){
+            add_object(o);
+        }
+    }
+
     friend std::ostream &operator<<(std::ostream &os_, const object &o_);
 };
 

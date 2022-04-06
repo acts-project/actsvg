@@ -23,22 +23,6 @@ using namespace actsvg;
 using point3 = std::array<scalar, 3>;
 using point3_container = std::vector<point3>;
 
-/// Helper method to calculate the center
-///
-/// @param vs are the vertices that build up this module
-std::string center_string(const point3_container& vs) {
-    std::string c_str = "center = (";
-    scalar c_x = 0;
-    scalar c_y = 0;
-    for (auto& v : vs) {
-        c_x += v[0];
-        c_y += v[1];
-    }
-    c_x /= vs.size();
-    c_y /= vs.size();
-    return c_str + std::to_string(c_x) + "," + std::to_string(c_y) + ")";
-}
-
 // Helper method to generate the endcap volume description
 template <typename point3_container_type = point3_container>
 proto::volume<point3_container_type> generate_endcap_volume() {
@@ -76,7 +60,7 @@ proto::volume<point3_container_type> generate_endcap_volume() {
 
         // Add some descriptive text
         endcap_module._info = {"module #" + std::to_string(im),
-                               center_string(endcap_module._vertices)};
+                               display::center_string(endcap_module._vertices)};
         endcap._surfaces.push_back(endcap_module);
     }
 
