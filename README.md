@@ -34,3 +34,7 @@ A view stand-alone files that are produced by the `googletest` based unit testin
 An example for an andcap sheet:
 
 <img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_endcap_sheet_module_info.svg" width=600/>
+
+An example for a barrel sheet (module info display):
+
+<img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_barrel_sheet_module_info.svg" width=600/>
