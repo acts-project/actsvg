@@ -90,7 +90,7 @@ proto::volume<point3_container_type> generate_barrel_volume() {
     barrel._surface_grid._edges_0 = z_values;
     barrel._surface_grid._edges_1 = phi_values;
 
-    //barrel._surface_grid._associations = data::odd_pixel_barrel_assoc;
+    barrel._surface_grid._associations = data::odd_pixel_barrel_assoc;
 
     return barrel;
 }
@@ -114,7 +114,7 @@ TEST(display, barrel_sheet_module_info) {
     eout << barrel_file;
     eout.close();
 }
-/*
+
 TEST(display, barrel_sheet_grid_info) {
 
     barrel._name = "ODD Pixel Barrel (sample)";
@@ -133,4 +133,3 @@ TEST(display, barrel_sheet_grid_info) {
     eout << barrel_file;
     eout.close();
 }
-*/

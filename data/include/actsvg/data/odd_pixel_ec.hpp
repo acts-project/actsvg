@@ -17,7 +17,7 @@ namespace actsvg {
 /// depicts one Pixel endcap layer
 namespace data {
 
-std::vector<std::array<scalar, 3u>> odd_pixel_ec = {
+static std::vector<std::array<scalar, 3u>> odd_pixel_ec = {
     {42, 8.5, -1515.6},
     {42, -8.5, -1515.6},
     {110, -14.5, -1515.6},
@@ -259,7 +259,7 @@ std::vector<std::array<scalar, 3u>> odd_pixel_ec = {
     {16.5, 173, -1524.4},
     {-16.5, 173, -1524.4}};
 
-std::vector<std::vector<size_t>> odd_pixel_ec_assoc = {
+static std::vector<std::vector<size_t>> odd_pixel_ec_assoc = {
     {4, 33, 34, 35},  {4, 5, 34, 35, 37},   {5, 35, 37},  {5, 6, 35, 37, 38},
     {6, 37, 38, 39},  {6, 7, 38, 39, 40},   {7, 39, 40},  {7, 8, 39, 40, 41},
     {8, 40, 41, 42},  {8, 9, 41, 42, 43},   {9, 42, 43},  {9, 10, 42, 43, 44},
@@ -285,6 +285,6 @@ std::vector<std::vector<size_t>> odd_pixel_ec_assoc = {
     {22, 27, 28, 29}, {22, 23, 28, 29, 30}, {23, 29, 30}, {2, 23, 29, 30, 31},
     {2, 30, 31, 32},  {2, 3, 31, 32, 33},   {3, 32, 33},  {3, 4, 32, 33, 34}};
 
-}  // namespace test
+}  // namespace data
 
 }  // namespace actsvg

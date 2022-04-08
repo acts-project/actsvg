@@ -84,7 +84,7 @@ static svg::object polygon(
 /** Draw a text object - unconnected
  *
  * @note will perform the y switxh
- * 
+ *
  * @param p_ is the text position
  * @param tid_ is the text object id
  * @param text_ is the actual text to be drawn
@@ -174,9 +174,6 @@ static std::vector<svg::object> r_phi_grid(
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
-    // Apply the scale
-    scalar sx = transform_._scale[0];
-    scalar sy = transform_._scale[1];
     // The list of grid sectors
     std::vector<svg::object> grid_sectors;
     for (size_t ir = 1; ir < r_edges_.size(); ++ir) {
@@ -188,20 +185,14 @@ static std::vector<svg::object> r_phi_grid(
             auto sector_contour = generators::sector_contour(
                 r_edges_[ir - 1], r_edges_[ir], phi_edges_[iphi - 1],
                 phi_edges_[iphi]);
-            if (sx != 0. and sy != 0.) {
-                for (auto sc : sector_contour) {
-                    sc[0] *= sx;
-                    sc[1] *= sy;
-                }
-            }
 
             auto grid_sector =
                 polygon(sector_contour, gs + std::to_string(iphi - 1), fill_,
                         stroke_, transform_);
             scalar r = r_edges_[ir - 1], r_edges_[ir];
             scalar phi = phi_edges_[iphi - 1], phi_edges_[iphi];
-            grid_sector._real_barycenter = {sx * r * std::cos(phi),
-                                       -sy * r * std::sin(phi)};
+            grid_sector._real_barycenter = {r * std::cos(phi),
+                                            r * std::sin(phi)};
             grid_sectors.push_back(grid_sector);
         }
     }
@@ -222,9 +213,6 @@ static std::vector<svg::object> z_phi_grid(
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
 
-    // Apply the scale
-    scalar sx = transform_._scale[0];
-    scalar sy = transform_._scale[1];
     // The list of grid sectors
     std::vector<svg::object> grid_tiles;
     for (size_t iz = 1; iz < z_edges_.size(); ++iz) {
@@ -233,14 +221,11 @@ static std::vector<svg::object> z_phi_grid(
         gs += std::to_string(iz - 1);
         gs += "_phi";
         for (size_t iphi = 1; iphi < phi_edges_.size(); ++iphi) {
-            std::array<scalar, 2u> llc = {sx * z_edges_[iz - 1],
-                                          sy * phi_edges_[iphi - 1]};
-            std::array<scalar, 2u> lrc = {sx * z_edges_[iz],
-                                          sy * phi_edges_[iphi - 1]};
-            std::array<scalar, 2u> rrc = {sx * z_edges_[iz],
-                                          sy * phi_edges_[iphi]};
-            std::array<scalar, 2u> rlc = {sx * z_edges_[iz - 1],
-                                          sy * phi_edges_[iphi]};
+            std::array<scalar, 2u> llc = {z_edges_[iz - 1],
+                                          phi_edges_[iphi - 1]};
+            std::array<scalar, 2u> lrc = {z_edges_[iz], phi_edges_[iphi - 1]};
+            std::array<scalar, 2u> rrc = {z_edges_[iz], phi_edges_[iphi]};
+            std::array<scalar, 2u> rlc = {z_edges_[iz - 1], phi_edges_[iphi]};
 
             std::vector<std::array<scalar, 2u>> tile = {llc, lrc, rrc, rlc};
 
@@ -254,7 +239,7 @@ static std::vector<svg::object> z_phi_grid(
 
 /** Method to draw a simple line
  * @note will perform the y switch
- * 
+ *
  */
 static svg::object line(const point2 &start_, const point2 &end_,
                         const style::stroke &stroke_ = style::stroke()) {
@@ -265,7 +250,7 @@ static svg::object line(const point2 &start_, const point2 &end_,
     l._attribute_map["y1"] = std::to_string(-start_[1]);
     l._attribute_map["x2"] = std::to_string(end_[0]);
     l._attribute_map["y2"] = std::to_string(-end_[1]);
-    // We have the range    
+    // We have the range
     l._x_range = {std::min(start_[0], end_[0])};
     l._y_range = {std::min(start_[1], end_[1])};
     // Remember the stroke attributes and add them
@@ -293,15 +278,16 @@ static svg::object marker(const point2 &at_, const style::marker &marker_,
 
     // It's a measure type
     if (marker_._type.substr(0u, 1u) == "|") {
-        auto measure_line = line({at_[0], static_cast<scalar>(at_[1] - 2 * size)},
-                                 {at_[0], static_cast<scalar>(at_[1] + 2 * size)}, marker_._stroke);
+        auto measure_line = line(
+            {at_[0], static_cast<scalar>(at_[1] - 2 * size)},
+            {at_[0], static_cast<scalar>(at_[1] + 2 * size)}, marker_._stroke);
         marker_._transform.attach_attributes(measure_line);
         marker_group.add_object(measure_line);
-        m_offset = -size; 
+        m_offset = -size;
     }
     // Still an arrow to draw
     if (marker_._type.find("<") != std::string::npos) {
-        arrow_head = {{at_[0] - size + m_offset , at_[1] - size},
+        arrow_head = {{at_[0] - size + m_offset, at_[1] - size},
                       {at_[0] + size + m_offset, at_[1]},
                       {at_[0] - size + m_offset, at_[1] + size}};
 
@@ -326,8 +312,8 @@ static svg::object marker(const point2 &at_, const style::marker &marker_,
 }
 
 /** Draw a measure in z-y
- * 
- * 
+ *
+ *
  */
 static svg::object measure(const point2 &start_, const point2 &end_,
                            const style::stroke &stroke_ = style::stroke(),
@@ -356,15 +342,15 @@ static svg::object measure(const point2 &start_, const point2 &end_,
     rmarker._transform = style::transform({start_[0], -start_[1], theta_deg});
     measure_group.add_object(marker({0., 0.}, rmarker));
 
-    if (not label_.empty()){
+    if (not label_.empty()) {
         scalar size = marker_._size;
 
         scalar x_off = side_x_ * 2 * std::abs(std::sin(theta)) * size;
-        scalar y_off = -side_y_ * 2 * std::abs(std::cos(theta)) * size;        
+        scalar y_off = -side_y_ * 2 * std::abs(std::cos(theta)) * size;
 
         scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
         scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;
-        auto ltext = text({xl,yl} , "t1", {label_}, font_);
+        auto ltext = text({xl, yl}, "t1", {label_}, font_);
         measure_group.add_object(ltext);
     }
 

@@ -8,10 +8,13 @@
 
 #pragma once
 
+#include <fstream>
 #include <map>
 #include <vector>
+#include <cmath>
 
 #include "svg.hpp"
+#include "utils.hpp"
 
 namespace actsvg {
 
@@ -21,15 +24,15 @@ namespace connectors {
  *
  * @param sources_ are the source objects
  * @param targests_ are the target objects
- * @param s_t_connections are the connections from source to target
+ * @param s_t_connections_ are the connections from source to target
  * @param on_off_ are the connection effects
  **/
 static void connect_objects(
     std::vector<svg::object> &sources_, std::vector<svg::object> &targets_,
-    const std::vector< std::vector<size_t> > &s_t_connections,
+    const std::vector<std::vector<size_t> > &s_t_connections_,
     const std::array<std::string, 2u> &on_off_ = {"mouseover", "mouseout"}) {
 
-    for (auto [s, ts] : utils::enumerate(s_t_connections)) {
+    for (auto [s, ts] : utils::enumerate(s_t_connections_)) {
         if (s < sources_.size()) {
             auto sog = sources_[s];
             // Continue if you do not have a source identification
