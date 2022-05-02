@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "actsvg/actsvg.hpp"
+#include "actsvg/core.hpp"
 
 namespace po = boost::program_options;
 using namespace actsvg;

@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-#include "actsvg/actsvg.hpp"
+#include "actsvg/core.hpp"
 
 using namespace actsvg;
 

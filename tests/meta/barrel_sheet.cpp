@@ -13,7 +13,7 @@
 #include <tuple>
 #include <vector>
 
-#include "actsvg/actsvg.hpp"
+#include "actsvg/core.hpp"
 #include "actsvg/data/odd_pixel_barrel.hpp"
 #include "actsvg/display/sheets.hpp"
 #include "actsvg/proto/volume.hpp"

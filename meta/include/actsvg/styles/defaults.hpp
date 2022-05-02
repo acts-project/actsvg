@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "actsvg/actsvg.hpp"
+#include "actsvg/core.hpp"
 
 namespace actsvg {
 

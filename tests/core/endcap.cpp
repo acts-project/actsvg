@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "actsvg/actsvg.hpp"
+#include "actsvg/core.hpp"
 #include "actsvg/data/odd_pixel_ec.hpp"
 
 using namespace actsvg;

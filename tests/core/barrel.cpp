@@ -9,7 +9,7 @@
 #include <fstream>
 #include <gtest/gtest.h>
 
-#include "actsvg/actsvg.hpp"
+#include "actsvg/core.hpp"
 #include "actsvg/data/odd_pixel_barrel.hpp"
 
 #include <array>

@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "actsvg/actsvg.hpp"
+#include "actsvg/core.hpp"
 #include "actsvg/display/helpers.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"

@@ -31,7 +31,7 @@ A view stand-alone files that are produced by the `googletest` based unit testin
 </tr>
 </table>
 
-An example for an andcap sheet:
+An example for an endcap sheet:
 
 <img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_endcap_sheet_module_info.svg" width=600/>
 
