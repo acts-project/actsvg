@@ -11,21 +11,12 @@
 
 // Single header include file for the actsvg::core module
 
-#include "core/connectors.hpp"
-#include "core/defs.hpp"
-#include "core/draw.hpp"
-#include "core/generators.hpp"
-#include "core/style.hpp"
-#include "core/svg.hpp"
-#include "core/utils.hpp"
-#include "core/views.hpp"
+#include "actsvg/proto/detector.hpp"
+#include "actsvg/proto/grid.hpp"
+#include "actsvg/proto/surface.hpp"
+#include "actsvg/proto/volume.hpp"
 
-#include "proto/detector.hpp"
-#include "proto/grid.hpp"
-#include "proto/surface.hpp"
-#include "proto/volume.hpp"
+#include "actsvg/styles/defaults.hpp"
 
-#include "styles/defaults.hpp"
-
-#include "display/helpers.hpp"
-#include "display/sheets.hpp"
+#include "actsvg/display/helpers.hpp"
+#include "actsvg/display/sheets.hpp"
