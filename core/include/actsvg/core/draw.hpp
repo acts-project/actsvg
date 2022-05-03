@@ -29,7 +29,7 @@ namespace draw {
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
  */
-static svg::object polygon(
+static inline svg::object polygon(
     const std::vector<point2> &polygon_, const std::string &id_ = "",
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
@@ -91,7 +91,7 @@ static svg::object polygon(
  * @param font_ is the font sytle specification
  * @param transform_ defines the text transform
  **/
-static svg::object text(
+static inline svg::object text(
     const point2 &p_, const std::string &tid_,
     const std::vector<std::string> &text_,
     const style::font &font_ = style::font(),
@@ -128,7 +128,7 @@ static svg::object text(
  * @param object_ is the connected object
  * @param highlight_ are the hightlighting options
  **/
-static svg::object connected_text(
+static inline svg::object connected_text(
     const point2 &p_, const std::string &tid_,
     const std::vector<std::string> &text_, const style::font &font_,
     const style::transform &transform_, const svg::object &object_,
@@ -169,7 +169,7 @@ static svg::object connected_text(
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
  */
-static std::vector<svg::object> r_phi_grid(
+static inline std::vector<svg::object> r_phi_grid(
     const std::vector<scalar> &r_edges_, const std::vector<scalar> &phi_edges_,
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
@@ -207,7 +207,7 @@ static std::vector<svg::object> r_phi_grid(
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
  */
-static std::vector<svg::object> z_phi_grid(
+static inline std::vector<svg::object> z_phi_grid(
     const std::vector<scalar> &z_edges_, const std::vector<scalar> &phi_edges_,
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
@@ -239,7 +239,12 @@ static std::vector<svg::object> z_phi_grid(
 
 /** Method to draw a simple line
  * @note will perform the y switch
+ * 
+ * @param start_ is the start point of the line
+ * @param end_ is the end point of the line
+ * @param stroke_ are the stroke parameters
  *
+ * @return an svg object for the line
  */
 static svg::object line(const point2 &start_, const point2 &end_,
                         const style::stroke &stroke_ = style::stroke()) {
@@ -263,8 +268,13 @@ static svg::object line(const point2 &start_, const point2 &end_,
  *
  *  Arrorws types are: <, <<, <|, |<, |<<, |<|, o, *
  *
+ * @param at_ is the poistion of the marker
+ * @param marker_ is the marker style
+ * @param m_id_ is the marker identification
+ * 
+ * @return an svg object for the marker
  **/
-static svg::object marker(const point2 &at_, const style::marker &marker_,
+static inline svg::object marker(const point2 &at_, const style::marker &marker_,
                           const std::string &m_id_ = "x0") {
 
     svg::object marker_group;
@@ -313,9 +323,18 @@ static svg::object marker(const point2 &at_, const style::marker &marker_,
 
 /** Draw a measure in z-y
  *
- *
+ * @param start_ is the start point of the line
+ * @param end_ is the end point of the line
+ * @param stroke_ are the stroke parameters
+ * @param marker_ are the marker parmeters
+ * @param label_ is the label associated
+ * @param font_ are the font parameters
+ * @param side_x_ is the x offset of the label
+ * @param side_y_ is the y offset of the label
+ * 
+ * @return an svg object for the measurexs
  */
-static svg::object measure(const point2 &start_, const point2 &end_,
+static inline svg::object measure(const point2 &start_, const point2 &end_,
                            const style::stroke &stroke_ = style::stroke(),
                            const style::marker &marker_ = style::marker({"|<"}),
                            const std::string &label_ = "",
@@ -358,9 +377,18 @@ static svg::object measure(const point2 &start_, const point2 &end_,
 }
 
 /** Draw an x-y axes system
+ * 
+ * @param x_range_ is the x range of the axes to be drawn
+ * @param y_range_ is the y range of the axes to be drawn
+ * @param stroke_ are the stroke parameters
+ * @param x_label_ is the x label of the axis system
+ * @param y_label_ is the y label of the axis system
+ * @param font_ are the font parameters
+ * @param markers_ are the 4 markers on each axis end
  *
+ * @return an svg object representing the axes
  */
-static svg::object x_y_axes(const std::array<scalar, 2> &x_range_,
+static inline svg::object x_y_axes(const std::array<scalar, 2> &x_range_,
                             const std::array<scalar, 2> &y_range_,
                             const style::stroke &stroke_ = style::stroke(),
                             const std::string &x_label_ = "",
