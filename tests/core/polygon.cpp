@@ -20,7 +20,7 @@ TEST(draw, triangle) {
     std::vector<std::array<scalar, 2u>> triangle = {
         {100, 400}, {200, 600}, {600, 200}};
 
-    auto tsvg0 = draw::polygon(triangle, "t0");
+    auto tsvg0 = draw::polygon("t0", triangle);
     tfile0._objects.push_back(tsvg0);
 
     std::ofstream tstream;
@@ -33,7 +33,7 @@ TEST(draw, triangle) {
     red_fill_hl_green._fc._hl_rgb = {0, 255, 0};
 
     svg::file tfile1;
-    auto tsvg1 = draw::polygon(triangle, "t1", red_fill_hl_green);
+    auto tsvg1 = draw::polygon("t1", triangle, red_fill_hl_green);
     tfile1._objects.push_back(tsvg1);
 
     tstream.open("triangle_highlight.svg");

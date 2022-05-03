@@ -6,21 +6,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <fstream>
 #include <gtest/gtest.h>
 
-#include "actsvg/core/draw.hpp"
-
+#include <fstream>
 #include <iostream>
 #include <sstream>
+
+#include "actsvg/core/draw.hpp"
 
 using namespace actsvg;
 
 TEST(text, unconnected_text) {
 
-    svg::object t = draw::text({10, 10}, "t0", {"text"});
+    svg::object t = draw::text("t0", {10, 10}, {"text"});
 
     std::cout << t << std::endl;
-
 }
-

@@ -30,17 +30,19 @@ enum sheet_type { e_module_info = 0, e_grid_info = 1 };
  *
  * @tparam volume3_container is the type of the 3D point container
  *
+ * @param id_ is the identifcation tag
  * @param s_ is the surface to be displayed
  * @param sh_ is the sheet size for displaying
  *
  * @return a surface sheet svg object
  **/
 template <typename point3_container>
-svg::object surface_sheet(const proto::surface<point3_container>& s_,
+svg::object surface_sheet(const std::string& id_,
+                          const proto::surface<point3_container>& s_,
                           const std::array<scalar, 2>& sh_ = {400., 400.}) {
     svg::object so;
     so._tag = "g";
-    so._id = "surface_sheet_" + s_._name;
+    so._id = id_;
 
     views::x_y x_y_view;
 
@@ -58,7 +60,7 @@ svg::object surface_sheet(const proto::surface<point3_container>& s_,
     style::transform scale_transform;
     scale_transform._scale = {s_x, s_y};
 
-    auto surface = draw::polygon(surface_contour, s_._name, s_._fill,
+    auto surface = draw::polygon(s_._name, surface_contour, s_._fill,
                                  s_._stroke, scale_transform);
     so.add_object(surface);
 
@@ -68,7 +70,7 @@ svg::object surface_sheet(const proto::surface<point3_container>& s_,
     axis_font._size = 10;
 
     so.add_object(
-        draw::x_y_axes(x_axis, y_axis, __a_stroke, "x", "y", axis_font));
+        draw::x_y_axes("xy", x_axis, y_axis, __a_stroke, "x", "y", axis_font));
 
     // The measures
     // - Trapezoid
@@ -83,13 +85,15 @@ svg::object surface_sheet(const proto::surface<point3_container>& s_,
         scalar hly_x = hlx_max + 2 * __m_marker._size;
 
         auto measure_hlx_min = draw::measure(
-            {0, -hly - ms}, {hlx_min, -hly - ms}, __m_stroke, __m_marker,
-            "h_x_min = " + std::to_string(s_._measures[0]), __m_font, 1, -2);
+            "hlx_min", {0, -hly - ms}, {hlx_min, -hly - ms}, __m_stroke,
+            __m_marker, "h_x_min = " + std::to_string(s_._measures[0]),
+            __m_font, 1, -2);
         auto measure_hlx_max = draw::measure(
-            {0, hly + ms}, {hlx_max, hly + ms}, __m_stroke, __m_marker,
-            "h_x_max = " + std::to_string(s_._measures[1]), __m_font, 1, 1);
+            "hlx_max", {0, hly + ms}, {hlx_max, hly + ms}, __m_stroke,
+            __m_marker, "h_x_max = " + std::to_string(s_._measures[1]),
+            __m_font, 1, 1);
         auto measure_hly = draw::measure(
-            {hly_x, 0}, {hly_x, hly}, __m_stroke, __m_marker,
+            "hly", {hly_x, 0}, {hly_x, hly}, __m_stroke, __m_marker,
             "h_y = " + std::to_string(s_._measures[2]), __m_font, 1, 1);
         so.add_object(measure_hlx_min);
         so.add_object(measure_hlx_max);
@@ -102,10 +106,10 @@ svg::object surface_sheet(const proto::surface<point3_container>& s_,
         scalar ms = 2 * __m_marker._size;
 
         auto measure_hlx = draw::measure(
-            {0, hly + ms}, {hlx, hly + ms}, __m_stroke, __m_marker,
+            "hlx", {0, hly + ms}, {hlx, hly + ms}, __m_stroke, __m_marker,
             "h_x = " + std::to_string(s_._measures[0]), __m_font, 1, 1);
         auto measure_hly = draw::measure(
-            {hlx + ms, 0}, {hlx + ms, hly}, __m_stroke, __m_marker,
+            "hly", {hlx + ms, 0}, {hlx + ms, hly}, __m_stroke, __m_marker,
             "h_y = " + std::to_string(s_._measures[1]), __m_font, 1, 1);
         so.add_object(measure_hlx);
         so.add_object(measure_hly);
@@ -118,20 +122,22 @@ svg::object surface_sheet(const proto::surface<point3_container>& s_,
  *
  * @tparam volume3_container is the type of the 3D point container
  *
+ * @param id_ is the identification tag of this sheet
  * @param v_ is the volume to be displayed
  * @param sh_ is the sheet size for displaying
  * @param t_ is the sheet type
  * @param s_sh_ is the surface sheet sub display size
  **/
 template <typename point3_container, typename view_type, layer_type lT>
-svg::object sheet(const proto::volume<point3_container>& v_,
+svg::object sheet(const std::string& id_,
+                  const proto::volume<point3_container>& v_,
                   const std::array<scalar, 2>& sh_ = {600., 600.},
                   sheet_type t_ = e_module_info,
                   const std::array<scalar, 2>& s_sh_ = {200., 400.}) {
 
     svg::object eo;
     eo._tag = "g";
-    eo._id = v_._name;
+    eo._id = id_;
 
     view_type view;
 
@@ -152,7 +158,8 @@ svg::object sheet(const proto::volume<point3_container>& v_,
             s_fill._fc._opacity = s._fill._fc._opacity;
             s._fill = s_fill;
             // The template sheet
-            auto s_sheet = display::surface_sheet(s, s_sh_);
+            auto s_sheet =
+                display::surface_sheet("surface_sheet_" + id_, s, s_sh_);
             style::transform(
                 {static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
                  0.})
@@ -188,7 +195,7 @@ svg::object sheet(const proto::volume<point3_container>& v_,
     // Add the axes on top
     auto axis_font = __a_font;
     axis_font._size = 10;
-    eo.add_object(draw::x_y_axes(x_axis, y_axis, __a_stroke,
+    eo.add_object(draw::x_y_axes("xy", x_axis, y_axis, __a_stroke,
                                  view._axis_names[0], view._axis_names[1],
                                  axis_font));
 
@@ -196,8 +203,9 @@ svg::object sheet(const proto::volume<point3_container>& v_,
     auto title_font = __t_font;
     title_font._size = 16;
     auto title = draw::text(
+        "sheet_title",
         {static_cast<scalar>(-0.5 * sh_[0]), static_cast<scalar>(0.5 * sh_[1])},
-        "sheet_title", {v_._name}, title_font);
+        {v_._name}, title_font);
     eo.add_object(title);
 
     return eo;
@@ -207,36 +215,42 @@ svg::object sheet(const proto::volume<point3_container>& v_,
  *
  * @tparam volume3_container is the type of the 3D point container
  *
+ * @param id_ is the idenfication tag of this sheet
  * @param v_ is the volume to be displayed
  * @param sh_ is the sheet size for displaying
  * @param t_ is the sheet type
  * @param s_sh_ is the surface sheet sub display size
  **/
 template <typename point3_container>
-svg::object endcap_sheet(const proto::volume<point3_container>& v_,
+svg::object endcap_sheet(const std::string& id_,
+                         const proto::volume<point3_container>& v_,
                          const std::array<scalar, 2>& sh_ = {600., 600.},
                          sheet_type t_ = e_module_info,
                          const std::array<scalar, 2>& s_sh_ = {200., 400.}) {
 
-    return sheet<point3_container, views::x_y, e_endcap>(v_, sh_, t_, s_sh_);
+    return sheet<point3_container, views::x_y, e_endcap>(id_, v_, sh_, t_,
+                                                         s_sh_);
 }
 
 /** Make a summary sheet for an barrel type volume
  *
  * @tparam volume3_container is the type of the 3D point container
  *
+ * @param id_ is the idenfication tag of this sheet
  * @param v_ is the volume to be displayed
  * @param sh_ is the sheet size for displaying
  * @param t_ is the sheet type
  * @param s_sh_ is the surface sheet sub display size
  **/
 template <typename point3_container>
-svg::object barrel_sheet(const proto::volume<point3_container>& v_,
+svg::object barrel_sheet(const std::string& id_,
+                         const proto::volume<point3_container>& v_,
                          const std::array<scalar, 2>& sh_ = {600., 600.},
                          sheet_type t_ = e_module_info,
                          const std::array<scalar, 2>& s_sh_ = {200., 400.}) {
 
-    return sheet<point3_container, views::z_phi, e_barrel>(v_, sh_, t_, s_sh_);
+    return sheet<point3_container, views::z_phi, e_barrel>(id_, v_, sh_, t_,
+                                                           s_sh_);
 }
 
 }  // namespace display

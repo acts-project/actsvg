@@ -54,7 +54,7 @@ TEST(endcap, z_r_view) {
         std::string m_id = std::string("m") + std::to_string(m);
         auto module_contour = z_r_view(ecm);
         modules.push_back(
-            draw::polygon(module_contour, m_id, module_color, stroke_color));
+            draw::polygon(m_id, module_contour, module_color, stroke_color));
     }
 
     // Add the surfaces
@@ -92,7 +92,7 @@ TEST(endcap, x_y_view) {
         std::string t_id = std::string("t") + std::to_string(m);
         auto module_contour = x_y_view(ecm);
         auto module =
-            draw::polygon(module_contour, m_id, module_color, stroke_color);
+            draw::polygon(m_id, module_contour, module_color, stroke_color);
         modules.push_back(module);
         std::string module_txt = "Module " + std::to_string(m);
         std::string center_txt =
@@ -103,7 +103,7 @@ TEST(endcap, x_y_view) {
                                          "Center "};
 
         auto ctext = draw::connected_text(
-            module._real_barycenter, t_id, {module_txt, center_txt},
+            t_id, module._real_barycenter, {module_txt, center_txt},
             style::font(), style::transform(), module);
         labels.push_back(ctext);
     }
@@ -145,7 +145,7 @@ TEST(endcap, x_y_view_grid) {
         std::string m_id = std::string("m") + std::to_string(m);
         auto module_contour = x_y_view(ecm);
         modules.push_back(
-            draw::polygon(module_contour, m_id, module_color, stroke_color));
+            draw::polygon(m_id, module_contour, module_color, stroke_color));
     }
 
     // Let's generate a grid & draw it

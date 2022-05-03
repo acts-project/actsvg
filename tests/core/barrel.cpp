@@ -56,7 +56,7 @@ TEST(barrel, x_y_view)
     {
         std::string m_id = std::string("m") + std::to_string(m);
         auto module_contour = x_y_view(bm);
-        modules.push_back(draw::polygon(module_contour, m_id, module_color, stroke_color));
+        modules.push_back(draw::polygon(m_id, module_contour, module_color, stroke_color));
     }
    
     // Add the surfaces
@@ -93,7 +93,7 @@ TEST(barrel, z_phi_view)
     {
         std::string m_id = std::string("m") + std::to_string(m);
         auto module_contour = z_phi_view(bm);
-        modules.push_back(draw::polygon(module_contour, m_id, module_color, stroke_color, scale));
+        modules.push_back(draw::polygon(m_id, module_contour,  module_color, stroke_color, scale));
     }
    
     // Add the surfaces
@@ -142,7 +142,7 @@ TEST(barrel, z_phi_view_grid)
     {
         std::string m_id = std::string("m") + std::to_string(m);
         auto module_contour = z_phi_view(bm);
-        modules.push_back(draw::polygon(module_contour, m_id, module_color, stroke_color, scale));
+        modules.push_back(draw::polygon(m_id, module_contour, module_color, stroke_color, scale));
     }
 
     // Find out the min/max of the z values 

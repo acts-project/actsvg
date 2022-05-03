@@ -70,19 +70,19 @@ int main(int argc, char* argv[]) {
 
     // rectangle svg object
     auto rectangle_svg =
-        draw::polygon(rectangle_2d, "r0", fill_style, stroke_style);
+        draw::polygon("r0", rectangle_2d, fill_style, stroke_style);
     svg::file rectangle_file;
     rectangle_file.add_object(rectangle_svg);
 
     auto x_y_a =
-        draw::x_y_axes({-150, 150}, {-250, 250}, stroke_black, "x", "y");
+        draw::x_y_axes("xy", {-150, 150}, {-250, 250}, stroke_black, "x", "y");
     rectangle_file.add_object(x_y_a);
 
     // measure labeling
     auto measure_marker = style::marker({"|<"});
-    auto measure_hlx = draw::measure({0, 210}, {100., 210}, stroke_black,
+    auto measure_hlx = draw::measure("hlx", {0, 210}, {100., 210}, stroke_black,
                                      measure_marker, "hx");
-    auto measure_hly = draw::measure({110, 0}, {110., 200}, stroke_black,
+    auto measure_hly = draw::measure("hly", {110, 0}, {110., 200}, stroke_black,
                                      measure_marker, "hy");
     rectangle_file.add_object(measure_hly);
     rectangle_file.add_object(measure_hlx);
@@ -102,16 +102,18 @@ int main(int argc, char* argv[]) {
 
     // rectangle svg object
     auto trapezoid_svg =
-        draw::polygon(trapezoid_2d, "to", fill_style, stroke_style);
+        draw::polygon("t0", trapezoid_2d, fill_style, stroke_style);
     svg::file trapezoid_file;
     trapezoid_file.add_object(trapezoid_svg);
     trapezoid_file.add_object(x_y_a);
 
-    auto measure_hlx_min = draw::measure({0, -210}, {50., -210}, stroke_black,
-                                     measure_marker, "hx_min");
+    auto measure_hlx_min =
+        draw::measure("hlx_min", {0, -210}, {50., -210}, stroke_black,
+                      measure_marker, "hx_min");
 
-    auto measure_hlx_max = draw::measure({0, 210}, {100., 210}, stroke_black,
-                                     measure_marker, "hx_max");
+    auto measure_hlx_max =
+        draw::measure("hlx_max", {0, 210}, {100., 210}, stroke_black,
+                      measure_marker, "hx_max");
 
     trapezoid_file.add_object(measure_hlx_min);
     trapezoid_file.add_object(measure_hlx_max);
@@ -121,5 +123,4 @@ int main(int argc, char* argv[]) {
     trapezoid_stream.open("basic_trapezoid.svg");
     trapezoid_stream << trapezoid_file;
     trapezoid_stream.close();
-
 }

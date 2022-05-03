@@ -14,9 +14,8 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
+#include "actsvg/meta.hpp"
 #include "actsvg/data/odd_pixel_ec.hpp"
-#include "actsvg/display/sheets.hpp"
-#include "actsvg/proto/volume.hpp"
 
 using namespace actsvg;
 
@@ -89,7 +88,8 @@ TEST(display, endcap_sheet_module_info) {
     endcap._name = "ODD Pixel Endcap (sample)";
 
     // Create the sheet
-    svg::object endcap_sheet = display::endcap_sheet(endcap, {600,600}, display::e_module_info);
+    svg::object endcap_sheet =
+        display::endcap_sheet("odd_endcap_sheet", endcap, {600, 600}, display::e_module_info);
 
     svg::file endcap_file;
     endcap_file._width = 1000;
@@ -108,7 +108,7 @@ TEST(display, endcap_sheet_grid_info) {
 
     // Create the sheet
     svg::object endcap_sheet =
-        display::endcap_sheet(endcap, {600, 600}, display::e_grid_info);
+        display::endcap_sheet("odd_endcap_sheet", endcap, {600, 600}, display::e_grid_info);
 
     svg::file endcap_file;
     endcap_file._width = 1000;

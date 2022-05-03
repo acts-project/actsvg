@@ -128,7 +128,7 @@ process_modules(const volume_type& v_, const view_type& view_,
     modules.reserve(contours.size());
     for (auto [ic, c] : utils::enumerate(contours)) {
         const auto& surface = v_._surfaces[ic];
-        auto surface_module = draw::polygon(c, surface._name, surface._fill,
+        auto surface_module = draw::polygon(surface._name, c, surface._fill,
                                             surface._stroke, scale_transform);
         modules.push_back(surface_module);
     }
@@ -168,7 +168,7 @@ void connect_surface_sheets(const volume_type& v_,
 
         s_sheet_s._attribute_map["display"] = "none";
 
-        auto surface_info = draw::text({0, yt_}, "info_" + s._name, s._info);
+        auto surface_info = draw::text("info_" + s._name, {0, yt_}, s._info);
         s_sheet_s.add_object(surface_info);
 
         // Object information to appear

@@ -23,14 +23,14 @@ namespace actsvg {
 namespace draw {
 /** Draw a polygon object
  *
- * @param polygon_ the polygon points
  * @param id_ is the identification
+ * @param polygon_ the polygon points
  * @param fill_ is the fill style
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
  */
 static inline svg::object polygon(
-    const std::vector<point2> &polygon_, const std::string &id_ = "",
+    const std::string &id_, const std::vector<point2> &polygon_,
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform())
@@ -85,14 +85,15 @@ static inline svg::object polygon(
  *
  * @note will perform the y switxh
  *
+ * @param id_ is the text object id
  * @param p_ is the text position
- * @param tid_ is the text object id
  * @param text_ is the actual text to be drawn
  * @param font_ is the font sytle specification
  * @param transform_ defines the text transform
  **/
 static inline svg::object text(
-    const point2 &p_, const std::string &tid_,
+    const std::string &id_,
+    const point2 &p_, 
     const std::vector<std::string> &text_,
     const style::font &font_ = style::font(),
     const style::transform &transform_ = style::transform()) {
@@ -100,7 +101,7 @@ static inline svg::object text(
     // Create the object, tag it, id it (if given)
     svg::object t;
     t._tag = "text";
-    t._id = tid_;
+    t._id = id_;
     // Apply the scale
     scalar x = p_[0];
     scalar y = p_[1];
@@ -120,8 +121,8 @@ static inline svg::object text(
 
 /** Draw a text object - unconnected
  *
+ * @param id_ is the text object id
  * @param p_ is the text position
- * @param tid_ is the text object id
  * @param text_ is the actual text to be drawn
  * @param font_ is the font sytle specification
  * @param transform_ defines the text transform
@@ -129,12 +130,13 @@ static inline svg::object text(
  * @param highlight_ are the hightlighting options
  **/
 static inline svg::object connected_text(
-    const point2 &p_, const std::string &tid_,
+    const std::string &id_,
+    const point2 &p_, 
     const std::vector<std::string> &text_, const style::font &font_,
     const style::transform &transform_, const svg::object &object_,
     const std::vector<std::string> &highlight_ = {"mouseover", "mouseout"}) {
 
-    auto t = text(p_, tid_, text_, font_, transform_);
+    auto t = text(id_, p_, text_, font_, transform_);
 
     t._attribute_map["display"] = "none";
 
@@ -187,7 +189,7 @@ static inline std::vector<svg::object> r_phi_grid(
                 phi_edges_[iphi]);
 
             auto grid_sector =
-                polygon(sector_contour, gs + std::to_string(iphi - 1), fill_,
+                polygon(gs + std::to_string(iphi - 1), sector_contour, fill_,
                         stroke_, transform_);
             scalar r = r_edges_[ir - 1], r_edges_[ir];
             scalar phi = phi_edges_[iphi - 1], phi_edges_[iphi];
@@ -229,7 +231,7 @@ static inline std::vector<svg::object> z_phi_grid(
 
             std::vector<std::array<scalar, 2u>> tile = {llc, lrc, rrc, rlc};
 
-            auto grid_tile = polygon(tile, gs + std::to_string(iphi - 1), fill_,
+            auto grid_tile = polygon(gs + std::to_string(iphi - 1), tile, fill_,
                                      stroke_, transform_);
             grid_tiles.push_back(grid_tile);
         }
@@ -239,17 +241,20 @@ static inline std::vector<svg::object> z_phi_grid(
 
 /** Method to draw a simple line
  * @note will perform the y switch
- * 
+ *
+ * @param id_ is the identification tag of this line
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
  *
  * @return an svg object for the line
  */
-static svg::object line(const point2 &start_, const point2 &end_,
+static svg::object line(const std::string& id_, 
+                        const point2 &start_, const point2 &end_,
                         const style::stroke &stroke_ = style::stroke()) {
     svg::object l;
     l._tag = "line";
+    l._id = id_;
     // Draw the line, remember the sign flip
     l._attribute_map["x1"] = std::to_string(start_[0]);
     l._attribute_map["y1"] = std::to_string(-start_[1]);
@@ -267,15 +272,15 @@ static svg::object line(const point2 &start_, const point2 &end_,
 /** Marker definition
  *
  *  Arrorws types are: <, <<, <|, |<, |<<, |<|, o, *
- *
+
+ * @param id_ is the marker identification
  * @param at_ is the poistion of the marker
  * @param marker_ is the marker style
- * @param m_id_ is the marker identification
- * 
+ *
  * @return an svg object for the marker
  **/
-static inline svg::object marker(const point2 &at_, const style::marker &marker_,
-                          const std::string &m_id_ = "x0") {
+static inline svg::object marker(const std::string &id_, const point2 &at_,
+                                 const style::marker &marker_) {
 
     svg::object marker_group;
     marker_group._tag = "g";
@@ -288,7 +293,7 @@ static inline svg::object marker(const point2 &at_, const style::marker &marker_
 
     // It's a measure type
     if (marker_._type.substr(0u, 1u) == "|") {
-        auto measure_line = line(
+        auto measure_line = line(id_ + "_line",
             {at_[0], static_cast<scalar>(at_[1] - 2 * size)},
             {at_[0], static_cast<scalar>(at_[1] + 2 * size)}, marker_._stroke);
         marker_._transform.attach_attributes(measure_line);
@@ -313,7 +318,7 @@ static inline svg::object marker(const point2 &at_, const style::marker &marker_
     }
     // Plot the arrow if not empty
     if (not arrow_head.empty()) {
-        auto arrow = polygon(arrow_head, m_id_, marker_._fill, marker_._stroke,
+        auto arrow = polygon(id_, arrow_head, marker_._fill, marker_._stroke,
                              marker_._transform);
         marker_group.add_object(arrow);
     }
@@ -323,6 +328,7 @@ static inline svg::object marker(const point2 &at_, const style::marker &marker_
 
 /** Draw a measure in z-y
  *
+ * @param id_ is the identification tag of this object
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
@@ -331,21 +337,22 @@ static inline svg::object marker(const point2 &at_, const style::marker &marker_
  * @param font_ are the font parameters
  * @param side_x_ is the x offset of the label
  * @param side_y_ is the y offset of the label
- * 
+ *
  * @return an svg object for the measurexs
  */
-static inline svg::object measure(const point2 &start_, const point2 &end_,
-                           const style::stroke &stroke_ = style::stroke(),
-                           const style::marker &marker_ = style::marker({"|<"}),
-                           const std::string &label_ = "",
-                           const style::font &font_ = style::font(),
-                           int side_x_ = 1, int side_y_ = 1) {
+static inline svg::object measure(
+    const std::string &id_, const point2 &start_, const point2 &end_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::marker &marker_ = style::marker({"|<"}),
+    const std::string &label_ = "", const style::font &font_ = style::font(),
+    int side_x_ = 1, int side_y_ = 1) {
 
     // Measure group here we go
     svg::object measure_group;
     measure_group._tag = "g";
+    measure_group._id = id_;
 
-    auto mline = line(start_, end_, stroke_);
+    auto mline = line(id_ + "_line", start_, end_, stroke_);
     measure_group.add_object(mline);
 
     // Calculate the rotation
@@ -355,11 +362,11 @@ static inline svg::object measure(const point2 &start_, const point2 &end_,
     style::marker lmarker = marker_;
     lmarker._transform = style::transform(
         {end_[0], -end_[1], static_cast<scalar>(theta_deg + 180.)});
-    measure_group.add_object(marker({0., 0.}, lmarker));
+    measure_group.add_object(marker("left_tag", {0., 0.}, lmarker));
 
     style::marker rmarker = marker_;
     rmarker._transform = style::transform({start_[0], -start_[1], theta_deg});
-    measure_group.add_object(marker({0., 0.}, rmarker));
+    measure_group.add_object(marker("right_tag", {0., 0.}, rmarker));
 
     if (not label_.empty()) {
         scalar size = marker_._size;
@@ -369,7 +376,7 @@ static inline svg::object measure(const point2 &start_, const point2 &end_,
 
         scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
         scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;
-        auto ltext = text({xl, yl}, "t1", {label_}, font_);
+        auto ltext = text( "label", {xl, yl}, {label_}, font_);
         measure_group.add_object(ltext);
     }
 
@@ -377,7 +384,8 @@ static inline svg::object measure(const point2 &start_, const point2 &end_,
 }
 
 /** Draw an x-y axes system
- * 
+ *
+ * @param id_ is the id tag of this object
  * @param x_range_ is the x range of the axes to be drawn
  * @param y_range_ is the y range of the axes to be drawn
  * @param stroke_ are the stroke parameters
@@ -388,21 +396,22 @@ static inline svg::object measure(const point2 &start_, const point2 &end_,
  *
  * @return an svg object representing the axes
  */
-static inline svg::object x_y_axes(const std::array<scalar, 2> &x_range_,
-                            const std::array<scalar, 2> &y_range_,
-                            const style::stroke &stroke_ = style::stroke(),
-                            const std::string &x_label_ = "",
-                            const std::string &y_label_ = "",
-                            const style::font &font_ = style::font(),
-                            const style::axis_markers<2u> &markers_ = {
-                                __standard_axis_markers,
-                                __standard_axis_markers}) {
+static inline svg::object x_y_axes(
+    const std::string& id_,
+    const std::array<scalar, 2> &x_range_,
+    const std::array<scalar, 2> &y_range_,
+    const style::stroke &stroke_ = style::stroke(),
+    const std::string &x_label_ = "", const std::string &y_label_ = "",
+    const style::font &font_ = style::font(),
+    const style::axis_markers<2u> &markers_ = {__standard_axis_markers,
+                                               __standard_axis_markers}) {
 
     svg::object axes;
     axes._tag = "g";
+    axes._id = id_;
 
-    auto x = line({x_range_[0], 0.}, {x_range_[1], 0.}, stroke_);
-    auto y = line({0., y_range_[0]}, {0., y_range_[1]}, stroke_);
+    auto x = line("x_axis", {x_range_[0], 0.}, {x_range_[1], 0.}, stroke_);
+    auto y = line("y_axis", {0., y_range_[0]}, {0., y_range_[1]}, stroke_);
 
     axes.add_object(x);
     axes.add_object(y);
@@ -420,7 +429,7 @@ static inline svg::object x_y_axes(const std::array<scalar, 2> &x_range_,
         auto lmarker = markers_[b0_][b1_];
         if (lmarker._type != "none") {
             lmarker._transform = style::transform({p_[0], -p_[1], -rot_});
-            axes.add_object(marker({0., 0.}, lmarker, mid_));
+            axes.add_object(marker(mid_, {0., 0.}, lmarker));
         }
     };
 
@@ -434,14 +443,14 @@ static inline svg::object x_y_axes(const std::array<scalar, 2> &x_range_,
     if (not x_label_.empty()) {
         scalar size = markers_[0][1]._size;
         auto xlab =
-            text({x_range_[1] + 2 * size, size}, "t1", {x_label_}, font_);
+            text("x_label", {x_range_[1] + 2 * size, size}, {x_label_}, font_);
         axes.add_object(xlab);
     }
     // Add the labels: y
     if (not y_label_.empty()) {
         scalar size = markers_[1][1]._size;
         auto ylab =
-            text({-size, y_range_[1] + 2 * size}, "t1", {y_label_}, font_);
+            text("y_label", {-size, y_range_[1] + 2 * size}, {y_label_}, font_);
         axes.add_object(ylab);
     }
 

@@ -14,8 +14,7 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
-#include "actsvg/display/sheets.hpp"
-#include "actsvg/proto/surface.hpp"
+#include "actsvg/meta.hpp"
 
 using namespace actsvg;
 
@@ -25,9 +24,10 @@ using point3_container = std::vector<point3>;
 TEST(display, surface_sheet) {
 
     proto::surface<point3_container> trapezoid;
-    trapezoid._vertices = {{-8.5, -34, 0.}, {8.5, -34, 0.}, {14.5, 34., 0.}, {-14.5, 34., 0.}};
+    trapezoid._vertices = {
+        {-8.5, -34, 0.}, {8.5, -34, 0.}, {14.5, 34., 0.}, {-14.5, 34., 0.}};
 
-    svg::object surface_sheet = display::surface_sheet(trapezoid);
+    svg::object surface_sheet = display::surface_sheet("trapezoid_sheet", trapezoid);
     svg::file surface_file;
     surface_file.add_object(surface_sheet);
 
