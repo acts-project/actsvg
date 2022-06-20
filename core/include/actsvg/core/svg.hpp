@@ -75,7 +75,7 @@ struct object {
                     std::max(_y_range[1], o_._y_range[1])};
         _r_range = {std::min(_r_range[0], o_._r_range[0]),
                     std::max(_r_range[1], o_._r_range[1])};
-        _phi_range = {std::min(_phi_range[0], o_.‹[0]),
+        _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
                     std::max(_phi_range[1], o_._phi_range[1])};                    
     }
 
