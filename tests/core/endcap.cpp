@@ -167,8 +167,8 @@ TEST(endcap, x_y_view_grid) {
         scalar c_phi = -M_PI + is * phi_step;
         phi_values.push_back(c_phi);
     }
-    auto grid_sectors =
-        draw::r_phi_grid(r_values, phi_values, grid_color, grid_stroke);
+    auto grid_sectors = draw::tiled_polar_grid("r_phi_",  r_values, phi_values,
+                                         grid_color, grid_stroke);
 
     // Create the connection map here' simply with some tolerances
     scalar close_by_r = 75.;
@@ -179,9 +179,12 @@ TEST(endcap, x_y_view_grid) {
         std::vector<size_t> sector_associations;
         for (auto [is, s] : utils::enumerate(modules)) {
             // phi matching only
-            scalar g_phi = std::atan2(g._real_barycenter[1], g._real_barycenter[0]);
-            scalar s_phi = std::atan2(s._real_barycenter[1], s._real_barycenter[0]);
-            if (std::abs(g_phi-s_phi) < 0.25 or std::abs(g_phi-s_phi) > (2 * M_PI - 0.25) ){
+            scalar g_phi =
+                std::atan2(g._real_barycenter[1], g._real_barycenter[0]);
+            scalar s_phi =
+                std::atan2(s._real_barycenter[1], s._real_barycenter[0]);
+            if (std::abs(g_phi - s_phi) < 0.25 or
+                std::abs(g_phi - s_phi) > (2 * M_PI - 0.25)) {
                 sector_associations.push_back(is);
                 std::cout << is << ",";
             }

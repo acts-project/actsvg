@@ -11,6 +11,7 @@
 #include <array>
 #include <limits>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -55,6 +56,11 @@ struct object {
     std::array<scalar, 2> _y_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
 
+    std::array<scalar, 2> _r_range = {std::numeric_limits<scalar>::max(),
+                                      std::numeric_limits<scalar>::min()};
+
+    std::array<scalar, 2> _phi_range = {std::numeric_limits<scalar>::max(),
+                                        std::numeric_limits<scalar>::min()};
     /** Add a sub object and respect the min/max range
      *
      * @param o_ is the object in question
@@ -62,11 +68,37 @@ struct object {
     void add_object(const svg::object &o_) {
         // Add the object
         _sub_objects.push_back(o_);
-        // Re-measure, x/y ranges include transforms already
+        // Re-measure, x/y/r/phi ranges include transforms already
         _x_range = {std::min(_x_range[0], o_._x_range[0]),
                     std::max(_x_range[1], o_._x_range[1])};
         _y_range = {std::min(_y_range[0], o_._y_range[0]),
                     std::max(_y_range[1], o_._y_range[1])};
+        _r_range = {std::min(_r_range[0], o_._r_range[0]),
+                    std::max(_r_range[1], o_._r_range[1])};
+        _phi_range = {std::min(_phi_range[0], o_.‹[0]),
+                    std::max(_phi_range[1], o_._phi_range[1])};                    
+    }
+
+    /** Find an object by string,
+     *
+     * @param id_ is the identifier with which the sub object
+     * is searched for
+     *
+     * @note std::optional is used and std::nullopt as @return if
+     * the search was not successful
+     */
+    std::optional<svg::object> find_object(const std::string &id_) const {
+
+        auto found_object =
+            std::find_if(_sub_objects.begin(), _sub_objects.end(),
+                         [&](const svg::object &candidate_) {
+                             return (candidate_._id == id_);
+                         });
+
+        if (found_object != _sub_objects.end()) {
+            return (*found_object);
+        }
+        return std::nullopt;
     }
 
     /** Add a sub object and respect the min/max range
@@ -76,7 +108,7 @@ struct object {
     template <typename object_container>
     void add_objects(const object_container &oc_) {
         // Add the object
-        for (const auto& o : oc_){
+        for (const auto &o : oc_) {
             add_object(o);
         }
     }
@@ -88,40 +120,51 @@ struct object {
  * object */
 inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
 
+    // We make a temporary copy for writing, this way we can
+    // write the same one with different attributes sets
+    object o_copy = o_;
+
     // Now write
-    os_ << __l << o_._tag;
-    if (not o_._id.empty()) {
-        os_ << __blk << "id=\"" << o_._id << "\"";
+    os_ << __l << o_copy._tag;
+    if (not o_copy._id.empty()) {
+        os_ << __blk << "id=\"" << o_copy._id << "\"";
     }
+
+    // Attach the styles: fill, stroke, transform
+    o_._fill.attach_attributes(o_copy);
+    o_._stroke.attach_attributes(o_copy);
+    o_._transform.attach_attributes(o_copy);
+
     // The attribute map
-    for (auto [key, value] : o_._attribute_map) {
+    for (auto [key, value] : o_copy._attribute_map) {
         os_ << __blk << key << "=\"" << value << "\"";
     }
+
     // This is done return
-    if (o_._sub_objects.empty() and o_._field.empty()) {
+    if (o_copy._sub_objects.empty() and o_copy._field.empty()) {
         os_ << __er;
         return os_;
     }
 
     os_ << __r;
-    for (const auto &a : o_._sub_objects) {
+    for (const auto &a : o_copy._sub_objects) {
         os_ << a;
     }
-    if (not o_._field.empty()) {
-        if (o_._field.size() == 1) {
-            os_ << o_._field[0];
+    if (not o_copy._field.empty()) {
+        if (o_copy._field.size() == 1) {
+            os_ << o_copy._field[0];
         } else {
-            for (const auto fl : o_._field) {
+            for (const auto fl : o_copy._field) {
                 os_ << "<tspan x=\"";
-                os_ << o_._real_barycenter[0] << "\"";
-                os_ << " dy=\"" << o_._field_span << "\">";
+                os_ << o_copy._real_barycenter[0] << "\"";
+                os_ << " dy=\"" << o_copy._field_span << "\">";
                 os_ << fl;
                 os_ << "</tspan>" << __nl;
             }
         }
     }
     // Close-out
-    os_ << __el << o_._tag << __r;
+    os_ << __el << o_copy._tag << __r;
     return os_;
 }
 
@@ -187,7 +230,6 @@ inline std::ostream &operator<<(std::ostream &os_, const file &f_) {
     viewBox[1] = (y_range[0] - 0.1 * viewBox[3]) - f_._border;
     viewBox[2] += f_._border;
     viewBox[3] += f_._border;
-
 
     if (f_._add_html) {
         os_ << f_._html_head;

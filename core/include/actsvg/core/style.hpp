@@ -49,8 +49,18 @@ struct color {
 
 /// Fill type specification
 struct fill {
+
     /// The fill color
     color _fc;
+
+    /// A constructor from @param fc_ color
+    fill(const color& fc_) : _fc(fc_) {}
+
+    /// A constructor for empty
+    fill() {
+        _fc = color();
+        _fc._opacity = 0.;
+    }
 
     /** Attach this fill attribute to an object
      *
@@ -147,7 +157,8 @@ struct font {
 /// The transform struct
 struct transform {
 
-    std::array<scalar, 3> _tr = {0., 0., 0.};
+    std::array<scalar, 3> _tr = {0., 0. };
+    std::array<scalar, 3> _rot = {0., 0., 0.};
     std::array<scalar, 2> _skew = {0., 0.};
     std::array<scalar, 2> _scale = {1., 1.};
 
@@ -158,7 +169,7 @@ struct transform {
      **/
     std::string attr() const {
         bool translate = (_tr[0] != 0. or _tr[1] != 0.);
-        bool rotate = (_tr[2] != 0.);
+        bool rotate = (_rot[0] != 0.);
         bool scale = (_scale[0] != 1. or _scale[1] != 1.);
         bool skew = (_skew[0] != 0. or _skew[1] != 0.);
         std::stringstream tr_str;
@@ -169,7 +180,7 @@ struct transform {
             }
         }
         if (rotate) {
-            tr_str << "rotate(" << _tr[2] << ")";
+            tr_str << "rotate(" << _rot[0] << __c << _rot[1] << __c << _rot[2] << ")";
             if (scale or skew) {
                 tr_str << __blk;
             }
@@ -185,7 +196,7 @@ struct transform {
      * @tparam object_type the type of the object
      *
      * @param o_ [in,out] the object in question
-     * 
+     *
      * @note is applies the transform to the x range
      **/
     template <typename object_type>
@@ -195,8 +206,8 @@ struct transform {
             o_._attribute_map["transform"] = transform_attribute;
             scalar tx = _tr[0];
             scalar ty = _tr[1];
-            o_._x_range = { o_._x_range[0] + tx, o_._x_range[1] + tx };
-            o_._y_range = { o_._y_range[0] + ty, o_._y_range[1] + ty };
+            o_._x_range = {o_._x_range[0] + tx, o_._x_range[1] + tx};
+            o_._y_range = {o_._y_range[0] + ty, o_._y_range[1] + ty};
         }
     }
 };
@@ -219,7 +230,7 @@ struct marker {
 
 // The axis marker types
 template <unsigned int kDIM>
-using axis_markers = std::array< std::array<marker, 2u>, kDIM>;
+using axis_markers = std::array<std::array<marker, 2u>, kDIM>;
 
 /// Some standard styles to be used as default
 
@@ -227,6 +238,7 @@ using axis_markers = std::array< std::array<marker, 2u>, kDIM>;
 
 static style::marker __no_marker = style::marker();
 static style::marker __standard_marker = style::marker{{"<<"}};
-static std::array<style::marker,2u> __standard_axis_markers  = {__no_marker, __standard_marker};
+static std::array<style::marker, 2u> __standard_axis_markers = {
+    __no_marker, __standard_marker};
 
 }  // namespace actsvg

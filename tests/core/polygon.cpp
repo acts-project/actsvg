@@ -10,6 +10,7 @@
 
 #include <fstream>
 
+#include "../common/playground.hpp"
 #include "actsvg/core.hpp"
 
 using namespace actsvg;
@@ -24,9 +25,18 @@ TEST(draw, triangle) {
     tfile0._objects.push_back(tsvg0);
 
     std::ofstream tstream;
-    tstream.open("triangle.svg");
+    tstream.open("test_core_triangle.svg");
     tstream << tfile0;
     tstream.close();
+}
+
+TEST(draw, triangle_highligh) {
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    std::vector<std::array<scalar, 2u>> triangle = {
+        {-10, -30}, {80, 70}, {10, 200}};
 
     style::fill red_fill_hl_green({255, 0, 0});
     red_fill_hl_green._fc._highlight = {"mouseover", "mouseout"};
@@ -34,9 +44,46 @@ TEST(draw, triangle) {
 
     svg::file tfile1;
     auto tsvg1 = draw::polygon("t1", triangle, red_fill_hl_green);
-    tfile1._objects.push_back(tsvg1);
+    tfile1.add_object(pg);
+    tfile1.add_object(tsvg1);
 
-    tstream.open("triangle_highlight.svg");
+    std::ofstream tstream;
+    tstream.open("test_core_triangle_highlight.svg");
+    tstream << tfile1;
+    tstream.close();
+}
+
+TEST(draw, disc_sector) {
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    style::fill blue_fill({0, 0, 200});
+    blue_fill._fc._opacity = 0.5;
+
+    auto blue_sector_vertices = generators::sector_contour(120., 230., -0.15, 0.15);
+    auto blue_sector = draw::polygon("blue_sector", blue_sector_vertices, blue_fill);
+
+    style::fill red_fill({200, 0, 0});
+    red_fill._fc._opacity = 0.5;
+    auto red_sector_vertices = generators::sector_contour(60., 75., -2.0, 2.0);
+    auto red_sector = draw::polygon("red_sector", red_sector_vertices, red_fill);
+
+
+    style::fill green_fill({0, 200, 0});
+    green_fill._fc._opacity = 0.5;
+
+    auto green_sector_vertices = generators::sector_contour(30., 70., 2.0, -2.0);
+    auto green_sector = draw::polygon("red_sector", green_sector_vertices, green_fill);
+
+    svg::file tfile1;
+    tfile1.add_object(pg);
+    tfile1.add_object(blue_sector);
+    tfile1.add_object(red_sector);
+    tfile1.add_object(green_sector);
+
+    std::ofstream tstream;
+    tstream.open("test_core_sector.svg");
     tstream << tfile1;
     tstream.close();
 }

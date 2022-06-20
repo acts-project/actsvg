@@ -1,7 +1,11 @@
 # Set up the core tests.
 actsvg_add_test( core
+  "arc.cpp"
   "barrel.cpp" 
-  "endcap.cpp"
+  "circle.cpp"
+  #"endcap.cpp"
+  "grids.cpp"
+  "line.cpp"
   "polygon.cpp"
   "style.cpp"
   "svg.cpp"

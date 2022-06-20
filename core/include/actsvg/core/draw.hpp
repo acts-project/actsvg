@@ -8,7 +8,9 @@
 
 #pragma once
 
+#include <iostream>
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -20,14 +22,239 @@
 
 namespace actsvg {
 
+namespace detail {
+/** Helper method to estimate ranges of an object
+ *
+ * @param _o_ is the svg object in question (to be adapted)
+ * @param vertices_ are the input vertices
+ **/
+static inline void adapt_range(svg::object &_o_,
+                               const std::vector<point2> &vertices_) {
+    for (const auto &v : vertices_) {
+        _o_._x_range = {std::min(_o_._x_range[0], v[0]),
+                        std::max(_o_._x_range[1], v[0])};
+        _o_._y_range = {std::min(_o_._y_range[0], v[1]),
+                        std::max(_o_._y_range[1], v[1])};
+
+        scalar r = std::sqrt(v[0]*v[0]+v[1]*v[1]);
+        scalar phi = std::atan2(-v[1],v[0]);
+        _o_._r_range = {std::min(_o_._r_range[0], r),
+                        std::max(_o_._r_range[1],r)};
+        _o_._phi_range = {std::min(_o_._phi_range[0], phi),
+                        std::max(_o_._phi_range[1], phi)};
+    }
+}
+
+}  // namespace detail
+
+/** The draw namespace encapsulates the CORRECT
+ * left handed x-y system from the AWKWARD SVG draw system, and applies
+ * the transform to it if necessary
+ *
+ * That is its main purpose (togehter with given allowing to
+ * give an identifier an connect objects.
+ *
+ * */
+
 namespace draw {
+
+/** Method to draw a simple line
+ *
+ * @note will perform the y switch
+ *
+ * @param id_ is the identification tag of this line
+ * @param start_ is the start point of the line
+ * @param end_ is the end point of the line
+ * @param stroke_ are the stroke parameters
+ *
+ * @return an svg object for the line
+ */
+static inline svg::object line(
+    const std::string &id_, const point2 &start_, const point2 &end_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+    svg::object l;
+    l._tag = "line";
+    l._id = id_;
+
+    // Apply the transform & scale
+    scalar tx = transform_._tr[0];
+    scalar ty = transform_._tr[1];
+    scalar sx = transform_._scale[0];
+    scalar sy = transform_._scale[1];
+
+    scalar st_x = sx * (start_[0] + tx);
+    scalar st_y = sx * (-start_[1] - ty);
+    scalar en_x = sy * (end_[0] + ty);
+    scalar en_y = sy * (-end_[1] - ty);
+
+    // Draw the line, remember the sign flip
+    l._attribute_map["x1"] = std::to_string(st_x);
+    l._attribute_map["y1"] = std::to_string(st_y);
+    l._attribute_map["x2"] = std::to_string(en_x);
+    l._attribute_map["y2"] = std::to_string(en_y);
+
+    // Adapt the range of this object
+    detail::adapt_range(l, {{st_x, st_y}, {en_x, en_y}});
+
+    // Remember the stroke attributes and add them
+    l._stroke = stroke_;
+    return l;
+}
+
+/** Method to draw an arc
+ *
+ * @note will perform the y switch
+ *
+ * @param id_ is the identification tag of this line
+ * @param r_ the radius
+ * @param start_ is the start point of the line
+ * @param end_ is the end point of the line
+ * @param stroke_ are the stroke parameters
+ *
+ * @return an svg object for the line
+ */
+static inline svg::object arc(
+    const std::string &id_, scalar r_, const point2 &start_, const point2 &end_,
+    const style::fill &fill_ = style::fill(),
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+    svg::object a;
+    a._tag = "path";
+    a._id = id_;
+
+    // Apply the transform & scale
+    scalar tx = transform_._tr[0];
+    scalar ty = transform_._tr[1];
+    scalar sx = transform_._scale[0];
+    scalar sy = transform_._scale[1];
+
+    scalar x_min = sx * (start_[0] + tx);
+    scalar y_min = -sy * (start_[1] + ty);
+    scalar x_max = sx * (end_[0] + tx);
+    scalar y_max = -sy * (end_[1] + ty);
+
+    std::string arc_string =
+        "M " + std::to_string(x_min) + " " + std::to_string(y_min);
+    arc_string +=
+        " A " + std::to_string(sx * r_) + " " + std::to_string(sy * r_);
+    arc_string += " 0 0 0 ";
+    arc_string += std::to_string(x_max) + " " + std::to_string(y_max);
+    a._attribute_map["d"] = arc_string;
+
+    // Adapt the range of this object
+    detail::adapt_range(a, {{x_min, y_min}, {x_max, y_max}});
+
+    // Remember the stroke attributes and add them
+    a._stroke = stroke_;
+    a._fill = fill_;
+    return a;
+}
+
+/** Draw a circle object
+ *  - will translate into ellipse to allow for a scale
+ *
+ * @param id_ is the identification
+ * @param p_ the position
+ * @param r_ the radius
+ * @param fill_ is the fill style
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @return an svg object for the circle
+ */
+static inline svg::object circle(
+    const std::string &id_, const point2 &p_, scalar r_,
+    const style::fill &fill_ = style::fill(),
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+    // Create the object, tag it, id it (if given)
+    svg::object e;
+    e._tag = "ellipse";
+    e._id = id_;
+
+    // Apply the transform & scale
+    scalar sx = transform_._scale[0];
+    scalar sy = transform_._scale[1];
+    scalar cx = sx * (p_[0] + transform_._tr[0]);
+    scalar cy = sy * (-p_[1] - transform_._tr[1]);
+
+    // Fill the points attributes
+    e._attribute_map["cx"] = std::to_string(cx);
+    e._attribute_map["cy"] = std::to_string(cy);
+    e._attribute_map["rx"] = std::to_string(r_ * sx);
+    e._attribute_map["ry"] = std::to_string(r_ * sy);
+
+    // Adapt the range of this object
+    detail::adapt_range(
+        e, {{cx - sx * r_, cy - sy * r_}, {cx + sx * r_, cy + sy * r_}});
+
+    // Attach fill, stroke & transform attributes and apply
+    e._fill = fill_;
+    e._stroke = stroke_;
+    e._transform = transform_;
+
+    // The svg object is now set up
+    return e;
+}
+
+/** Draw an ellipse object
+ *
+ * @param id_ is the identification
+ * @param p_ the position
+ * @param rs_ the radii
+ * @param fill_ is the fill style
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @return an svg object for the ellipse
+ */
+static inline svg::object ellipse(
+    const std::string &id_, const point2 &p_, const std::array<scalar, 2> &rs_,
+    const style::fill &fill_ = style::fill(),
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+
+    // Create the object, tag it, id it (if given)
+    svg::object e;
+    e._tag = "ellipse";
+    e._id = id_;
+
+    // Apply the transform & scale
+    scalar sx = transform_._scale[0];
+    scalar sy = transform_._scale[1];
+    scalar cx = sx * (p_[0] + transform_._tr[0]);
+    scalar cy = sy * (-p_[1] - transform_._tr[1]);
+
+    // Fill the points attributes
+    e._attribute_map["cx"] = std::to_string(cx);
+    e._attribute_map["cy"] = std::to_string(cy);
+    e._attribute_map["rx"] = std::to_string(rs_[0] * sx);
+    e._attribute_map["ry"] = std::to_string(rs_[1] * sy);
+
+    // Adapt the range of this object
+    detail::adapt_range(e, {{cx - sx * rs_[0], cy - sy * rs_[1]},
+                            {cx + sx * rs_[0], cy + sy * rs_[1]}});
+
+    // Attach fill, stroke & transform attributes and apply
+    e._fill = fill_;
+    e._stroke = stroke_;
+    e._transform = transform_;
+    // The svg object is now set up
+    return e;
+}
+
 /** Draw a polygon object
+ *
+ * @note will perform the y switch
  *
  * @param id_ is the identification
  * @param polygon_ the polygon points
  * @param fill_ is the fill style
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
+ *
+ * @return an svg object for the polygon
  */
 static inline svg::object polygon(
     const std::string &id_, const std::vector<point2> &polygon_,
@@ -54,15 +281,13 @@ static inline svg::object polygon(
         // Add display scaling
         x *= sx;
         y *= sy;
-        // Record min/max for the view point
-        p._x_range = {std::min(p._x_range[0], x + tx),
-                      std::max(p._x_range[1], x + tx)};
-        p._y_range = {std::min(p._y_range[0], y + ty),
-                      std::max(p._y_range[1], y + ty)};
+        // Per vertex range estimation
+        detail::adapt_range(p, {{x, -y}});
+
         // Convert to string attributes
         svg_points_string += std::to_string(x);
         svg_points_string += ",";
-        svg_points_string += std::to_string(y);
+        svg_points_string += std::to_string(-y);
         svg_points_string += " ";
     }
     // Re-normalize the barycenter
@@ -74,9 +299,6 @@ static inline svg::object polygon(
     p._fill = fill_;
     p._stroke = stroke_;
     p._transform = transform_;
-    fill_.attach_attributes(p);
-    stroke_.attach_attributes(p);
-    transform_.attach_attributes(p);
     // The svg object is now set up
     return p;
 }
@@ -90,14 +312,15 @@ static inline svg::object polygon(
  * @param text_ is the actual text to be drawn
  * @param font_ is the font sytle specification
  * @param transform_ defines the text transform
+ *
+ * @return an svg object for the text
+ *
  **/
 static inline svg::object text(
-    const std::string &id_,
-    const point2 &p_, 
+    const std::string &id_, const point2 &p_,
     const std::vector<std::string> &text_,
     const style::font &font_ = style::font(),
     const style::transform &transform_ = style::transform()) {
-
     // Create the object, tag it, id it (if given)
     svg::object t;
     t._tag = "text";
@@ -105,17 +328,25 @@ static inline svg::object text(
     // Apply the scale
     scalar x = p_[0];
     scalar y = p_[1];
+    // Real barycenter
+    t._real_barycenter = {x, -y};
+
     x *= transform_._scale[0];
     y *= transform_._scale[1];
+
     // Fill the field
     t._field = text_;
     t._attribute_map["x"] = std::to_string(x);
     t._attribute_map["y"] = std::to_string(-y);
-    // barycenter
-    t._real_barycenter = {x, -y};
 
-    font_.attach_attributes(t);
-    transform_.attach_attributes(t);
+    size_t l = 0;
+    for (const auto &t : text_) {
+        l = l > t.size() ? l : t.size();
+    }
+
+    scalar fs = font_._size;
+
+    detail::adapt_range(t, {{x, -y + l}, {x + fs * l, -y - l}});
     return t;
 }
 
@@ -128,14 +359,15 @@ static inline svg::object text(
  * @param transform_ defines the text transform
  * @param object_ is the connected object
  * @param highlight_ are the hightlighting options
+ *
+ * @return an svg object with highlight connection
+ *
  **/
 static inline svg::object connected_text(
-    const std::string &id_,
-    const point2 &p_, 
+    const std::string &id_, const point2 &p_,
     const std::vector<std::string> &text_, const style::font &font_,
     const style::transform &transform_, const svg::object &object_,
     const std::vector<std::string> &highlight_ = {"mouseover", "mouseout"}) {
-
     auto t = text(id_, p_, text_, font_, transform_);
 
     t._attribute_map["display"] = "none";
@@ -163,26 +395,312 @@ static inline svg::object connected_text(
     return t;
 }
 
-/** Draw a connected r-phi-grid in x_y
+/** Draw a tiled cartesian grid - ready for connecting
  *
+ * @param id_ the grid identification
+ * @param l0_edges_ are the edges in l0
+ * @param l1_edges_ are the edges in l1
+ * @param fill_ is the fill style
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @return a simple cartesian grid
+ */
+static inline svg::object cartesian_grid(
+    const std::string &id_, const std::vector<scalar> &l0_edges_,
+    const std::vector<scalar> &l1_edges_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+    // The grid group object
+    svg::object grid;
+    grid._tag = "g";
+    grid._id = id_;
+
+    scalar l0_min = l0_edges_[0];
+    scalar l0_max = l0_edges_[l0_edges_.size() - 1];
+
+    scalar l1_min = l1_edges_[0];
+    scalar l1_max = l1_edges_[l1_edges_.size() - 1];
+
+    for (auto [i0, l0] : utils::enumerate(l0_edges_)) {
+        grid.add_object(line("l0_" + std::to_string(i0), {l0, l1_min},
+                             {l0, l1_max}, stroke_));
+    }
+
+    for (auto [i1, l1] : utils::enumerate(l1_edges_)) {
+        grid.add_object(line("l1_" + std::to_string(i1), {l0_min, l1},
+                             {l0_max, l1}, stroke_));
+    }
+
+    return grid;
+}
+
+/** Draw a tiled cartesian grid - ready for connecting
+ *
+ * @param id_ the grid identification
+ * @param l0_edges_ are the edges in l0
+ * @param l1_edges_ are the edges in l1
+ * @param fill_ is the fill style
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @note - the single objects of the grid can be found by
+ * their unique name "id_+_X_Y" when X is the bin in the
+ * first local and j the bin in the second local coordinate
+ *
+ * @return a tiled grid with internal objects
+ */
+static inline svg::object tiled_cartesian_grid(
+    const std::string &id_, const std::vector<scalar> &l0_edges_,
+    const std::vector<scalar> &l1_edges_,
+    const style::fill &fill_ = style::fill(),
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+
+    // The grid group object
+    svg::object grid;
+    grid._tag = "g";
+    grid._id = id_;
+
+    // The list of grid sectors
+    for (size_t il0 = 1; il0 < l0_edges_.size(); ++il0) {
+        // Grid svg object
+        std::string gs = id_ + "_";
+        gs += std::to_string(il0 - 1);
+        gs += "_";
+        for (size_t il1 = 1; il1 < l1_edges_.size(); ++il1) {
+            std::array<scalar, 2u> llc = {l0_edges_[il0 - 1],
+                                          l1_edges_[il1 - 1]};
+            std::array<scalar, 2u> lrc = {l0_edges_[il0], l1_edges_[il1 - 1]};
+            std::array<scalar, 2u> rrc = {l0_edges_[il0], l1_edges_[il1]};
+            std::array<scalar, 2u> rlc = {l0_edges_[il0 - 1], l1_edges_[il1]};
+
+            std::vector<std::array<scalar, 2u>> tile = {llc, lrc, rrc, rlc};
+
+            auto grid_tile = polygon(gs + std::to_string(il1 - 1), tile, fill_,
+                                     stroke_, transform_);
+            grid.add_object(grid_tile);
+        }
+    }
+    return grid;
+}
+
+/** Draw a simple fan grid
+ *
+ * @param id_ the grid identification
+ * @param x_low_edges_ are the edges in x at low y
+ * @param x_high_edges_ are the edges in x at high y
+ * @param y_edges_ are the edges in phi
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @return a simple faned grid structure
+ */
+static inline svg::object fan_grid(
+    const std::string &id_, const std::vector<scalar> &x_low_edges_,
+    const std::vector<scalar> &x_high_edges_,
+    const std::vector<scalar> &y_edges_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) noexcept(false) {
+
+    // The list of grid sectors
+    svg::object grid;
+    grid._tag = "g";
+    grid._id = id_;
+
+    if (x_low_edges_.size() != x_high_edges_.size()) {
+        throw std::invalid_argument(
+            "fan_grid: mismatch in low/high edge numbers");
+    }
+
+    scalar x_low_min = x_low_edges_[0];
+    scalar x_low_max = x_low_edges_[x_low_edges_.size() - 1];
+
+    scalar x_high_min = x_high_edges_[0];
+    scalar x_high_max = x_high_edges_[x_high_edges_.size() - 1];
+
+    scalar y_min = y_edges_[0];
+    scalar y_max = y_edges_[y_edges_.size() - 1];
+
+    // Calculate slopes
+    scalar x_low_slope = (x_high_min - x_low_min) / (y_max - y_min);
+    scalar x_high_slope = (x_high_max - x_low_max) / (y_max - y_min);
+
+    for (const auto [ix, x] : utils::enumerate(x_low_edges_)) {
+        scalar x_min = x;
+        scalar x_max = x_high_edges_[ix];
+        grid.add_object(line("l0_" + std::to_string(ix), {x_min, y_min},
+                             {x_max, y_max}, stroke_));
+    }
+
+    for (const auto &[iy, y] : utils::enumerate(y_edges_)) {
+        scalar x_min = x_low_min + (y - y_min) * x_low_slope;
+        scalar x_max = x_low_max + (y - y_min) * x_high_slope;
+        grid.add_object(
+            line("l1_" + std::to_string(iy), {x_min, y}, {x_max, y}, stroke_));
+    }
+
+    return grid;
+}
+
+/** Draw a simple fan grid
+ *
+ * @param id_ the grid identification
+ * @param x_low_edges_ are the edges in x at low y
+ * @param x_high_edges_ are the edges in x at high y
+ * @param y_edges_ are the edges in phi
+ * @param fill_ is the fill style
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @note - the single objects of the grid can be found by
+ * their unique name "id_+_X_Y" when X is the bin in the
+ * first local and j the bin in the second local coordinate
+ *
+ * @return a tiled grid with contained individual cells
+ */
+static inline svg::object tiled_fan_grid(
+    const std::string &id_, const std::vector<scalar> &x_low_edges_,
+    const std::vector<scalar> &x_high_edges_,
+    const std::vector<scalar> &y_edges_,
+    const style::fill &fill_ = style::fill(),
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) noexcept(false) {
+
+    svg::object grid;
+    grid._tag = "g";
+    grid._id = id_;
+
+    // The list of grid sectors
+    std::vector<svg::object> grid_tiles;
+
+    if (x_low_edges_.size() != x_high_edges_.size()) {
+        throw std::invalid_argument(
+            "fan_grid: mismatch in low/high edge numbers");
+    }
+
+    scalar y_min = y_edges_[0];
+    scalar y_max = y_edges_[y_edges_.size() - 1];
+
+    std::vector<scalar> slopes;
+    for (auto [ix, xl] : utils::enumerate(x_low_edges_)) {
+        scalar xh = x_high_edges_[ix];
+        slopes.push_back((xh - xl) / (y_max - y_min));
+    }
+
+    for (auto [iy, yl] : utils::enumerate(y_edges_)) {
+        if (iy + 1 == y_edges_.size()) {
+            continue;
+        }
+        scalar yh = y_edges_[iy + 1];
+        for (auto [ix, xll] : utils::enumerate(x_low_edges_)) {
+            if (ix + 1 == x_low_edges_.size()) {
+                continue;
+            }
+            scalar xlr = x_low_edges_[ix + 1];
+
+            scalar x_l_slope = slopes[ix];
+            scalar x_r_slope = slopes[ix + 1];
+
+            // the corrected position given the y values
+            scalar xll_c = xll + x_l_slope * (yl - y_min);
+            scalar xlr_c = xlr + x_r_slope * (yl - y_min);
+
+            scalar xhl_c = xll + x_l_slope * (yh - y_min);
+            scalar xhr_c = xlr + x_r_slope * (yh - y_min);
+
+            std::string g_n =
+                id_ + "_" + std::to_string(ix) + "_" + std::to_string(iy);
+            grid.add_object(draw::polygon(
+                g_n, {{xll_c, yl}, {xlr_c, yl}, {xhr_c, yh}, {xhl_c, yh}},
+                fill_, stroke_, transform_));
+        }
+    }
+
+    return grid;
+}
+
+/** Draw a simple polar grid
+ *
+ * @param id_ the grid identification
+ * @param r_edges_ are the edges in r
+ * @param phi_edges_ are the edges in phi
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @return a simple polar grid object
+ */
+static inline svg::object polar_grid(
+    const std::string &id_, const std::vector<scalar> &r_edges_,
+    const std::vector<scalar> &phi_edges_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+    // The list of grid sectors
+    svg::object grid;
+    grid._tag = "g";
+    grid._id = id_;
+
+    scalar r_min = r_edges_[0];
+    scalar r_max = r_edges_[r_edges_.size() - 1];
+
+    scalar phi_min = phi_edges_[0];
+    scalar phi_max = phi_edges_[phi_edges_.size() - 1];
+
+    scalar cos_phi_min = std::cos(phi_min);
+    scalar sin_phi_min = std::sin(phi_min);
+    scalar cos_phi_max = std::cos(phi_max);
+    scalar sin_phi_max = std::sin(phi_max);
+
+    style::fill fill;
+
+    for (const auto [ir, r] : utils::enumerate(r_edges_)) {
+        grid.add_object(draw::arc(
+            "r_" + std::to_string(ir), r, {r * cos_phi_min, r * sin_phi_min},
+            {r * cos_phi_max, r * sin_phi_max}, fill, stroke_, transform_));
+    }
+
+    for (const auto &[iphi, phi] : utils::enumerate(phi_edges_)) {
+        scalar cos_phi = std::cos(phi);
+        scalar sin_phi = std::sin(phi);
+        grid.add_object(draw::line(
+            "l_" + std::to_string(iphi), {r_min * cos_phi, r_min * sin_phi},
+            {r_max * cos_phi, r_max * sin_phi}, stroke_, transform_));
+    }
+
+    return grid;
+}
+
+/** Draw a connected polar grid
+ *
+ * @param id_ the grid identification
  * @param r_edges_ are the edges in r
  * @param phi_edges_ are the edges in phi
  * @param fill_ is the fill style
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
+ * 
+ * @note - the single objects of the grid can be found by
+ * their unique name "id_+_X_Y" when X is the bin in the
+ * first local and j the bin in the second local coordinate
+ *
+ * @return a tiled polar grid in individual objects
  */
-static inline std::vector<svg::object> r_phi_grid(
-    const std::vector<scalar> &r_edges_, const std::vector<scalar> &phi_edges_,
+static inline svg::object tiled_polar_grid(
+    const std::string &id_, const std::vector<scalar> &r_edges_,
+    const std::vector<scalar> &phi_edges_,
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
-    // The list of grid sectors
-    std::vector<svg::object> grid_sectors;
+
+    svg::object grid;
+    grid._tag = "g";
+    grid._id = id_;
+
     for (size_t ir = 1; ir < r_edges_.size(); ++ir) {
         // Grid svg object
-        std::string gs = "g_r";
+        std::string gs = id_ + "_";
         gs += std::to_string(ir - 1);
-        gs += "_phi";
+        gs += "_";
         for (size_t iphi = 1; iphi < phi_edges_.size(); ++iphi) {
             auto sector_contour = generators::sector_contour(
                 r_edges_[ir - 1], r_edges_[ir], phi_edges_[iphi - 1],
@@ -195,84 +713,15 @@ static inline std::vector<svg::object> r_phi_grid(
             scalar phi = phi_edges_[iphi - 1], phi_edges_[iphi];
             grid_sector._real_barycenter = {r * std::cos(phi),
                                             r * std::sin(phi)};
-            grid_sectors.push_back(grid_sector);
+            grid.add_object(grid_sector);
         }
     }
-    return grid_sectors;
-}
-
-/** Draw a connected z-phi-grid in x_y
- *
- * @param z_edges_ are the edges in r
- * @param phi_edges_ are the edges in phi
- * @param fill_ is the fill style
- * @param stroke_ is the stroke style
- * @param transform_ is the optional transform
- */
-static inline std::vector<svg::object> z_phi_grid(
-    const std::vector<scalar> &z_edges_, const std::vector<scalar> &phi_edges_,
-    const style::fill &fill_ = style::fill(),
-    const style::stroke &stroke_ = style::stroke(),
-    const style::transform &transform_ = style::transform()) {
-
-    // The list of grid sectors
-    std::vector<svg::object> grid_tiles;
-    for (size_t iz = 1; iz < z_edges_.size(); ++iz) {
-        // Grid svg object
-        std::string gs = "g_z";
-        gs += std::to_string(iz - 1);
-        gs += "_phi";
-        for (size_t iphi = 1; iphi < phi_edges_.size(); ++iphi) {
-            std::array<scalar, 2u> llc = {z_edges_[iz - 1],
-                                          phi_edges_[iphi - 1]};
-            std::array<scalar, 2u> lrc = {z_edges_[iz], phi_edges_[iphi - 1]};
-            std::array<scalar, 2u> rrc = {z_edges_[iz], phi_edges_[iphi]};
-            std::array<scalar, 2u> rlc = {z_edges_[iz - 1], phi_edges_[iphi]};
-
-            std::vector<std::array<scalar, 2u>> tile = {llc, lrc, rrc, rlc};
-
-            auto grid_tile = polygon(gs + std::to_string(iphi - 1), tile, fill_,
-                                     stroke_, transform_);
-            grid_tiles.push_back(grid_tile);
-        }
-    }
-    return grid_tiles;
-}
-
-/** Method to draw a simple line
- * @note will perform the y switch
- *
- * @param id_ is the identification tag of this line
- * @param start_ is the start point of the line
- * @param end_ is the end point of the line
- * @param stroke_ are the stroke parameters
- *
- * @return an svg object for the line
- */
-static svg::object line(const std::string& id_, 
-                        const point2 &start_, const point2 &end_,
-                        const style::stroke &stroke_ = style::stroke()) {
-    svg::object l;
-    l._tag = "line";
-    l._id = id_;
-    // Draw the line, remember the sign flip
-    l._attribute_map["x1"] = std::to_string(start_[0]);
-    l._attribute_map["y1"] = std::to_string(-start_[1]);
-    l._attribute_map["x2"] = std::to_string(end_[0]);
-    l._attribute_map["y2"] = std::to_string(-end_[1]);
-    // We have the range
-    l._x_range = {std::min(start_[0], end_[0])};
-    l._y_range = {std::min(start_[1], end_[1])};
-    // Remember the stroke attributes and add them
-    l._stroke = stroke_;
-    stroke_.attach_attributes(l);
-    return l;
+    return grid;
 }
 
 /** Marker definition
  *
- *  Arrorws types are: <, <<, <|, |<, |<<, |<|, o, *
-
+ *  Arrorws types are: <, <<, <|, |<, |<<, |<|, o, x, *
  * @param id_ is the marker identification
  * @param at_ is the poistion of the marker
  * @param marker_ is the marker style
@@ -281,7 +730,6 @@ static svg::object line(const std::string& id_,
  **/
 static inline svg::object marker(const std::string &id_, const point2 &at_,
                                  const style::marker &marker_) {
-
     svg::object marker_group;
     marker_group._tag = "g";
 
@@ -293,10 +741,9 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
 
     // It's a measure type
     if (marker_._type.substr(0u, 1u) == "|") {
-        auto measure_line = line(id_ + "_line",
-            {at_[0], static_cast<scalar>(at_[1] - 2 * size)},
+        auto measure_line = line(
+            id_ + "_line", {at_[0], static_cast<scalar>(at_[1] - 2 * size)},
             {at_[0], static_cast<scalar>(at_[1] + 2 * size)}, marker_._stroke);
-        marker_._transform.attach_attributes(measure_line);
         marker_group.add_object(measure_line);
         m_offset = -size;
     }
@@ -315,7 +762,21 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
             arrow_head.push_back(
                 {static_cast<scalar>(at_[0] + 1 * size + m_offset), at_[1]});
         }
+    } else if (marker_._type.find("o") != std::string::npos) {
+        // A dot marker
+        svg::object dot = circle(id_, at_, 0.5 * size, marker_._fill,
+                                 marker_._stroke, marker_._transform);
+        marker_group.add_object(dot);
+    } else if (marker_._type.find("x")) {
+        scalar a_x = at_[0];
+        scalar a_y = at_[1];
+        scalar h_s = 0.5 * size;
+        marker_group.add_object(
+            line("ml0", {a_x - h_s, a_y - h_s}, {a_x + h_s, a_y + h_s}));
+        marker_group.add_object(
+            line("ml1", {a_x - h_s, a_y + h_s}, {a_x + h_s, a_y - h_s}));
     }
+
     // Plot the arrow if not empty
     if (not arrow_head.empty()) {
         auto arrow = polygon(id_, arrow_head, marker_._fill, marker_._stroke,
@@ -346,7 +807,6 @@ static inline svg::object measure(
     const style::marker &marker_ = style::marker({"|<"}),
     const std::string &label_ = "", const style::font &font_ = style::font(),
     int side_x_ = 1, int side_y_ = 1) {
-
     // Measure group here we go
     svg::object measure_group;
     measure_group._tag = "g";
@@ -376,7 +836,7 @@ static inline svg::object measure(
 
         scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
         scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;
-        auto ltext = text( "label", {xl, yl}, {label_}, font_);
+        auto ltext = text("label", {xl, yl}, {label_}, font_);
         measure_group.add_object(ltext);
     }
 
@@ -397,15 +857,13 @@ static inline svg::object measure(
  * @return an svg object representing the axes
  */
 static inline svg::object x_y_axes(
-    const std::string& id_,
-    const std::array<scalar, 2> &x_range_,
+    const std::string &id_, const std::array<scalar, 2> &x_range_,
     const std::array<scalar, 2> &y_range_,
     const style::stroke &stroke_ = style::stroke(),
     const std::string &x_label_ = "", const std::string &y_label_ = "",
     const style::font &font_ = style::font(),
     const style::axis_markers<2u> &markers_ = {__standard_axis_markers,
                                                __standard_axis_markers}) {
-
     svg::object axes;
     axes._tag = "g";
     axes._id = id_;

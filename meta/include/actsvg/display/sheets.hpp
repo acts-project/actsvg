@@ -10,9 +10,11 @@
 
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "actsvg/core.hpp"
 #include "actsvg/display/helpers.hpp"
+#include "actsvg/proto/clusters.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"
 
@@ -175,11 +177,11 @@ svg::object sheet(const std::string& id_,
 
         // Draw the grid with the appropriate scale transform
         if (lT == e_endcap) {
-            extra_objects = draw::r_phi_grid(
+            extra_objects = draw::tiled_polar_grid(id_,
                 v_._surface_grid._edges_0, v_._surface_grid._edges_1, __g_fill,
                 __g_stroke, scale_transform);
         } else if (lT == e_barrel) {
-            extra_objects = draw::z_phi_grid(
+            extra_objects = draw::tiled_cartesian_grid(id_,
                 v_._surface_grid._edges_0, v_._surface_grid._edges_1, __g_fill,
                 __g_stroke, scale_transform);
         }

@@ -44,6 +44,7 @@ constexpr auto enumerate(container_type &&iterable) {
     return iterable_wrapper{std::forward<container_type>(iterable)};
 }
 
+
 }  // namespace utils
 
 }  // namespace actsvg
