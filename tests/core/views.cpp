@@ -27,7 +27,7 @@ TEST(views, xy)
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {{1., -2.}, {3., -4.}, {7., -8.}};
+    views::contour exptected = {{1., 2.}, {3., 4.}, {7., 8.}};
     ASSERT_TRUE(exptected == c);
 
 }
@@ -41,7 +41,7 @@ TEST(views, zr)
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {{3., -1.}, {0., -4.}, { 2., -static_cast<scalar>(std::sqrt(8.))}};
+    views::contour exptected = {{3., 1.}, {0., 4.}, { 2., static_cast<scalar>(std::sqrt(8.))}};
     ASSERT_TRUE(exptected == c);
 
 }
@@ -55,7 +55,7 @@ TEST(views, zphi)
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = { {3., 0.}, {0., -0.5*M_PI}, {2., -0.25*M_PI}};
+    views::contour exptected = { {3., 0.}, {0., 0.5*M_PI}, {2., 0.25*M_PI}};
     ASSERT_TRUE(exptected == c);
 
 }
@@ -69,7 +69,7 @@ TEST(views, zrphi)
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = { {3., 0.}, {0., -1.*M_PI}, {2., -0.5*M_PI}};
+    views::contour exptected = { {3., 0.}, {0., 1.*M_PI}, {2., 0.5*M_PI}};
     ASSERT_TRUE(exptected == c);
 
 }

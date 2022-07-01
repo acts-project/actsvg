@@ -13,12 +13,71 @@
 #include <sstream>
 
 #include "actsvg/core/draw.hpp"
+#include "actsvg/core/style.hpp"
+#include "../common/playground.hpp"
 
 using namespace actsvg;
 
 TEST(text, unconnected_text) {
 
-    svg::object t = draw::text("t0", {10, 10}, {"text"});
+    svg::file ftemplate;
 
-    std::cout << t << std::endl;
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    // Write out the file
+    std::ofstream fo;
+    fo.open("test_core_text.svg");
+
+    fo << ftemplate._html_head;
+    fo << ftemplate._svg_head;
+    fo << " width=\"900\" height=\"900\" viewBox=\"-450 -450 900 900\"";
+    fo << ftemplate._svg_def_end;
+    // Add the playground
+    fo << pg;
+ 
+    style::color red{{255, 0, 0}};
+    style::font fs;
+    fs._family = "Arial";
+    fs._fc = red;
+
+    // Add the text
+    fo << draw::text("t0", {10, 10}, {"Arial test text at (10,10)"}, fs);
+    // Close the file
+    fo << ftemplate._svg_tail;
+    fo << ftemplate._html_tail;
+    fo.close();
+
+}
+
+
+TEST(text, multiline_text) {
+
+    svg::file ftemplate;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    style::color red{{255, 0, 0}};
+    style::font fs;
+    fs._family = "Arial";
+    fs._fc = red;
+
+    // Write out the file
+    std::ofstream fo;
+    fo.open("test_core_text_multiline.svg");
+
+    fo << ftemplate._html_head;
+    fo << ftemplate._svg_head;
+    fo << " width=\"900\" height=\"900\" viewBox=\"-450 -450 900 900\"";
+    fo << ftemplate._svg_def_end;
+    // Add the playground
+    fo << pg;
+
+    // Add the text
+    fo << draw::text("t0", {100, 100}, {"line 0", "line 1"}, fs);
+    // Close the file
+    fo << ftemplate._svg_tail;
+    fo << ftemplate._html_tail;
+    fo.close();
 }

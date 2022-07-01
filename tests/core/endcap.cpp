@@ -63,7 +63,7 @@ TEST(endcap, z_r_view) {
 
     // File output
     std::ofstream ec_stream;
-    ec_stream.open("odd_pixel_ec_zr.svg");
+    ec_stream.open("test_core_endcap_zr.svg");
     ec_stream << ec_file;
     ec_stream.close();
 }
@@ -116,7 +116,7 @@ TEST(endcap, x_y_view) {
 
     // File output
     std::ofstream ec_stream;
-    ec_stream.open("odd_pixel_ec_xy.svg");
+    ec_stream.open("test_core_endcap_xy.svg");
     ec_stream << ec_file;
     ec_stream.close();
 }
@@ -175,7 +175,7 @@ TEST(endcap, x_y_view_grid) {
     scalar close_by_phi = 0.1;
 
     std::vector<std::vector<size_t>> associations;
-    for (auto [ig, g] : utils::enumerate(grid_sectors)) {
+    for (auto [ig, g] : utils::enumerate(grid_sectors._sub_objects)) {
         std::vector<size_t> sector_associations;
         for (auto [is, s] : utils::enumerate(modules)) {
             // phi matching only
@@ -194,18 +194,18 @@ TEST(endcap, x_y_view_grid) {
     }
 
     // Build the connectors
-    connectors::connect_objects(grid_sectors, modules, associations);
+    connectors::connect_objects(grid_sectors._sub_objects, modules, associations);
 
     // Add the surfaces
     ec_file._objects.insert(ec_file._objects.end(), modules.begin(),
                             modules.end());
     // Add the grid sectors
-    ec_file._objects.insert(ec_file._objects.end(), grid_sectors.begin(),
-                            grid_sectors.end());
+    ec_file._objects.insert(ec_file._objects.end(), grid_sectors._sub_objects.begin(),
+                            grid_sectors._sub_objects.end());
 
     // File output
     std::ofstream ec_stream;
-    ec_stream.open("odd_pixel_ec_grid_xy.svg");
+    ec_stream.open("test_core_encap_grid_xy.svg");
     ec_stream << ec_file;
     ec_stream.close();
 }

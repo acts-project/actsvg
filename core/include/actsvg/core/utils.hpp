@@ -15,6 +15,8 @@ namespace utils {
 /** Helper method to run enumerate(...) with structured binding
  * over STL type containers.
  *
+ * @param iterable is a std-like iterable container type
+ * 
  **/
 template <typename container_type,
           typename container_type_iter =
@@ -43,7 +45,6 @@ constexpr auto enumerate(container_type &&iterable) {
     };
     return iterable_wrapper{std::forward<container_type>(iterable)};
 }
-
 
 }  // namespace utils
 

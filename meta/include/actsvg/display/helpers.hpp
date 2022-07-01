@@ -33,13 +33,16 @@ std::string center_string(const point3_container& vs) {
     std::string c_str = "center = (";
     scalar c_x = 0;
     scalar c_y = 0;
+    scalar c_z = 0;
     for (auto& v : vs) {
         c_x += v[0];
         c_y += v[1];
+        c_z += v[2];
     }
     c_x /= vs.size();
     c_y /= vs.size();
-    return c_str + std::to_string(c_x) + "," + std::to_string(c_y) + ")";
+    c_z /= vs.size();
+    return c_str + std::to_string(c_x) + "," + std::to_string(c_y) + ", " + std::to_string(c_z) + ")";
 }
 
 /** Helper method to prepare axis for a view point

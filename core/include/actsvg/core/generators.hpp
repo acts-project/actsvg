@@ -47,7 +47,7 @@ namespace actsvg
          * @param outer_r is the outer radius
          * @param start_phi is the start for the arc generation
          * @param end_phi is the end of the arc generation
-         * @param unsigned int lseg is the number of segments to approximate the arc
+         * @param lseg is the number of segments to approximate the arc
          * 
          * @note this contour generation DOES NOT perform the y flip
          * @note start/end are respected in terms of orientation

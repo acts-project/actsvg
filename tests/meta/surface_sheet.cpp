@@ -21,19 +21,19 @@ using namespace actsvg;
 using point3 = std::array<scalar, 3>;
 using point3_container = std::vector<point3>;
 
-TEST(display, surface_sheet) {
+TEST(display, sheet_trapezoid) {
 
     proto::surface<point3_container> trapezoid;
     trapezoid._vertices = {
         {-8.5, -34, 0.}, {8.5, -34, 0.}, {14.5, 34., 0.}, {-14.5, 34., 0.}};
 
-    svg::object surface_sheet = display::surface_sheet("trapezoid_sheet", trapezoid);
+    svg::object surface_sheet = display::surface_sheet("sheet_trapezoid", trapezoid);
     svg::file surface_file;
     surface_file.add_object(surface_sheet);
 
     // Write out the file
     std::ofstream sout;
-    sout.open("trapezoid_sheet.svg");
+    sout.open("sheet_trapezoid.svg");
     sout << surface_file;
     sout.close();
 }
