@@ -50,7 +50,7 @@ struct x_y {
         c.reserve(vertices_.size());
         for (const auto &v : vertices_) {
             // flip y coordinate */
-            c.push_back({v[0], -v[1]});
+            c.push_back({v[0], v[1]});
         }
         return c;
     }
@@ -78,7 +78,7 @@ struct z_r {
         c.reserve(vertices_.size());
         for (const auto &v : vertices_) {
             scalar r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
-            c.push_back({v[2], -r});
+            c.push_back({v[2], r});
         }
         return c;
     }
@@ -114,7 +114,7 @@ struct z_phi {
         for (const auto &v : vertices_) {
             scalar phi = std::atan2(v[1], v[0]);
             phi_values.push_back(phi);
-            c.push_back({v[2], -phi});
+            c.push_back({v[2], phi});
         }
         // Run the phi detection and protection
         if (_protect_phi) {
@@ -163,7 +163,7 @@ struct z_rphi {
                 r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
             }
             scalar phi = std::atan2(v[1], v[0]);
-            c.push_back({v[2], -r * phi});
+            c.push_back({v[2], r * phi});
         }
         return c;
     }

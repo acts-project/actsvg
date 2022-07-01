@@ -62,6 +62,7 @@ struct fill {
         _fc._opacity = 0.;
     }
 
+
     /** Attach this fill attribute to an object
      *
      * @tparam object_type the type of the object
@@ -74,19 +75,13 @@ struct fill {
         o_._attribute_map["fill-opacity"] = std::to_string(_fc._opacity);
 
         if (_fc._highlight.size() == 2u) {
-            for (auto [i, hl] : utils::enumerate(_fc._highlight)) {
                 object_type on_off;
-                on_off._tag = "animate";
-                on_off._attribute_map["fill"] = "freeze";
+                on_off._tag = "set";
                 on_off._attribute_map["attributeName"] = "fill";
-                on_off._attribute_map["begin"] = _fc._highlight[i];
-                on_off._attribute_map["dur"] = "0.1s";
-                on_off._attribute_map["to"] =
-                    (i == 1) ? rgb_attr(_fc._rgb) : rgb_attr(_fc._hl_rgb);
-                on_off._attribute_map["from"] =
-                    (i == 1) ? rgb_attr(_fc._hl_rgb) : rgb_attr(_fc._rgb);
-                o_._sub_objects.push_back(on_off);
-            }
+                on_off._attribute_map["begin"] = _fc._highlight[0];
+                on_off._attribute_map["end"] = _fc._highlight[1];
+                on_off._attribute_map["to"] = rgb_attr(_fc._hl_rgb);
+                o_.add_object(on_off);
         }
     }
 };
@@ -133,6 +128,8 @@ struct font {
 
     unsigned int _size = 12;
 
+    scalar _line_spacing = 1.4;
+
     std::string _style = "";
 
     /** Attach this fill attribute to an object
@@ -174,13 +171,13 @@ struct transform {
         bool skew = (_skew[0] != 0. or _skew[1] != 0.);
         std::stringstream tr_str;
         if (translate) {
-            tr_str << "translate(" << _tr[0] << __c << _tr[1] << ")";
+            tr_str << "translate(" << _tr[0] << __c << -_tr[1] << ")";
             if (rotate or scale or skew) {
                 tr_str << __blk;
             }
         }
         if (rotate) {
-            tr_str << "rotate(" << _rot[0] << __c << _rot[1] << __c << _rot[2] << ")";
+            tr_str << "rotate(" << -_rot[0] << __c << _rot[1] << __c << -_rot[2] << ")";
             if (scale or skew) {
                 tr_str << __blk;
             }
@@ -225,7 +222,6 @@ struct marker {
 
     stroke _stroke = stroke();
 
-    transform _transform = transform();
 };
 
 // The axis marker types

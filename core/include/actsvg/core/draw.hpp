@@ -36,12 +36,12 @@ static inline void adapt_range(svg::object &_o_,
         _o_._y_range = {std::min(_o_._y_range[0], v[1]),
                         std::max(_o_._y_range[1], v[1])};
 
-        scalar r = std::sqrt(v[0]*v[0]+v[1]*v[1]);
-        scalar phi = std::atan2(-v[1],v[0]);
+        scalar r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
+        scalar phi = std::atan2(-v[1], v[0]);
         _o_._r_range = {std::min(_o_._r_range[0], r),
-                        std::max(_o_._r_range[1],r)};
+                        std::max(_o_._r_range[1], r)};
         _o_._phi_range = {std::min(_o_._phi_range[0], phi),
-                        std::max(_o_._phi_range[1], phi)};
+                          std::max(_o_._phi_range[1], phi)};
     }
 }
 
@@ -66,6 +66,7 @@ namespace draw {
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
+ * @param transform_ is an optional transform of the object
  *
  * @return an svg object for the line
  */
@@ -103,8 +104,6 @@ static inline svg::object line(
 }
 
 /** Method to draw an arc
- *
- * @note will perform the y switch
  *
  * @param id_ is the identification tag of this line
  * @param r_ the radius
@@ -246,8 +245,6 @@ static inline svg::object ellipse(
 
 /** Draw a polygon object
  *
- * @note will perform the y switch
- *
  * @param id_ is the identification
  * @param polygon_ the polygon points
  * @param fill_ is the fill style
@@ -284,7 +281,7 @@ static inline svg::object polygon(
         // Per vertex range estimation
         detail::adapt_range(p, {{x, -y}});
 
-        // Convert to string attributes
+        // Convert to string attributes, y-switch
         svg_points_string += std::to_string(x);
         svg_points_string += ",";
         svg_points_string += std::to_string(-y);
@@ -304,8 +301,6 @@ static inline svg::object polygon(
 }
 
 /** Draw a text object - unconnected
- *
- * @note will perform the y switxh
  *
  * @param id_ is the text object id
  * @param p_ is the text position
@@ -334,10 +329,15 @@ static inline svg::object text(
     x *= transform_._scale[0];
     y *= transform_._scale[1];
 
+    t._fill = font_._fc;
+
     // Fill the field
     t._field = text_;
     t._attribute_map["x"] = std::to_string(x);
     t._attribute_map["y"] = std::to_string(-y);
+    t._attribute_map["font-family"] = font_._family;
+
+    t._field_span = font_._size * font_._line_spacing;
 
     size_t l = 0;
     for (const auto &t : text_) {
@@ -423,12 +423,12 @@ static inline svg::object cartesian_grid(
     scalar l1_max = l1_edges_[l1_edges_.size() - 1];
 
     for (auto [i0, l0] : utils::enumerate(l0_edges_)) {
-        grid.add_object(line("l0_" + std::to_string(i0), {l0, l1_min},
+        grid.add_object(line(id_ + "_l0_" + std::to_string(i0), {l0, l1_min},
                              {l0, l1_max}, stroke_));
     }
 
     for (auto [i1, l1] : utils::enumerate(l1_edges_)) {
-        grid.add_object(line("l1_" + std::to_string(i1), {l0_min, l1},
+        grid.add_object(line(id_ + "_l1_" + std::to_string(i1), {l0_min, l1},
                              {l0_max, l1}, stroke_));
     }
 
@@ -529,15 +529,15 @@ static inline svg::object fan_grid(
     for (const auto [ix, x] : utils::enumerate(x_low_edges_)) {
         scalar x_min = x;
         scalar x_max = x_high_edges_[ix];
-        grid.add_object(line("l0_" + std::to_string(ix), {x_min, y_min},
+        grid.add_object(line(id_ + "_l0_" + std::to_string(ix), {x_min, y_min},
                              {x_max, y_max}, stroke_));
     }
 
     for (const auto &[iy, y] : utils::enumerate(y_edges_)) {
         scalar x_min = x_low_min + (y - y_min) * x_low_slope;
         scalar x_max = x_low_max + (y - y_min) * x_high_slope;
-        grid.add_object(
-            line("l1_" + std::to_string(iy), {x_min, y}, {x_max, y}, stroke_));
+        grid.add_object(line(id_ + "_l1_" + std::to_string(iy), {x_min, y},
+                             {x_max, y}, stroke_));
     }
 
     return grid;
@@ -654,19 +654,20 @@ static inline svg::object polar_grid(
     style::fill fill;
 
     for (const auto [ir, r] : utils::enumerate(r_edges_)) {
-        grid.add_object(draw::arc(
-            "r_" + std::to_string(ir), r, {r * cos_phi_min, r * sin_phi_min},
-            {r * cos_phi_max, r * sin_phi_max}, fill, stroke_, transform_));
+        grid.add_object(draw::arc(id_ + "_r_" + std::to_string(ir), r,
+                                  {r * cos_phi_min, r * sin_phi_min},
+                                  {r * cos_phi_max, r * sin_phi_max}, fill,
+                                  stroke_, transform_));
     }
 
     for (const auto &[iphi, phi] : utils::enumerate(phi_edges_)) {
         scalar cos_phi = std::cos(phi);
         scalar sin_phi = std::sin(phi);
-        grid.add_object(draw::line(
-            "l_" + std::to_string(iphi), {r_min * cos_phi, r_min * sin_phi},
-            {r_max * cos_phi, r_max * sin_phi}, stroke_, transform_));
+        grid.add_object(draw::line(id_ + "_l_" + std::to_string(iphi),
+                                   {r_min * cos_phi, r_min * sin_phi},
+                                   {r_max * cos_phi, r_max * sin_phi}, stroke_,
+                                   transform_));
     }
-
     return grid;
 }
 
@@ -678,7 +679,7 @@ static inline svg::object polar_grid(
  * @param fill_ is the fill style
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
- * 
+ *
  * @note - the single objects of the grid can be found by
  * their unique name "id_+_X_Y" when X is the bin in the
  * first local and j the bin in the second local coordinate
@@ -725,18 +726,20 @@ static inline svg::object tiled_polar_grid(
  * @param id_ is the marker identification
  * @param at_ is the poistion of the marker
  * @param marker_ is the marker style
+ * @param rot_ is the rotation in [pi,phi)]
  *
- * @return an svg object for the marker
+ * @return an svg object for the marker group
  **/
 static inline svg::object marker(const std::string &id_, const point2 &at_,
-                                 const style::marker &marker_) {
+                                 const style::marker &marker_,
+                                 scalar rot_ = 0.) {
     svg::object marker_group;
     marker_group._tag = "g";
 
     std::vector<point2> arrow_head;
     auto size = marker_._size;
 
-    // offset due to measureing
+    // Offset due to measureing
     scalar m_offset = 0.;
 
     // It's a measure type
@@ -754,7 +757,8 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
                       {at_[0] - size + m_offset, at_[1] + size}};
 
         // Modify the arrow-type marker
-        if (marker_._type == "<<") {
+        if (marker_._type.find("<<") != std::string::npos) {
+            // Filled arrow-head
             arrow_head.push_back(
                 {static_cast<scalar>(at_[0] - 0.25 * size + m_offset), at_[1]});
         } else if (marker_._type.substr(1u, marker_._type.size()).find("|") ==
@@ -764,24 +768,31 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
         }
     } else if (marker_._type.find("o") != std::string::npos) {
         // A dot marker
-        svg::object dot = circle(id_, at_, 0.5 * size, marker_._fill,
-                                 marker_._stroke, marker_._transform);
+        svg::object dot =
+            circle(id_, at_, 0.5 * size, marker_._fill, marker_._stroke);
         marker_group.add_object(dot);
     } else if (marker_._type.find("x")) {
         scalar a_x = at_[0];
         scalar a_y = at_[1];
         scalar h_s = 0.5 * size;
         marker_group.add_object(
-            line("ml0", {a_x - h_s, a_y - h_s}, {a_x + h_s, a_y + h_s}));
+            line(id_ + "_ml0", {a_x - h_s, a_y - h_s}, {a_x + h_s, a_y + h_s}));
         marker_group.add_object(
-            line("ml1", {a_x - h_s, a_y + h_s}, {a_x + h_s, a_y - h_s}));
+            line(id_ + "_ml1", {a_x - h_s, a_y + h_s}, {a_x + h_s, a_y - h_s}));
     }
 
     // Plot the arrow if not empty
     if (not arrow_head.empty()) {
-        auto arrow = polygon(id_, arrow_head, marker_._fill, marker_._stroke,
-                             marker_._transform);
+        auto arrow = polygon(id_, arrow_head, marker_._fill, marker_._stroke);
         marker_group.add_object(arrow);
+    }
+
+    // We need to rotate the marker group
+    if (rot_ != 0.) {
+        style::transform group_transform = style::transform{};
+        group_transform._rot = {static_cast<scalar>(rot_ * 180. / M_PI), at_[0],
+                                at_[1]};
+        marker_group._transform = group_transform;
     }
 
     return marker_group;
@@ -816,17 +827,17 @@ static inline svg::object measure(
     measure_group.add_object(mline);
 
     // Calculate the rotation
-    scalar theta = std::atan2(end_[1] - start_[1], -end_[0] + start_[0]);
-    scalar theta_deg = theta * 180 / M_PI;
+    scalar theta = std::atan2(end_[1] - start_[1], end_[0] - start_[0]);
+    if (std::abs(end_[1] - start_[1]) <
+        std::numeric_limits<scalar>::epsilon()) {
+        theta = 0.;
+    }
 
-    style::marker lmarker = marker_;
-    lmarker._transform = style::transform(
-        {end_[0], -end_[1], static_cast<scalar>(theta_deg + 180.)});
-    measure_group.add_object(marker("left_tag", {0., 0.}, lmarker));
-
-    style::marker rmarker = marker_;
-    rmarker._transform = style::transform({start_[0], -start_[1], theta_deg});
-    measure_group.add_object(marker("right_tag", {0., 0.}, rmarker));
+    measure_group.add_object(marker(id_ + "_start_tag", {start_[0], start_[1]},
+                                    marker_,
+                                    M_PI + static_cast<scalar>(theta)));
+    measure_group.add_object(marker(id_ + "_end_tag", {end_[0], end_[1]},
+                                    marker_, static_cast<scalar>(theta)));
 
     if (not label_.empty()) {
         scalar size = marker_._size;
@@ -836,7 +847,58 @@ static inline svg::object measure(
 
         scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
         scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;
-        auto ltext = text("label", {xl, yl}, {label_}, font_);
+        auto ltext = text(id_ + "_label", {xl, yl}, {label_}, font_);
+        measure_group.add_object(ltext);
+    }
+
+    return measure_group;
+}
+
+/** Draw an arc measure
+ *
+ * @param id_ is the identification tag of this object
+ * @param r_ the radius
+ * @param start_ is the start point of the line
+ * @param end_ is the end point of the line, defines the marker
+ * @param stroke_ are the stroke parameters
+ * @param marker_ are the marker parmeters
+ * @param label_ is the label associated
+ * @param font_ are the font parameters
+ * @param side_x_ is the x offset of the label
+ * @param side_y_ is the y offset of the label
+ *
+ * @return an svg object for the measurexs
+ */
+static inline svg::object arc_measure(
+    const std::string &id_, scalar r_, const point2 &start_, const point2 &end_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::marker &marker_ = style::marker({"|<"}),
+    const std::string &label_ = "", const style::font &font_ = style::font(),
+    int side_x_ = 1, int side_y_ = 1) {
+
+    // Measure group here we go
+    svg::object measure_group;
+    measure_group._tag = "g";
+    measure_group._id = id_;
+
+    measure_group.add_object(
+        arc((id_ + "_arc"), r_, start_, end_, style::fill(), stroke_));
+
+    // Arrow is at end point
+    scalar theta = atan2(end_[1], end_[0]) + 0.5 * M_PI;
+
+    measure_group.add_object(marker(id_ + "_end_tag", {end_[0], end_[1]},
+                                    marker_, static_cast<scalar>(theta)));
+
+    if (not label_.empty()) {
+        scalar size = marker_._size;
+
+        scalar x_off = side_x_ * 2 * std::abs(std::sin(theta)) * size;
+        scalar y_off = -side_y_ * 2 * std::abs(std::cos(theta)) * size;
+
+        scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
+        scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;
+        auto ltext = text(id_ + "_label", {xl, yl}, {label_}, font_);
         measure_group.add_object(ltext);
     }
 
@@ -868,8 +930,10 @@ static inline svg::object x_y_axes(
     axes._tag = "g";
     axes._id = id_;
 
-    auto x = line("x_axis", {x_range_[0], 0.}, {x_range_[1], 0.}, stroke_);
-    auto y = line("y_axis", {0., y_range_[0]}, {0., y_range_[1]}, stroke_);
+    auto x =
+        line(id_ + "_x_axis", {x_range_[0], 0.}, {x_range_[1], 0.}, stroke_);
+    auto y =
+        line(id_ + "_y_axis", {0., y_range_[0]}, {0., y_range_[1]}, stroke_);
 
     axes.add_object(x);
     axes.add_object(y);
@@ -879,36 +943,35 @@ static inline svg::object x_y_axes(
      * @param p_ is the position of the marker
      * @param b0_ and @param b1_ are the accessors into the marker styles
      * @param rot_ is the rotation parameter
-     * @param mid_ is the marker idengification
+     * @param mid_ is the marker identification
      *
      * */
     auto add_marker = [&](const point2 &p_, unsigned int b0_, unsigned int b1_,
                           scalar rot_, const std::string &mid_) -> void {
         auto lmarker = markers_[b0_][b1_];
         if (lmarker._type != "none") {
-            lmarker._transform = style::transform({p_[0], -p_[1], -rot_});
-            axes.add_object(marker(mid_, {0., 0.}, lmarker));
+            axes.add_object(marker(mid_, {p_[0], p_[1]}, lmarker, rot_));
         }
     };
 
     // Add the markers to the arrows
-    add_marker({x_range_[0], 0.}, 0, 0, 180., "neg_x_head");
-    add_marker({x_range_[1], 0.}, 0, 1, 0., "pos_x_head");
-    add_marker({0., y_range_[0]}, 1, 0, -90., "neg_y_head");
-    add_marker({0., y_range_[1]}, 1, 1, 90., "pos_y_head");
+    add_marker({x_range_[0], 0.}, 0, 0, M_PI, id_ + "_neg_x_head");
+    add_marker({x_range_[1], 0.}, 0, 1, 0., id_ + "pos_x_head");
+    add_marker({0., y_range_[0]}, 1, 0, -0.5 * M_PI, id_ + "neg_y_head");
+    add_marker({0., y_range_[1]}, 1, 1, 0.5 * M_PI, id_ + "pos_y_head");
 
     // Add the labels: x
     if (not x_label_.empty()) {
         scalar size = markers_[0][1]._size;
-        auto xlab =
-            text("x_label", {x_range_[1] + 2 * size, size}, {x_label_}, font_);
+        auto xlab = text(id_ + "_x_label", {x_range_[1] + 2 * size, size},
+                         {x_label_}, font_);
         axes.add_object(xlab);
     }
     // Add the labels: y
     if (not y_label_.empty()) {
         scalar size = markers_[1][1]._size;
-        auto ylab =
-            text("y_label", {-size, y_range_[1] + 2 * size}, {y_label_}, font_);
+        auto ylab = text(id_ + "_y_label", {-size, y_range_[1] + 2 * size},
+                         {y_label_}, font_);
         axes.add_object(ylab);
     }
 

@@ -44,7 +44,7 @@ struct cluster {
 
     /// Measurements coordinates
     std::array<coordinate, DIM> _coords;
-    
+
     /// The list of channels
     std::vector<channel<DIM>> _channels;
 
@@ -56,7 +56,6 @@ struct cluster {
     /// Truth
     std::array<scalar, DIM> _truth;
     bool _mc = true;
-    
 };
 
 }  // namespace proto

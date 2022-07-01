@@ -8,10 +8,10 @@
 
 #pragma once
 
+#include <cmath>
 #include <fstream>
 #include <map>
 #include <vector>
-#include <cmath>
 
 #include "svg.hpp"
 #include "utils.hpp"
@@ -45,33 +45,13 @@ static void connect_objects(
                     auto &tog = targets_[t];
 
                     // Highlight it
-                    svg::object grid_on;
-                    grid_on._tag = "animate";
-                    grid_on._attribute_map["fill"] = "freeze";
-                    grid_on._attribute_map["attributeName"] = "fill";
-                    grid_on._attribute_map["begin"] =
-                        sog._id + __d + on_off_[0];
-                    grid_on._attribute_map["dur"] = "0.05s";
-                    grid_on._attribute_map["to"] =
-                        style::rgb_attr(tog._fill._fc._hl_rgb);
-                    grid_on._attribute_map["from"] =
-                        style::rgb_attr(tog._fill._fc._rgb);
-                    // Back to normal
-                    svg::object grid_off;
-                    grid_off._tag = "animate";
-                    grid_off._attribute_map["fill"] = "freeze";
-                    grid_off._attribute_map["attributeName"] = "fill";
-                    grid_off._attribute_map["begin"] =
-                        sog._id + __d + on_off_[1];
-                    grid_off._attribute_map["dur"] = "0.05s";
-                    grid_off._attribute_map["from"] =
-                        style::rgb_attr(tog._fill._fc._hl_rgb);
-                    grid_off._attribute_map["to"] =
-                        style::rgb_attr(tog._fill._fc._rgb);
-
-                    // Record them
-                    tog._sub_objects.push_back(grid_on);
-                    tog._sub_objects.push_back(grid_off);
+                    svg::object on_off;
+                    on_off._tag = "set";
+                    on_off._attribute_map["attributeName"] = "fill";
+                    on_off._attribute_map["begin"] = sog._id + __d + on_off_[0];
+                    on_off._attribute_map["end"] = sog._id + __d + on_off_[1];
+                    // On off tests
+                    tog._sub_objects.push_back(on_off);
                 }
             }
         }

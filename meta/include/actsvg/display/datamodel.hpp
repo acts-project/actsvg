@@ -91,7 +91,7 @@ static inline std::pair<svg::object, svg::object> cluster(
     scalar c_r = 0.;
 
     std::array<scalar, 2> x_range = {std::numeric_limits<scalar>::max(),
-                                     std::numeric_limits<scalar>::lowest()};                                     
+                                     std::numeric_limits<scalar>::lowest()};
     std::array<scalar, 2> y_range = x_range;
     std::array<scalar, 2> r_range = x_range;
     std::array<scalar, 2> phi_range = x_range;
@@ -118,8 +118,8 @@ static inline std::pair<svg::object, svg::object> cluster(
             m_r = cluster_._measurement[DIM - 2];
             m_phi = cluster_._measurement[DIM - 1];
 
-            d_r = cluster_._variance[DIM-2];
-            d_phi = cluster_._variance[DIM-1];
+            d_r = cluster_._variance[DIM - 2];
+            d_phi = cluster_._variance[DIM - 1];
 
             t_r = cluster_._measurement[DIM - 2];
             t_phi = cluster_._measurement[DIM - 1];
@@ -136,7 +136,7 @@ static inline std::pair<svg::object, svg::object> cluster(
             // Correlation between -1 (-45 deg)and 1 (45 deg)
             scalar corr = cluster_._correlation;
             corr = corr < -1. ? -1. : (corr > 1. ? 1. : corr);
-            c_r =  corr * 45; 
+            c_r = -corr * 45;
         }
     }
 
@@ -205,8 +205,8 @@ static inline std::pair<svg::object, svg::object> cluster(
             m_r = cluster_._measurement[DIM - 1];
             t_r = cluster_._truth[DIM - 1];
 
-            d_r = cluster_._variance[DIM-1];
-            d_phi = std::abs(phi_range[1]-phi_range[0])/std::sqrt(12.);
+            d_r = cluster_._variance[DIM - 1];
+            d_phi = std::abs(phi_range[1] - phi_range[0]) / std::sqrt(12.);
 
             m_phi = 0.5 * (phi_range[0] + phi_range[1]);
             t_phi = m_phi;
@@ -214,8 +214,8 @@ static inline std::pair<svg::object, svg::object> cluster(
             m_phi = cluster_._measurement[DIM - 1];
             t_phi = cluster_._truth[DIM - 1];
 
-            d_r = std::abs(r_range[1]-r_range[0])/std::sqrt(12.);
-            d_phi = cluster_._variance[DIM-1];
+            d_r = std::abs(r_range[1] - r_range[0]) / std::sqrt(12.);
+            d_phi = cluster_._variance[DIM - 1];
 
             m_r = 0.5 * (r_range[0] + r_range[1]);
             t_r = m_r;
@@ -230,7 +230,7 @@ static inline std::pair<svg::object, svg::object> cluster(
             // Correlation between -1 (-45 deg)and 1 (45 deg)
             scalar corr = cluster_._correlation;
             corr = corr < -1. ? -1. : (corr > 1. ? 1. : corr);
-            c_r =  corr * 45; 
+            c_r = -corr * 45;
 
         } else {
             m_y = cluster_._measurement[DIM - 1];
@@ -243,7 +243,7 @@ static inline std::pair<svg::object, svg::object> cluster(
             // Correlation between -1 (-45 deg)and 1 (45 deg)
             scalar corr = cluster_._correlation;
             corr = corr < -1. ? -1. : (corr > 1. ? 1. : corr);
-            c_r =  corr * 45;             
+            c_r = corr * 45;
         }
     }
 
@@ -259,11 +259,10 @@ static inline std::pair<svg::object, svg::object> cluster(
         c_x = std::abs(cos_phi * d_r - m_r * sin_phi * d_phi);
         c_y = std::abs(sin_phi * d_r + m_r * cos_phi * d_phi);
 
-        c_r = -m_phi * 180 / M_PI;
-        
+        c_r = m_phi * 180 / M_PI;
+
         t_x = t_r * std::cos(t_phi);
         t_y = t_r * std::sin(t_phi);
-
     }
 
     // Add an error ellipse
@@ -271,7 +270,7 @@ static inline std::pair<svg::object, svg::object> cluster(
     fill_c._fc._opacity = 0.5;
     style::stroke stroke_c;
     style::transform t_c;
-    t_c._rot = {c_r, m_x, -m_y};
+    t_c._rot = {c_r, m_x, m_y};
     cluster_group.add_object(
         draw::ellipse("c", {m_x, m_y}, {c_x, c_y}, fill_c, stroke_c, t_c));
 

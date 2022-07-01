@@ -102,7 +102,7 @@ TEST(display, barrel_sheet_module_info) {
 
     // Create the sheet
     svg::object barrel_sheet =
-        display::barrel_sheet("odd_barrel_sheet", barrel, {600, 600}, display::e_module_info);
+        display::barrel_sheet("sheet_odd_barrel", barrel, {600, 600}, display::e_module_info);
 
     svg::file barrel_file;
     barrel_file._width = 1000;
@@ -110,7 +110,7 @@ TEST(display, barrel_sheet_module_info) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("odd_barrel_sheet_module_info.svg");
+    eout.open("sheet_odd_barrel_module_info.svg");
     eout << barrel_file;
     eout.close();
 }
@@ -121,7 +121,7 @@ TEST(display, barrel_sheet_grid_info) {
 
     // Create the sheet
     svg::object barrel_sheet =
-        display::barrel_sheet("odd_barrel_sheet", barrel, {600, 600}, display::e_grid_info);
+        display::barrel_sheet("sheet_odd_barrel", barrel, {600, 600}, display::e_grid_info);
 
     svg::file barrel_file;
     barrel_file._width = 1000;
@@ -129,7 +129,7 @@ TEST(display, barrel_sheet_grid_info) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("odd_barrel_sheet_grid_info.svg");
+    eout.open("sheet_odd_barrel_grid_info.svg");
     eout << barrel_file;
     eout.close();
 }

@@ -31,34 +31,44 @@ namespace svg {
  **/
 struct object {
 
+    /// SVG tag of the objec
     std::string _tag = "";
 
+    /// Identification string
     std::string _id = "";
 
+    /// In-field of the svg tag
     std::vector<std::string> _field = {};
     scalar _field_span = 12;
 
+    /// Fill specifications
     style::fill _fill;
 
+    /// Stroke specifications
     style::stroke _stroke;
 
+    /// Transform of the object
     style::transform _transform;
 
+    /// Attribute map for writing
     std::map<std::string, std::string> _attribute_map;
 
+    /// Containes sub objects ( group, animation, etc.)
     std::vector<object> _sub_objects;
 
+    /// Barycenter - Detector frame
     std::array<scalar, 2> _real_barycenter = {0., 0.};
 
+    /// Range in x - Detector frame
     std::array<scalar, 2> _x_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
-
+    /// Range in y - Detector frame
     std::array<scalar, 2> _y_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
-
+    /// Range in r  - Detector frame
     std::array<scalar, 2> _r_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
-
+    /// Range in phi - Detector frame
     std::array<scalar, 2> _phi_range = {std::numeric_limits<scalar>::max(),
                                         std::numeric_limits<scalar>::min()};
     /** Add a sub object and respect the min/max range
@@ -76,7 +86,7 @@ struct object {
         _r_range = {std::min(_r_range[0], o_._r_range[0]),
                     std::max(_r_range[1], o_._r_range[1])};
         _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
-                    std::max(_phi_range[1], o_._phi_range[1])};                    
+                      std::max(_phi_range[1], o_._phi_range[1])};
     }
 
     /** Find an object by string,
@@ -176,8 +186,10 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
  **/
 struct file {
 
+    /// Directive to add html header or not
     bool _add_html = false;
 
+    /// Default header tail definitions
     std::string _html_head = "<html>\n<body>\n";
     std::string _svg_head = "<svg version=\"1.1\"";
 

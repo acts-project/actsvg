@@ -8,13 +8,13 @@
 
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include "actsvg/core.hpp"
 #include "actsvg/display/helpers.hpp"
-#include "actsvg/proto/clusters.hpp"
+#include "actsvg/proto/cluster.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"
 
@@ -177,13 +177,17 @@ svg::object sheet(const std::string& id_,
 
         // Draw the grid with the appropriate scale transform
         if (lT == e_endcap) {
-            extra_objects = draw::tiled_polar_grid(id_,
-                v_._surface_grid._edges_0, v_._surface_grid._edges_1, __g_fill,
-                __g_stroke, scale_transform);
+            extra_objects =
+                draw::tiled_polar_grid(id_, v_._surface_grid._edges_0,
+                                       v_._surface_grid._edges_1, __g_fill,
+                                       __g_stroke, scale_transform)
+                    ._sub_objects;
         } else if (lT == e_barrel) {
-            extra_objects = draw::tiled_cartesian_grid(id_,
-                v_._surface_grid._edges_0, v_._surface_grid._edges_1, __g_fill,
-                __g_stroke, scale_transform);
+            extra_objects =
+                draw::tiled_cartesian_grid(id_, v_._surface_grid._edges_0,
+                                           v_._surface_grid._edges_1, __g_fill,
+                                           __g_stroke, scale_transform)
+                    ._sub_objects;
         }
         // Connect grid and surfaces
         connectors::connect_objects(extra_objects, modules,
@@ -203,11 +207,11 @@ svg::object sheet(const std::string& id_,
 
     //  Add the title text
     auto title_font = __t_font;
-    title_font._size = 16;
-    auto title = draw::text(
-        "sheet_title",
-        {static_cast<scalar>(-0.5 * sh_[0]), static_cast<scalar>(0.5 * sh_[1])},
-        {v_._name}, title_font);
+    title_font._size = 0.03 * sh_[0];
+    auto title = draw::text("sheet_title",
+                            {static_cast<scalar>(-0.55 * sh_[0]),
+                             static_cast<scalar>(0.55 * sh_[1])},
+                            {v_._name}, title_font);
     eo.add_object(title);
 
     return eo;

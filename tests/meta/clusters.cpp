@@ -513,7 +513,7 @@ TEST(display, cluster2D_fan_focus) {
     cl._type = proto::cluster<2>::e_polar;
     cl._coords = {proto::cluster<2>::e_x, proto::cluster<2>::e_y};
     cl._truth = {375, 0.22};
-    cl._variance = {5., 25.};
+    cl._variance = {0.05, 0.25};
 
     std::vector<scalar> x_low_boundaries = {0.};
     x_low_boundaries.reserve(100);

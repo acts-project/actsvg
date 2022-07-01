@@ -63,7 +63,7 @@ TEST(barrel, x_y_view) {
 
     // File output
     std::ofstream barrel_stream;
-    barrel_stream.open("test_core_odd_pixel_barrel_xy.svg");
+    barrel_stream.open("test_core_barrel_xy.svg");
     barrel_stream << barrel_file;
     barrel_stream.close();
 }
@@ -100,7 +100,7 @@ TEST(barrel, z_phi_view) {
 
     // File output
     std::ofstream barrel_stream;
-    barrel_stream.open("test_core_odd_pixel_barrel_zphi.svg");
+    barrel_stream.open("test_core_barrel_zphi.svg");
     barrel_stream << barrel_file;
     barrel_stream.close();
 }
@@ -184,7 +184,7 @@ TEST(barrel, z_phi_view_grid) {
 
     // File output
     std::ofstream barrel_stream;
-    barrel_stream.open("test_core_odd_pixel_barrel_grid_zphi.svg");
+    barrel_stream.open("test_core_barrel_grid_zphi.svg");
     barrel_stream << barrel_file;
     barrel_stream.close();
 }

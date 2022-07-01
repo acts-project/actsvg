@@ -89,7 +89,7 @@ TEST(display, endcap_sheet_module_info) {
 
     // Create the sheet
     svg::object endcap_sheet =
-        display::endcap_sheet("odd_endcap_sheet", endcap, {600, 600}, display::e_module_info);
+        display::endcap_sheet("sheet_odd_endcap", endcap, {600, 600}, display::e_module_info);
 
     svg::file endcap_file;
     endcap_file._width = 1000;
@@ -97,7 +97,7 @@ TEST(display, endcap_sheet_module_info) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("odd_endcap_sheet_module_info.svg");
+    eout.open("sheet_odd_endcap_module_info.svg");
     eout << endcap_file;
     eout.close();
 }
@@ -108,7 +108,7 @@ TEST(display, endcap_sheet_grid_info) {
 
     // Create the sheet
     svg::object endcap_sheet =
-        display::endcap_sheet("odd_endcap_sheet", endcap, {600, 600}, display::e_grid_info);
+        display::endcap_sheet("sheet_odd_endcap", endcap, {600, 600}, display::e_grid_info);
 
     svg::file endcap_file;
     endcap_file._width = 1000;
@@ -116,7 +116,7 @@ TEST(display, endcap_sheet_grid_info) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("odd_endcap_sheet_grid_info.svg");
+    eout.open("sheet_odd_endcap_grid_info.svg");
     eout << endcap_file;
     eout.close();
 }
