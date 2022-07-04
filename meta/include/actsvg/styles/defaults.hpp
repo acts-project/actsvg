@@ -40,6 +40,9 @@ static style::stroke __a_stroke;
 static style::font __a_font;
 static std::array<style::marker, 2u> __a_markers = __standard_axis_markers;
 
+// Transform section
+static style::transform __t_identity;
+
 /** Static method to create the defaults in situ */
 static bool create_defaults() {
 
@@ -54,6 +57,8 @@ static bool create_defaults() {
 
     // Stroke definition
     __s_stroke._sc._opacity = 0.75;
+    __a_stroke._sc._rgb = {0, 0, 0};
+    __a_stroke._width = 0.75;
 
     // Measurement
     __m_stroke = style::stroke();
@@ -68,7 +73,11 @@ static bool create_defaults() {
     __g_stroke._width = 0.5;
     __g_stroke._dasharray = {1, 1};
 
+    // Transform
+    __t_identity = style::transform();
+
     return true;
+
 }
 
 static bool __defaults_set = create_defaults();

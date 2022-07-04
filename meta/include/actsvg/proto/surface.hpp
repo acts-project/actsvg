@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "actsvg/core/style.hpp"
 #include "actsvg/styles/defaults.hpp"
@@ -30,19 +31,33 @@ struct surface {
 
     enum type { e_annulus, e_cylinder, e_disc, e_rectangle, e_trapez };
 
-    /// Name of the volume
+    enum boolean { e_clipping, e_union, e_subtraction, e_none };
+
+    /// Name of the surface
     std::string _name = "unnamed";
 
     /// Auxiliary information
     std::vector<std::string> _info = {};
 
-    /// The contained surfaces
+    /// The contained vertices - for polygon surfaces
     point3_container _vertices = {};
+
+    /// Dedicated disc descriptions, simplifies the set
+    std::array<scalar, 2> _radii = {0., 0.};
+    std::array<scalar, 2> _opening = {-M_PI, M_PI};
+
+    /// Boolean surfaces
+    std::vector<surface<point3_container>> _boolean_surface = {};
+    boolean _boolean_operation = e_none;
+
+    /// Fill and stroke
     style::fill _fill = defaults::__s_fill;
     style::stroke _stroke = defaults::__s_stroke;
+    style::transform _transform = defaults::__t_identity;
 
     /// Type of the surfaces
     type _type = e_trapez;
+
     /// And their measures
     std::vector<scalar> _measures = {};
 };

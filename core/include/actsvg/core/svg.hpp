@@ -53,8 +53,11 @@ struct object {
     /// Attribute map for writing
     std::map<std::string, std::string> _attribute_map;
 
-    /// Containes sub objects ( group, animation, etc.)
+    /// Contains sub objects ( group, animation, etc.)
     std::vector<object> _sub_objects;
+
+    /// Contains definintions
+    std::vector<object> _definitions;
 
     /// Barycenter - Detector frame
     std::array<scalar, 2> _real_barycenter = {0., 0.};
@@ -78,6 +81,9 @@ struct object {
     void add_object(const svg::object &o_) {
         // Add the object
         _sub_objects.push_back(o_);
+        // Collect eventual definitions
+        _definitions.insert(_definitions.end(), o_._definitions.begin(),
+                            o_._definitions.end());
         // Re-measure, x/y/r/phi ranges include transforms already
         _x_range = {std::min(_x_range[0], o_._x_range[0]),
                     std::max(_x_range[1], o_._x_range[1])};
@@ -133,6 +139,14 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
     // We make a temporary copy for writing, this way we can
     // write the same one with different attributes sets
     object o_copy = o_;
+
+    if (not o_._definitions.empty()){
+        os_ << __l << "defs" << __r;
+        for (const auto d : o_._definitions){
+            os_ << d;
+        }
+        os_ << __l << "/defs" << __r << __nl;       
+    }
 
     // Now write
     os_ << __l << o_copy._tag;
