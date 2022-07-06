@@ -56,7 +56,7 @@ if ( ACTSVG_BUILD_EXAMPLES )
    add_subdirectory(examples)
 endif()
 
-option(ACTSVG_BUILD_TESTING "Build the (unit) tests of ACTSVG" TRUE )
+option(ACTSVG_BUILD_TESTING "Build the (unit) tests of ACTSVG" OFF )
 
 if (ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
    add_subdirectory(data)
