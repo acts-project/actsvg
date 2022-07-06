@@ -29,7 +29,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DACTSVG_USE_SYSTEM_BOOST=Off
+      run: cmake $GITHUB_WORKSPACE -DACTSVG_USE_SYSTEM_BOOST=Off -DACTSVG_BUILD_TESTING=On
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
