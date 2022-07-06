@@ -14,8 +14,6 @@ namespace actsvg {
 
 namespace defaults {
 
-static scalar __border = 10.;
-
 // Empty object for displaying
 static svg::object __e_object;
 
