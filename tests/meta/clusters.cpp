@@ -49,7 +49,6 @@ void cluster_position(
             cluster_._measurement[DIM - 2] += data * channel_p0;
             cluster_._measurement[DIM - 1] += data * channel_p1;
         }
-        scalar weight = 1. / total_data;
     }
     // same for 1-d case
     if constexpr (DIM == 1 and BOUNDS == 1) {
@@ -89,7 +88,6 @@ void cluster_position(
             // Total weight
             scalar data = c._data;
             total_data += data;
-            scalar channel_p = 0.;
 
             scalar low_y = 0.;
             scalar high_y = 0.;

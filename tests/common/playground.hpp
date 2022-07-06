@@ -88,7 +88,7 @@ static inline svg::object playground(const point2& llc_, const point2& ruc_,
         t_text._attribute_map["x"] = std::to_string(tx - 0.01 * wx);
         t_text._attribute_map["y"] = std::to_string(0.025 * hy);
         t_text._attribute_map["font-family"] = "Arial";
-        t_text._fill = style::fill{{0,0,0}};        
+        t_text._fill = style::fill{{{0,0,0}}};        
         t_text._field = { std::to_string(static_cast<int>(tx)) };
         pg._sub_objects.push_back(t_text);    
     }
@@ -108,7 +108,7 @@ static inline svg::object playground(const point2& llc_, const point2& ruc_,
         t_text._attribute_map["x"] = std::to_string(0.01 * wx);
         t_text._attribute_map["y"] = std::to_string(-ty + 0.005 * hy);
         t_text._attribute_map["font-family"] = "Arial";
-        t_text._fill = style::fill{{0,0,0}};          
+        t_text._fill = style::fill{{{0,0,0}}};          
         t_text._field = { std::to_string(static_cast<int>(ty)) };
         pg._sub_objects.push_back(t_text);    
 

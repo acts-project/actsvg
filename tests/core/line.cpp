@@ -18,14 +18,13 @@ using namespace actsvg;
 
 TEST(core, line) {
 
-    auto line =
-        draw::line("l", {40., -20.}, {80., 100.}, style::stroke{{255, 0, 0}, 2});
+    auto line = draw::line("l", {40., -20.}, {80., 100.},
+                           style::stroke{style::color{{255, 0, 0}}, 2});
 
     std::array<scalar, 2> ref_x_range = {40., 80.};
     std::array<scalar, 2> ref_y_range = {-100., 20.};
     ASSERT_TRUE(line._x_range == ref_x_range);
     ASSERT_TRUE(line._y_range == ref_y_range);
-
 }
 
 TEST(core, line_plain) {
@@ -47,7 +46,7 @@ TEST(core, line_plain) {
     fo << pg;
     // Add the line
     fo << draw::line("l", {40, -20.}, {80., 100.},
-                     style::stroke{{255, 0, 0}, 2});
+                     style::stroke{style::color{{255, 0, 0}}, 2});
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;
@@ -75,7 +74,7 @@ TEST(core, line_shifted) {
     fo << pg;
     // Add the line
     fo << draw::line("l", {40, -20.}, {80., 100.},
-                     style::stroke{{0, 255, 0}, 2}, t);
+                     style::stroke{style::color{{0, 255, 0}}, 2}, t);
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;
@@ -103,8 +102,8 @@ TEST(core, line_scaled) {
     // Add the playground
     fo << pg;
     // Add the line
-    fo << draw::line("l", {4, -2.}, {8., 10.}, style::stroke{{0, 0, 255}, 2},
-                     t);
+    fo << draw::line("l", {4, -2.}, {8., 10.},
+                     style::stroke{style::color{{0, 0, 255}}, 2}, t);
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;

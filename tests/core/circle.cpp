@@ -17,18 +17,6 @@
 
 using namespace actsvg;
 
-TEST(core, circle) {
-
-    auto circle =
-        draw::circle("c", {40., -20.}, 5.);
-
-    std::array<scalar, 2> ref_x_range = {35., 45.};
-    std::array<scalar, 2> ref_y_range = {-25., -20.};
-    //ASSERT_TRUE(circle._x_range == ref_x_range);
-    //ASSERT_TRUE(circle._y_range == ref_y_range);
-
-}
-
 TEST(core, circle_plain) {
 
     svg::file ftemplate;
@@ -47,14 +35,15 @@ TEST(core, circle_plain) {
     // Add the playground
     fo << pg;
     // Draw the circles
-    fo << draw::circle("cc", {0.,0.}, 10, style::fill({255,255,255}));
-    fo << draw::circle("c", {40., -20.}, 25., style::fill{{0,125,0}});
+    fo << draw::circle("cc", {0., 0.}, 10,
+                       style::fill(style::color{{255, 255, 255}}));
+    fo << draw::circle("c", {40., -20.}, 25.,
+                       style::fill{style::color{{0, 125, 0}}});
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;
     fo.close();
 }
-
 
 TEST(core, circle_shifted) {
 
@@ -76,7 +65,9 @@ TEST(core, circle_shifted) {
     // Add the playground
     fo << pg;
     // Add the circle
-    fo << draw::circle("c", {40., -20.}, 25., style::fill{{0,125,0}}, style::stroke{{0,0,0}}, t);
+    fo << draw::circle("c", {40., -20.}, 25.,
+                       style::fill{style::color{{0, 125, 0}}},
+                       style::stroke{style::color{{0, 0, 0}}}, t);
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;
@@ -91,7 +82,7 @@ TEST(core, circle_scaled) {
     auto pg = test::playground({-400, -400}, {400, 400});
 
     style::transform t{{0, 0}};
-    t._scale = { 10, 10};
+    t._scale = {10, 10};
 
     // Write out the file
     std::ofstream fo;
@@ -104,11 +95,11 @@ TEST(core, circle_scaled) {
     // Add the playground
     fo << pg;
     // Add the circle
-    fo << draw::circle("c", {4., -2.}, 2.5, style::fill{{0,125,0}}, style::stroke{{0,0,0}}, t);
+    fo << draw::circle("c", {4., -2.}, 2.5,
+                       style::fill{style::color{{0, 125, 0}}},
+                       style::stroke{style::color{{0, 0, 0}}}, t);
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;
     fo.close();
 }
-
-

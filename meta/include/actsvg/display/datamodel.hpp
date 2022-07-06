@@ -39,9 +39,9 @@ template <size_t DIM>
 static inline std::pair<svg::object, svg::object> cluster(
     const svg::object& grid_, const std::string& id_,
     const proto::cluster<DIM>& cluster_,
-    const style::fill& fill_low_ = style::fill({255, 255, 0}),
-    const style::fill& fill_high_ = style::fill({250, 0, 0}),
-    const style::fill& fill_m_ = style::fill({0, 0, 255}),
+    const style::fill& fill_low_ = style::fill{style::color{{255, 255, 0}}},
+    const style::fill& fill_high_ = style::fill{style::color{{250, 0, 0}}},
+    const style::fill& fill_m_ = style::fill{style::color{{0, 0, 255}}},
     const std::array<unsigned int, 2>& expand_ = {2, 2}) {
 
     svg::object cluster_group;
@@ -108,7 +108,7 @@ static inline std::pair<svg::object, svg::object> cluster(
         int ch_g = low_g + rel_delta_data * delta_g;
         int ch_b = low_b + rel_delta_data * delta_b;
 
-        return style::fill({ch_r, ch_g, ch_b});
+        return style::fill{style::color{{ch_r, ch_g, ch_b}}};
     };
 
     if constexpr (DIM == 2) {

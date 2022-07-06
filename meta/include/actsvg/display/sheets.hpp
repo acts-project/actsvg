@@ -163,8 +163,8 @@ svg::object sheet(const std::string& id_,
             auto s_sheet =
                 display::surface_sheet("surface_sheet_" + id_, s, s_sh_);
             style::transform(
-                {static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
-                 0.})
+                {{static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
+                 0.}})
                 .attach_attributes(s_sheet);
             templates.push_back(s_sheet);
         }

@@ -40,11 +40,11 @@ TEST(barrel, x_y_view) {
     svg::file barrel_file;
 
     // Draw the surfaces
-    style::fill module_color{{28, 156, 168}};
+    style::fill module_color{style::color{{28, 156, 168}}};
     module_color._fc._opacity = 0.5;
     module_color._fc._hl_rgb = {{10, 200, 10}};
 
-    style::stroke stroke_color{{8, 76, 87}};
+    style::stroke stroke_color{style::color{{8, 76, 87}}};
     stroke_color._width = 0.5;
 
     views::x_y x_y_view;
@@ -73,12 +73,12 @@ TEST(barrel, z_phi_view) {
     svg::file barrel_file;
 
     // Draw the surfaces
-    style::fill module_color{{28, 156, 168}};
+    style::fill module_color{style::color{{28, 156, 168}}};
     module_color._fc._opacity = 0.5;
     module_color._fc._highlight = {"mouseover", "mouseout"};
     module_color._fc._hl_rgb = {{10, 200, 10}};
 
-    style::stroke stroke_color{{8, 76, 87}};
+    style::stroke stroke_color{style::color{{8, 76, 87}}};
     stroke_color._width = 0.5;
 
     style::transform scale;
@@ -110,24 +110,24 @@ TEST(barrel, z_phi_view_grid) {
     svg::file barrel_file;
 
     // Draw the surfaces
-    style::fill module_color{{28, 156, 168}};
+    style::fill module_color{style::color{{28, 156, 168}}};
     module_color._fc._opacity = 0.5;
     module_color._fc._highlight = {"mouseover", "mouseout"};
     module_color._fc._hl_rgb = {{10, 200, 10}};
 
-    style::stroke stroke_color{{8, 76, 87}};
+    style::stroke stroke_color{style::color{{8, 76, 87}}};
     stroke_color._width = 0.5;
 
     style::transform scale;
     scale._scale = {1, 150};
 
     // Let's generate a grid & draw it
-    style::fill grid_color{{200, 200, 200}};
+    style::fill grid_color{style::color{{200, 200, 200}}};
     grid_color._fc._opacity = 0.25;
     grid_color._fc._highlight = {"mouseover", "mouseout"};
     grid_color._fc._hl_rgb = {{255, 0, 0}};
 
-    style::stroke grid_stroke{{255, 0, 0}};
+    style::stroke grid_stroke{style::color{{255, 0, 0}}};
     grid_stroke._width = 0.5;
     grid_stroke._dasharray = {1, 1};
 

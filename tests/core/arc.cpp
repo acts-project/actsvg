@@ -43,7 +43,7 @@ TEST(core, arc_plain) {
 
     // Add the line
     fo << draw::arc("a", r, start, end, style::fill(),
-                     style::stroke{{255, 0, 0}, 2});
+                     style::stroke{{{255, 0, 0}}, 2});
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;

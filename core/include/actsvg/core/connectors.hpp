@@ -27,7 +27,7 @@ namespace connectors {
  * @param s_t_connections_ are the connections from source to target
  * @param on_off_ are the connection effects
  **/
-static void connect_objects(
+static inline void connect_objects(
     std::vector<svg::object> &sources_, std::vector<svg::object> &targets_,
     const std::vector<std::vector<size_t> > &s_t_connections_,
     const std::array<std::string, 2u> &on_off_ = {"mouseover", "mouseout"}) {

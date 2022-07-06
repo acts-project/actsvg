@@ -38,9 +38,9 @@ TEST(draw, triangle_highligh) {
     std::vector<std::array<scalar, 2u>> triangle = {
         {-10, -30}, {80, 70}, {10, 200}};
 
-    style::fill red_fill_hl_green({255, 0, 0});
+    style::fill red_fill_hl_green(style::color{{255, 0, 0}});
     red_fill_hl_green._fc._highlight = {"mouseover", "mouseout"};
-    red_fill_hl_green._fc._hl_rgb = {0, 255, 0};
+    red_fill_hl_green._fc._hl_rgb = {{0, 255, 0}};
 
     svg::file tfile1;
     auto tsvg1 = draw::polygon("t1", triangle, red_fill_hl_green);
@@ -58,23 +58,27 @@ TEST(draw, disc_sector) {
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
 
-    style::fill blue_fill({0, 0, 200});
+    style::fill blue_fill(style::color{{0, 0, 200}});
     blue_fill._fc._opacity = 0.5;
 
-    auto blue_sector_vertices = generators::sector_contour(120., 230., -0.15, 0.15);
-    auto blue_sector = draw::polygon("blue_sector", blue_sector_vertices, blue_fill);
+    auto blue_sector_vertices =
+        generators::sector_contour(120., 230., -0.15, 0.15);
+    auto blue_sector =
+        draw::polygon("blue_sector", blue_sector_vertices, blue_fill);
 
-    style::fill red_fill({200, 0, 0});
+    style::fill red_fill(style::color{{200, 0, 0}});
     red_fill._fc._opacity = 0.5;
     auto red_sector_vertices = generators::sector_contour(60., 75., -2.0, 2.0);
-    auto red_sector = draw::polygon("red_sector", red_sector_vertices, red_fill);
+    auto red_sector =
+        draw::polygon("red_sector", red_sector_vertices, red_fill);
 
-
-    style::fill green_fill({0, 200, 0});
+    style::fill green_fill(style::color{{0, 200, 0}});
     green_fill._fc._opacity = 0.5;
 
-    auto green_sector_vertices = generators::sector_contour(30., 70., 2.0, -2.0);
-    auto green_sector = draw::polygon("red_sector", green_sector_vertices, green_fill);
+    auto green_sector_vertices =
+        generators::sector_contour(30., 70., 2.0, -2.0);
+    auto green_sector =
+        draw::polygon("red_sector", green_sector_vertices, green_fill);
 
     svg::file tfile1;
     tfile1.add_object(pg);

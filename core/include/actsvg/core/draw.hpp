@@ -273,8 +273,8 @@ static inline svg::object polygon(
     std::string svg_points_string;
     for (auto [x, y] : polygon_) {
         // Add to the real barycenter (without display scaling)
-        p._real_barycenter[0] += x;
-        p._real_barycenter[1] += y;
+        p._real_barycenter[0] += x + tx;
+        p._real_barycenter[1] += y + ty;
         // Add display scaling
         x *= sx;
         y *= sy;
@@ -340,8 +340,8 @@ static inline svg::object text(
     t._field_span = font_._size * font_._line_spacing;
 
     size_t l = 0;
-    for (const auto &t : text_) {
-        l = l > t.size() ? l : t.size();
+    for (const auto &tl : text_) {
+        l = l > tl.size() ? l : tl.size();
     }
 
     scalar fs = font_._size;
@@ -424,12 +424,12 @@ static inline svg::object cartesian_grid(
 
     for (auto [i0, l0] : utils::enumerate(l0_edges_)) {
         grid.add_object(line(id_ + "_l0_" + std::to_string(i0), {l0, l1_min},
-                             {l0, l1_max}, stroke_));
+                             {l0, l1_max}, stroke_, transform_));
     }
 
     for (auto [i1, l1] : utils::enumerate(l1_edges_)) {
         grid.add_object(line(id_ + "_l1_" + std::to_string(i1), {l0_min, l1},
-                             {l0_max, l1}, stroke_));
+                             {l0_max, l1}, stroke_, transform_));
     }
 
     return grid;
@@ -530,14 +530,14 @@ static inline svg::object fan_grid(
         scalar x_min = x;
         scalar x_max = x_high_edges_[ix];
         grid.add_object(line(id_ + "_l0_" + std::to_string(ix), {x_min, y_min},
-                             {x_max, y_max}, stroke_));
+                             {x_max, y_max}, stroke_, transform_));
     }
 
     for (const auto &[iy, y] : utils::enumerate(y_edges_)) {
         scalar x_min = x_low_min + (y - y_min) * x_low_slope;
         scalar x_max = x_low_max + (y - y_min) * x_high_slope;
         grid.add_object(line(id_ + "_l1_" + std::to_string(iy), {x_min, y},
-                             {x_max, y}, stroke_));
+                             {x_max, y}, stroke_, transform_));
     }
 
     return grid;
@@ -710,8 +710,8 @@ static inline svg::object tiled_polar_grid(
             auto grid_sector =
                 polygon(gs + std::to_string(iphi - 1), sector_contour, fill_,
                         stroke_, transform_);
-            scalar r = r_edges_[ir - 1], r_edges_[ir];
-            scalar phi = phi_edges_[iphi - 1], phi_edges_[iphi];
+            scalar r = r_edges_[ir - 1];
+            scalar phi = phi_edges_[iphi - 1];
             grid_sector._real_barycenter = {r * std::cos(phi),
                                             r * std::sin(phi)};
             grid.add_object(grid_sector);

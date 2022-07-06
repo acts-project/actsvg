@@ -6,6 +6,9 @@ project (actsvg VERSION 0.1 LANGUAGES CXX )
 set( CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard to use" )
 set( CMAKE_CXX_EXTENSIONS FALSE CACHE BOOL "Disable C++ extensions" )
 
+set(ACTSVG_CXX_FLAGS "-Wall -Wextra -Wpedantic -Wshadow -Wno-unused-local-typedefs")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ACTSVG_CXX_FLAGS}")
+
 # CMake include(s).
 include( CMakeDependentOption )
 include( GNUInstallDirs )
@@ -30,12 +33,12 @@ include( actsvg-functions )
 # Core library component
 add_subdirectory(core)
 
-option(ACTSVG_BUILD_META "Build the meta level interface of ACTSVG" TRUE )
+option(ACTSVG_BUILD_META "Build the meta level interface of ACTSVG" ON )
 if ( ACTSVG_BUILD_META )
    add_subdirectory(meta)
 endif()
 
-option(ACTSVG_BUILD_EXAMPLES "Build the example applications of ACTSVG" TRUE )
+option(ACTSVG_BUILD_EXAMPLES "Build the example applications of ACTSVG" OFF )
 if ( ACTSVG_BUILD_EXAMPLES )
    # Setup boost for the examples 
    set(_actsvg_boost_version 1.71.0)

@@ -42,22 +42,22 @@ struct object {
     scalar _field_span = 12;
 
     /// Fill specifications
-    style::fill _fill;
+    style::fill _fill = style::fill();
 
     /// Stroke specifications
-    style::stroke _stroke;
+    style::stroke _stroke = style::stroke();
 
     /// Transform of the object
-    style::transform _transform;
+    style::transform _transform = style::transform{};
 
     /// Attribute map for writing
-    std::map<std::string, std::string> _attribute_map;
+    std::map<std::string, std::string> _attribute_map = {};
 
     /// Contains sub objects ( group, animation, etc.)
-    std::vector<object> _sub_objects;
+    std::vector<object> _sub_objects = {};
 
     /// Contains definintions
-    std::vector<object> _definitions;
+    std::vector<object> _definitions = {};
 
     /// Barycenter - Detector frame
     std::array<scalar, 2> _real_barycenter = {0., 0.};
@@ -140,12 +140,12 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
     // write the same one with different attributes sets
     object o_copy = o_;
 
-    if (not o_._definitions.empty()){
+    if (not o_._definitions.empty()) {
         os_ << __l << "defs" << __r;
-        for (const auto d : o_._definitions){
+        for (const auto &d : o_._definitions) {
             os_ << d;
         }
-        os_ << __l << "/defs" << __r << __nl;       
+        os_ << __l << "/defs" << __r << __nl;
     }
 
     // Now write
@@ -178,7 +178,7 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
         if (o_copy._field.size() == 1) {
             os_ << o_copy._field[0];
         } else {
-            for (const auto fl : o_copy._field) {
+            for (const auto &fl : o_copy._field) {
                 os_ << "<tspan x=\"";
                 os_ << o_copy._real_barycenter[0] << "\"";
                 os_ << " dy=\"" << o_copy._field_span << "\">";

@@ -43,7 +43,7 @@ struct color {
     /// The opacity
     scalar _opacity = 1.;
     /// The highlight mode it is assumed on/off
-    std::vector<std::string> _highlight;
+    std::vector<std::string> _highlight = {};
     rgb _hl_rgb = {255, 0, 0};
 };
 
@@ -51,7 +51,7 @@ struct color {
 struct fill {
 
     /// The fill color
-    color _fc;
+    color _fc = color{{0,0,0}};
     bool _sterile = false;
 
     /// A constructor from @param fc_ color
@@ -232,7 +232,7 @@ struct marker {
 
     scalar _size = 4.;
 
-    fill _fill = fill({0, 0, 0});
+    fill _fill = fill{{{0, 0, 0}}};
 
     stroke _stroke = stroke();
 };
