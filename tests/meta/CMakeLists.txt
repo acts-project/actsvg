@@ -7,4 +7,5 @@ actsvg_add_test( meta
   "barrel_sheet.cpp"
   "endcap_sheet.cpp"
   "surface_sheet.cpp"
+  "surfaces.cpp"
 LINK_LIBRARIES GTest::gtest_main actsvg::core actsvg::meta actsvg::data)

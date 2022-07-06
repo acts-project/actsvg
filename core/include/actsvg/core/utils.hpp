@@ -16,7 +16,7 @@ namespace utils {
  * over STL type containers.
  *
  * @param iterable is a std-like iterable container type
- * 
+ *
  **/
 template <typename container_type,
           typename container_type_iter =
@@ -44,6 +44,13 @@ constexpr auto enumerate(container_type &&iterable) {
         auto end() { return iterator{0, std::end(iterable)}; }
     };
     return iterable_wrapper{std::forward<container_type>(iterable)};
+}
+
+/** Helper from id to url
+ * @param id_ the idnetification to be transformed
+ **/
+static inline std::string id_to_url(const std::string &id_) {
+    return std::string("url(#") + id_ + ")";
 }
 
 }  // namespace utils

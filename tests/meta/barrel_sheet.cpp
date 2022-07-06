@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
-#include "actsvg/meta.hpp"
 #include "actsvg/data/odd_pixel_barrel.hpp"
+#include "actsvg/meta.hpp"
 
 using namespace actsvg;
 
@@ -89,7 +89,54 @@ proto::volume<point3_container_type> generate_barrel_volume() {
     barrel._surface_grid._edges_0 = z_values;
     barrel._surface_grid._edges_1 = phi_values;
 
-    barrel._surface_grid._associations = data::odd_pixel_barrel_assoc;
+    // Create the associations by simple matching
+    if (barrel._surface_grid._associations.empty()) {
+        views::z_phi z_phi_view;
+
+        for (unsigned int iz = 0; iz < z_tiles; ++iz) {
+            scalar z_value = z_min + iz * z_step;
+            for (unsigned int iphi = 0; iphi < n_sectors; ++iphi) {
+                scalar phi_value = -M_PI + iphi * phi_step;
+
+                std::cout << "bin " << iz << " x " << iphi << std::endl;
+
+                std::map<unsigned long, unsigned long> module_associations;
+                for (auto [is, s] : utils::enumerate(barrel._surfaces)) {
+                    auto vertices = z_phi_view(s._vertices);
+                    // Any touching vertex counts + central value
+                    point2 center = {0., 0.};
+                    for (auto v : vertices) {
+                        center[0] += v[0];
+                        center[1] += v[1];
+                    }
+                    center[0] /= vertices.size();
+                    center[1] /= vertices.size();
+                    vertices.push_back(center);
+
+                    for (auto v : vertices) {
+                        if (std::abs(z_value - v[0]) < 1.0 * z_step) {
+                            scalar phi = v[1];
+                            if (std::abs(phi - phi_value) < 1.0 * phi_step or
+                                std::abs(phi - phi_value) >
+                                    (2 * M_PI - phi_step)) {
+                                std::cout
+                                    << "- diff z =  " << z_value - v[0]
+                                    << " / diff phi =  " << phi - phi_value
+                                    << std::endl;
+                                module_associations[is] = is;
+                            }
+                        }
+                    }
+                }
+                std::vector<unsigned long> module_associtations_sl;
+                for (auto [key, value] : module_associations) {
+                    module_associtations_sl.push_back(key);
+                }
+                barrel._surface_grid._associations.push_back(
+                    module_associtations_sl);
+            }
+        }
+    }
 
     return barrel;
 }
@@ -101,8 +148,8 @@ TEST(display, barrel_sheet_module_info) {
     barrel._name = "ODD Pixel Barrel (sample)";
 
     // Create the sheet
-    svg::object barrel_sheet =
-        display::barrel_sheet("sheet_odd_barrel", barrel, {600, 600}, display::e_module_info);
+    svg::object barrel_sheet = display::barrel_sheet(
+        "sheet_odd_barrel", barrel, {600, 600}, display::e_module_info);
 
     svg::file barrel_file;
     barrel_file._width = 1000;
@@ -120,8 +167,8 @@ TEST(display, barrel_sheet_grid_info) {
     barrel._name = "ODD Pixel Barrel (sample)";
 
     // Create the sheet
-    svg::object barrel_sheet =
-        display::barrel_sheet("sheet_odd_barrel", barrel, {600, 600}, display::e_grid_info);
+    svg::object barrel_sheet = display::barrel_sheet(
+        "sheet_odd_barrel", barrel, {600, 600}, display::e_grid_info);
 
     svg::file barrel_file;
     barrel_file._width = 1000;

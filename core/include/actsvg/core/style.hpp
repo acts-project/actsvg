@@ -40,11 +40,11 @@ static std::string rgb_attr(const rgb &rgb_) {
 struct color {
     /// The color
     rgb _rgb = {255, 255, 255};
+    /// The opacity
+    scalar _opacity = 1.;
     /// The highlight mode it is assumed on/off
     std::vector<std::string> _highlight;
     rgb _hl_rgb = {255, 0, 0};
-    /// The opacity
-    scalar _opacity = 1.;
 };
 
 /// Fill type specification
@@ -52,16 +52,16 @@ struct fill {
 
     /// The fill color
     color _fc;
+    bool _sterile = false;
 
     /// A constructor from @param fc_ color
-    fill(const color& fc_) : _fc(fc_) {}
+    fill(const color &fc_) : _fc(fc_) {}
 
     /// A constructor for empty
-    fill() {
+    fill(bool s_ = false) : _sterile(s_) {
         _fc = color();
         _fc._opacity = 0.;
     }
-
 
     /** Attach this fill attribute to an object
      *
@@ -71,29 +71,39 @@ struct fill {
      **/
     template <typename object_type>
     void attach_attributes(object_type &o_) const {
-        o_._attribute_map["fill"] = rgb_attr(_fc._rgb);
-        o_._attribute_map["fill-opacity"] = std::to_string(_fc._opacity);
+
+        if (not _sterile) {
+            o_._attribute_map["fill"] = rgb_attr(_fc._rgb);
+            o_._attribute_map["fill-opacity"] = std::to_string(_fc._opacity);
+        }
 
         if (_fc._highlight.size() == 2u) {
-                object_type on_off;
-                on_off._tag = "set";
-                on_off._attribute_map["attributeName"] = "fill";
-                on_off._attribute_map["begin"] = _fc._highlight[0];
-                on_off._attribute_map["end"] = _fc._highlight[1];
-                on_off._attribute_map["to"] = rgb_attr(_fc._hl_rgb);
-                o_.add_object(on_off);
+            object_type on_off;
+            on_off._tag = "set";
+            on_off._attribute_map["attributeName"] = "fill";
+            on_off._attribute_map["begin"] = _fc._highlight[0];
+            on_off._attribute_map["end"] = _fc._highlight[1];
+            on_off._attribute_map["to"] = rgb_attr(_fc._hl_rgb);
+            o_.add_object(on_off);
         }
     }
 };
 
 /// Stroke type speficiation
 struct stroke {
+
     /// The stroke color
     color _sc{{0, 0, 0}};
     /// Width definition
     scalar _width = 0.5;
     /// Dashing definition
     std::vector<int> _dasharray = {};
+    bool _sterile = false;
+
+    stroke(const color &c_, scalar w_ = 0.5, const std::vector<int>& d_ = {})
+        : _sc(c_), _width(w_), _dasharray(d_) {}
+
+    stroke(bool s_ = false) : _sterile(s_) {}
 
     /** Attach this fill attribute to an object
      *
@@ -103,18 +113,21 @@ struct stroke {
      **/
     template <typename object_type>
     void attach_attributes(object_type &o_) const {
-        o_._attribute_map["stroke"] = rgb_attr(_sc._rgb);
-        o_._attribute_map["stroke-opacity"] = std::to_string(_sc._opacity);
-        o_._attribute_map["stroke-width"] = std::to_string(_width);
-        if (not _dasharray.empty()) {
-            std::string da_str;
-            for (auto [i, d] : utils::enumerate(_dasharray)) {
-                da_str += std::to_string(d);
-                if (i + 1 < _dasharray.size()) {
-                    da_str += __blk;
+
+        if (not _sterile) {
+            o_._attribute_map["stroke"] = rgb_attr(_sc._rgb);
+            o_._attribute_map["stroke-opacity"] = std::to_string(_sc._opacity);
+            o_._attribute_map["stroke-width"] = std::to_string(_width);
+            if (not _dasharray.empty()) {
+                std::string da_str;
+                for (auto [i, d] : utils::enumerate(_dasharray)) {
+                    da_str += std::to_string(d);
+                    if (i + 1 < _dasharray.size()) {
+                        da_str += __blk;
+                    }
                 }
+                o_._attribute_map["stroke-dasharray"] = da_str;
             }
-            o_._attribute_map["stroke-dasharray"] = da_str;
         }
     }
 };
@@ -154,7 +167,7 @@ struct font {
 /// The transform struct
 struct transform {
 
-    std::array<scalar, 3> _tr = {0., 0. };
+    std::array<scalar, 3> _tr = {0., 0.};
     std::array<scalar, 3> _rot = {0., 0., 0.};
     std::array<scalar, 2> _skew = {0., 0.};
     std::array<scalar, 2> _scale = {1., 1.};
@@ -177,7 +190,8 @@ struct transform {
             }
         }
         if (rotate) {
-            tr_str << "rotate(" << -_rot[0] << __c << _rot[1] << __c << -_rot[2] << ")";
+            tr_str << "rotate(" << -_rot[0] << __c << _rot[1] << __c << -_rot[2]
+                   << ")";
             if (scale or skew) {
                 tr_str << __blk;
             }
@@ -221,7 +235,6 @@ struct marker {
     fill _fill = fill({0, 0, 0});
 
     stroke _stroke = stroke();
-
 };
 
 // The axis marker types

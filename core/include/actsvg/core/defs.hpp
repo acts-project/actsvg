@@ -26,4 +26,5 @@ namespace actsvg
 
     using point2 = std::array<scalar, 2>;
 
+
 }
