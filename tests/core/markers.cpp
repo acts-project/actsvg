@@ -48,49 +48,49 @@ TEST(draw, markers) {
     // Flipped in red
     style::marker m_arr_r{"<"};
     m_arr_r._size = 10;
-    m_arr_r._fill._fc = {255, 0,0};
+    m_arr_r._fill._fc = style::color{{255, 0,0}};
     auto m2_r = draw::marker("m2_r", {100,-80}, m_arr_r, M_PI);
 
     style::marker m_darr_r{"<<"};
     m_darr_r._size = 10;
-    m_darr_r._fill._fc = {255, 0,0};
+    m_darr_r._fill._fc = style::color{{255, 0,0}};
     auto m3_r = draw::marker("m3_r", {100,-110}, m_darr_r, M_PI);
 
     style::marker m_marr_r{"|<"};
     m_marr_r._size = 10;
-    m_marr_r._fill._fc = {255, 0,0};
+    m_marr_r._fill._fc = style::color{{255, 0,0}};
     auto m4_r = draw::marker("m4_r", {150,-170}, m_marr_r, M_PI);
 
     style::marker m_mdarr_r{"|<<"};
     m_mdarr_r._size = 10;
-    m_mdarr_r._fill._fc = {255, 0,0};
+    m_mdarr_r._fill._fc = style::color{{255, 0,0}};
     auto m5_r = draw::marker("m5_r", {150,-210}, m_mdarr_r, M_PI);
 
     // 45 degree outwards pointing in blue
     style::marker m_arr_b{"<"};
     m_arr_b._size = 10;
-    m_arr_b._fill._fc = {0, 0, 255};
+    m_arr_b._fill._fc = style::color{{0, 0, 255}};
     auto m2_b = draw::marker("m2_r", {-100,80}, m_arr_b, 0.75*M_PI);
 
     style::marker m_darr_b{"<<"};
     m_darr_b._size = 10;
-    m_darr_b._fill._fc = {0, 0, 255};
+    m_darr_b._fill._fc = style::color{{0, 0, 255}};
     auto m3_b = draw::marker("m3_r", {-100,110}, m_darr_b, 0.75*M_PI);
 
     style::marker m_marr_b{"|<"};
     m_marr_b._size = 10;
-    m_marr_b._fill._fc = {0, 0, 255};
+    m_marr_b._fill._fc = style::color{{0, 0, 255}};
     auto m4_b = draw::marker("m4_r", {-150,170}, m_marr_b, 0.75* M_PI);
 
     style::marker m_mdarr_b{"|<<"};
     m_mdarr_b._size = 10;
-    m_mdarr_b._fill._fc = {0, 0, 255};
+    m_mdarr_b._fill._fc = style::color{{0, 0, 255}};
     auto m5_b = draw::marker("m5_r", {-150,210}, m_mdarr_b, 0.75*M_PI);
 
     // back-to-back measure test
     style::marker m_mdarr_g{"|<<"};
     m_mdarr_g._size = 10;
-    m_mdarr_g._fill._fc = {0, 255, 0};
+    m_mdarr_g._fill._fc = style::color{{0, 255, 0}};
     auto f_g = draw::marker("f_g", {-100,-100}, m_default);
     auto m5_f_g = draw::marker("m5_f_g", {-100,-100}, m_mdarr_g);
     auto m5_b_g = draw::marker("m5_f_g", {-100,-100}, m_mdarr_g, -M_PI);

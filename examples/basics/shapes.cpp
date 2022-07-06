@@ -51,13 +51,12 @@ int main(int argc, char* argv[]) {
     using point3 = std::array<scalar, 3>;
     views::x_y x_y_view;
 
-    style::fill fill_style({r, g, b});
+    style::fill fill_style{{{r, g, b}}};
     fill_style._fc._highlight = {"mouseover", "mouseout"};
     fill_style._fc._hl_rgb = {0, 255, 0};
     fill_style._fc._opacity = 0.5;
 
-    style::stroke stroke_style({r, g, b});
-
+    style::stroke stroke_style{{{r, g, b}}};
     style::stroke stroke_black = style::stroke();
 
     // Make a rectangle shape

@@ -39,12 +39,12 @@ TEST(endcap, z_r_view) {
     svg::file ec_file;
 
     // Draw the surfaces
-    style::fill module_color{{28, 156, 168}};
+    style::fill module_color{style::color{{28, 156, 168}}};
     module_color._fc._opacity = 0.5;
     module_color._fc._highlight = {"mouseover", "mouseout"};
     module_color._fc._hl_rgb = {{255, 0, 0}};
 
-    style::stroke stroke_color{{8, 76, 87}};
+    style::stroke stroke_color{style::color{{8, 76, 87}}};
     stroke_color._width = 0.5;
 
     views::z_r z_r_view;
@@ -75,12 +75,12 @@ TEST(endcap, x_y_view) {
     ec_file._width = 800;
 
     // Draw the surfaces
-    style::fill module_color{{28, 156, 168}};
+    style::fill module_color{style::color{{28, 156, 168}}};
     module_color._fc._opacity = 0.5;
     module_color._fc._hl_rgb = {{10, 200, 10}};
     module_color._fc._highlight = {"mouseover", "mouseout"};
 
-    style::stroke stroke_color{{8, 76, 87}};
+    style::stroke stroke_color{style::color{{8, 76, 87}}};
     stroke_color._width = 0.5;
 
     views::x_y x_y_view;
@@ -128,11 +128,11 @@ TEST(endcap, x_y_view_grid) {
     ec_file._width = 800;
 
     // Draw the surfaces
-    style::fill module_color{{28, 156, 168}};
+    style::fill module_color{style::color{{28, 156, 168}}};
     module_color._fc._opacity = 0.5;
     module_color._fc._hl_rgb = {{10, 200, 10}};
 
-    style::stroke stroke_color{{8, 76, 87}};
+    style::stroke stroke_color{style::color{{8, 76, 87}}};
     stroke_color._width = 0.5;
 
     style::font font_style;
@@ -149,12 +149,12 @@ TEST(endcap, x_y_view_grid) {
     }
 
     // Let's generate a grid & draw it
-    style::fill grid_color{{200, 200, 200}};
+    style::fill grid_color{style::color{{200, 200, 200}}};
     grid_color._fc._opacity = 0.25;
     grid_color._fc._highlight = {"mouseover", "mouseout"};
     grid_color._fc._hl_rgb = {{255, 0, 0}};
 
-    style::stroke grid_stroke{{255, 0, 0}};
+    style::stroke grid_stroke{style::color{{255, 0, 0}}};
     grid_stroke._width = 0.5;
     grid_stroke._dasharray = {1, 1};
 
@@ -167,12 +167,11 @@ TEST(endcap, x_y_view_grid) {
         scalar c_phi = -M_PI + is * phi_step;
         phi_values.push_back(c_phi);
     }
-    auto grid_sectors = draw::tiled_polar_grid("r_phi_",  r_values, phi_values,
-                                         grid_color, grid_stroke);
+    auto grid_sectors = draw::tiled_polar_grid("r_phi_", r_values, phi_values,
+                                               grid_color, grid_stroke);
 
     // Create the connection map here' simply with some tolerances
-    scalar close_by_r = 75.;
-    scalar close_by_phi = 0.1;
+    scalar close_by_phi = 0.25;
 
     std::vector<std::vector<size_t>> associations;
     for (auto [ig, g] : utils::enumerate(grid_sectors._sub_objects)) {
@@ -183,8 +182,8 @@ TEST(endcap, x_y_view_grid) {
                 std::atan2(g._real_barycenter[1], g._real_barycenter[0]);
             scalar s_phi =
                 std::atan2(s._real_barycenter[1], s._real_barycenter[0]);
-            if (std::abs(g_phi - s_phi) < 0.25 or
-                std::abs(g_phi - s_phi) > (2 * M_PI - 0.25)) {
+            if (std::abs(g_phi - s_phi) < close_by_phi or
+                std::abs(g_phi - s_phi) > (2 * M_PI - close_by_phi)) {
                 sector_associations.push_back(is);
                 std::cout << is << ",";
             }
@@ -194,13 +193,15 @@ TEST(endcap, x_y_view_grid) {
     }
 
     // Build the connectors
-    connectors::connect_objects(grid_sectors._sub_objects, modules, associations);
+    connectors::connect_objects(grid_sectors._sub_objects, modules,
+                                associations);
 
     // Add the surfaces
     ec_file._objects.insert(ec_file._objects.end(), modules.begin(),
                             modules.end());
     // Add the grid sectors
-    ec_file._objects.insert(ec_file._objects.end(), grid_sectors._sub_objects.begin(),
+    ec_file._objects.insert(ec_file._objects.end(),
+                            grid_sectors._sub_objects.begin(),
                             grid_sectors._sub_objects.end());
 
     // File output
