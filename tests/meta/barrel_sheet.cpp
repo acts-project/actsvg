@@ -98,8 +98,6 @@ proto::volume<point3_container_type> generate_barrel_volume() {
             for (unsigned int iphi = 0; iphi < n_sectors; ++iphi) {
                 scalar phi_value = -M_PI + iphi * phi_step;
 
-                std::cout << "bin " << iz << " x " << iphi << std::endl;
-
                 std::map<unsigned long, unsigned long> module_associations;
                 for (auto [is, s] : utils::enumerate(barrel._surfaces)) {
                     auto vertices = z_phi_view(s._vertices);
@@ -119,10 +117,6 @@ proto::volume<point3_container_type> generate_barrel_volume() {
                             if (std::abs(phi - phi_value) < 1.0 * phi_step or
                                 std::abs(phi - phi_value) >
                                     (2 * M_PI - phi_step)) {
-                                std::cout
-                                    << "- diff z =  " << z_value - v[0]
-                                    << " / diff phi =  " << phi - phi_value
-                                    << std::endl;
                                 module_associations[is] = is;
                             }
                         }

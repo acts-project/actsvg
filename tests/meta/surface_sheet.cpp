@@ -27,7 +27,7 @@ TEST(display, sheet_trapezoid) {
     trapezoid._vertices = {
         {-8.5, -34, 0.}, {8.5, -34, 0.}, {14.5, 34., 0.}, {-14.5, 34., 0.}};
 
-    svg::object surface_sheet = display::surface_sheet("sheet_trapezoid", trapezoid);
+    svg::object surface_sheet = display::surface_sheet_xy("sheet_trapezoid", trapezoid);
     svg::file surface_file;
     surface_file.add_object(surface_sheet);
 

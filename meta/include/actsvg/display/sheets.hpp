@@ -35,13 +35,15 @@ enum sheet_type { e_module_info = 0, e_grid_info = 1 };
  * @param id_ is the identifcation tag
  * @param s_ is the surface to be displayed
  * @param sh_ is the sheet size for displaying
+ * @param kr_ is a directive to keep the ratio
  *
  * @return a surface sheet svg object
  **/
 template <typename point3_container>
-svg::object surface_sheet(const std::string& id_,
-                          const proto::surface<point3_container>& s_,
-                          const std::array<scalar, 2>& sh_ = {400., 400.}) {
+svg::object surface_sheet_xy(const std::string& id_,
+                             const proto::surface<point3_container>& s_,
+                             const std::array<scalar, 2>& sh_ = {400., 400.},
+                             bool kr_ = true) {
     svg::object so;
     so._tag = "g";
     so._id = id_;
@@ -58,6 +60,13 @@ svg::object surface_sheet(const std::string& id_,
     scalar s_x = sh_[0] / (x_axis[1] - x_axis[0]);
     scalar s_y = sh_[1] / (y_axis[1] - y_axis[0]);
 
+    // Harmonize the view window
+    if (kr_) {
+        s_x = s_x < s_y ? s_x : s_y;
+        s_y = s_y < s_x ? s_y : s_x;
+    }
+
+
     // Create the scale transform
     style::transform scale_transform;
     scale_transform._scale = {s_x, s_y};
@@ -71,8 +80,8 @@ svg::object surface_sheet(const std::string& id_,
     auto axis_font = __a_font;
     axis_font._size = 10;
 
-    so.add_object(
-        draw::x_y_axes("xy", x_axis, y_axis, __a_stroke, "x", "y", axis_font));
+    so.add_object(draw::x_y_axes(id_ + "_axes_xy", x_axis, y_axis, __a_stroke,
+                                 "x", "y", axis_font));
 
     // The measures
     // - Trapezoid
@@ -161,10 +170,10 @@ svg::object sheet(const std::string& id_,
             s._fill = s_fill;
             // The template sheet
             auto s_sheet =
-                display::surface_sheet("surface_sheet_" + id_, s, s_sh_);
+                display::surface_sheet_xy("surface_sheet_" + id_, s, s_sh_);
             style::transform(
                 {{static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
-                 0.}})
+                  0.}})
                 .attach_attributes(s_sheet);
             templates.push_back(s_sheet);
         }
