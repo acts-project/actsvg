@@ -20,4 +20,5 @@
 
 #include "actsvg/display/helpers.hpp"
 #include "actsvg/display/sheets.hpp"
+#include "actsvg/display/geometry.hpp"
 #include "actsvg/display/datamodel.hpp"

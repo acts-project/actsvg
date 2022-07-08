@@ -68,17 +68,19 @@ if( ACTSVG_BUILD_TESTING )
   add_subdirectory( tests )
 endif()
 
-# Set up GoogleTest.
-option( ACTSVG_SETUP_GOOGLETEST
-   "Set up the GoogleTest target(s) explicitly" TRUE )
-option( ACTSVG_USE_SYSTEM_GOOGLETEST
-   "Pick up an existing installation of GoogleTest from the build environment"
-   FALSE )
-if( ACTSVG_SETUP_GOOGLETEST )
-   if( ACTSVG_USE_SYSTEM_GOOGLETEST )
-      find_package( GTest REQUIRED )
-   else()
-      add_subdirectory( extern/googletest )
+if (ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
+   # Set up GoogleTest.
+   option( ACTSVG_SETUP_GOOGLETEST
+      "Set up the GoogleTest target(s) explicitly" TRUE )
+   option( ACTSVG_USE_SYSTEM_GOOGLETEST
+      "Pick up an existing installation of GoogleTest from the build environment"
+      FALSE )
+   if( ACTSVG_SETUP_GOOGLETEST )
+      if( ACTSVG_USE_SYSTEM_GOOGLETEST )
+         find_package( GTest REQUIRED )
+      else()
+         add_subdirectory( extern/googletest )
+      endif()
    endif()
 endif()
 

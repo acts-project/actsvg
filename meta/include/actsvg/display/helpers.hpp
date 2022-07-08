@@ -26,7 +26,7 @@ namespace display {
  *
  * @param vs are the vertices that build up this module
  *
- * @return the string 
+ * @return the string
  **/
 template <typename point3_container>
 std::string center_string(const point3_container& vs) {
@@ -42,7 +42,8 @@ std::string center_string(const point3_container& vs) {
     c_x /= vs.size();
     c_y /= vs.size();
     c_z /= vs.size();
-    return c_str + std::to_string(c_x) + "," + std::to_string(c_y) + ", " + std::to_string(c_z) + ")";
+    return c_str + std::to_string(c_x) + "," + std::to_string(c_y) + ", " +
+           std::to_string(c_z) + ")";
 }
 
 /** Helper method to prepare axis for a view point
@@ -56,9 +57,9 @@ std::string center_string(const point3_container& vs) {
  *
  * @return the marker size as 1 percent of the range
  **/
-static void prepare_axes(std::array<scalar, 2>& first_,
-                         std::array<scalar, 2>& second_, scalar sx_, scalar sy_,
-                         scalar ax_ = 0., scalar ay_ = 0.) {
+static inline void prepare_axes(std::array<scalar, 2>& first_,
+                                std::array<scalar, 2>& second_, scalar sx_,
+                                scalar sy_, scalar ax_ = 0., scalar ay_ = 0.) {
     // Add some extra space for the axis
     first_[0] *= sx_;
     first_[1] *= sx_;
@@ -156,8 +157,7 @@ process_modules(const volume_type& v_, const view_type& view_,
 template <typename volume_type>
 void connect_surface_sheets(const volume_type& v_,
                             std::vector<svg::object>& templates_,
-                            svg::object& o_,
-                            scalar yt_ = 200.) {
+                            svg::object& o_, scalar yt_ = 200.) {
     // Now create an item per surface
     for (auto [is, s] : utils::enumerate(v_._surfaces)) {
         std::string sid = s._name;
