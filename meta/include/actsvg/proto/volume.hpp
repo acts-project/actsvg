@@ -29,6 +29,8 @@ namespace proto {
 template <typename point3_container>
 struct volume {
 
+    using surface_type = surface<point3_container>;
+
     /// Type enumeration 
     enum type { e_barrel = 0, e_endcap = 1, e_other = 2};
 

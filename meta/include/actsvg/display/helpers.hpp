@@ -15,6 +15,7 @@
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"
 #include "actsvg/styles/defaults.hpp"
+#include "actsvg/display/geometry.hpp"
 
 namespace actsvg {
 
@@ -110,6 +111,8 @@ std::tuple<std::vector<svg::object>, style::transform,
 process_modules(const volume_type& v_, const view_type& view_,
                 const std::array<scalar, 2>& sh_ = {600., 600.}) {
 
+    using surface_type = typename volume_type::surface_type;
+
     // Axis range & pre-loop
     std::vector<views::contour> contours;
     contours.reserve(v_._surfaces.size());
@@ -131,9 +134,9 @@ process_modules(const volume_type& v_, const view_type& view_,
     std::vector<svg::object> modules;
     modules.reserve(contours.size());
     for (auto [ic, c] : utils::enumerate(contours)) {
-        const auto& surface = v_._surfaces[ic];
-        auto surface_module = draw::polygon(surface._name, c, surface._fill,
-                                            surface._stroke, scale_transform);
+        surface_type draw_surface = v_._surfaces[ic];
+        draw_surface._transform._scale = {s_x, s_y};
+        auto surface_module = display::surface(draw_surface._name, draw_surface, view_);
         modules.push_back(surface_module);
     }
 

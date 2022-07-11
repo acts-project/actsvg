@@ -14,6 +14,7 @@
 
 #include "actsvg/core.hpp"
 #include "actsvg/display/helpers.hpp"
+#include "actsvg/display/geometry.hpp"
 #include "actsvg/proto/cluster.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"
@@ -66,17 +67,17 @@ svg::object surface_sheet_xy(const std::string& id_,
         s_y = s_y < s_x ? s_y : s_x;
     }
 
-
     // Create the scale transform
     style::transform scale_transform;
     scale_transform._scale = {s_x, s_y};
 
-    auto surface = draw::polygon(s_._name, surface_contour, s_._fill,
-                                 s_._stroke, scale_transform);
+    // Copy in order to modify the transform
+    proto::surface<point3_container> draw_surface = s_;
+    draw_surface._transform._scale = {s_x, s_y};
+    auto surface = display::surface(s_._name, draw_surface, x_y_view);
     so.add_object(surface);
 
     display::prepare_axes(x_axis, y_axis, s_x, s_y, 30., 30.);
-
     auto axis_font = __a_font;
     axis_font._size = 10;
 

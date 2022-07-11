@@ -37,6 +37,9 @@ struct object {
     /// Identification string
     std::string _id = "";
 
+    /// Sterile - does not write _fill, stroke, transform
+    bool _sterile = false;
+
     /// In-field of the svg tag
     std::vector<std::string> _field = {};
     scalar _field_span = 12;
@@ -84,15 +87,17 @@ struct object {
         // Collect eventual definitions
         _definitions.insert(_definitions.end(), o_._definitions.begin(),
                             o_._definitions.end());
-        // Re-measure, x/y/r/phi ranges include transforms already
-        _x_range = {std::min(_x_range[0], o_._x_range[0]),
-                    std::max(_x_range[1], o_._x_range[1])};
-        _y_range = {std::min(_y_range[0], o_._y_range[0]),
-                    std::max(_y_range[1], o_._y_range[1])};
-        _r_range = {std::min(_r_range[0], o_._r_range[0]),
-                    std::max(_r_range[1], o_._r_range[1])};
-        _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
-                      std::max(_phi_range[1], o_._phi_range[1])};
+        if (not _sterile) {
+            // Re-measure, x/y/r/phi ranges include transforms already
+            _x_range = {std::min(_x_range[0], o_._x_range[0]),
+                        std::max(_x_range[1], o_._x_range[1])};
+            _y_range = {std::min(_y_range[0], o_._y_range[0]),
+                        std::max(_y_range[1], o_._y_range[1])};
+            _r_range = {std::min(_r_range[0], o_._r_range[0]),
+                        std::max(_r_range[1], o_._r_range[1])};
+            _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
+                          std::max(_phi_range[1], o_._phi_range[1])};
+        }
     }
 
     /** Find an object by string,
@@ -140,24 +145,18 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
     // write the same one with different attributes sets
     object o_copy = o_;
 
-    if (not o_._definitions.empty()) {
-        os_ << __l << "defs" << __r;
-        for (const auto &d : o_._definitions) {
-            os_ << d;
-        }
-        os_ << __l << "/defs" << __r << __nl;
-    }
-
-    // Now write
+    // Write the file
     os_ << __l << o_copy._tag;
     if (not o_copy._id.empty()) {
         os_ << __blk << "id=\"" << o_copy._id << "\"";
     }
 
     // Attach the styles: fill, stroke, transform
-    o_._fill.attach_attributes(o_copy);
-    o_._stroke.attach_attributes(o_copy);
-    o_._transform.attach_attributes(o_copy);
+    if (not o_._sterile) {
+        o_._fill.attach_attributes(o_copy);
+        o_._stroke.attach_attributes(o_copy);
+        o_._transform.attach_attributes(o_copy);
+    }
 
     // The attribute map
     for (auto [key, value] : o_copy._attribute_map) {
@@ -207,7 +206,9 @@ struct file {
     std::string _html_head = "<html>\n<body>\n";
     std::string _svg_head = "<svg version=\"1.1\"";
 
-    std::string _svg_def_end = " xmlns=\"http://www.w3.org/2000/svg\">\n";
+    std::string _svg_def_end =
+        " xmlns=\"http://www.w3.org/2000/svg\"  "
+        "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n";
 
     std::string _svg_tail = "</svg>\n";
     std::string _html_tail = "</body>\n</html>\n";
@@ -241,11 +242,16 @@ inline std::ostream &operator<<(std::ostream &os_, const file &f_) {
 
     std::array<scalar, 4> viewBox = {-800, -800, 1600, 1600};
 
-    for (auto &o : f_._objects) {
+    std::map<std::string, svg::object> definitions;
+
+    for (const auto &o : f_._objects) {
         x_range[0] = std::min(x_range[0], o._x_range[0]);
         x_range[1] = std::max(x_range[1], o._x_range[1]);
         y_range[0] = std::min(y_range[0], o._y_range[0]);
         y_range[1] = std::max(y_range[1], o._y_range[1]);
+        for (const auto &d : o._definitions) {
+            definitions[d._id] = d;
+        }
     }
     // Enlarge the view box by 10 percent
     viewBox[2] = 1.2 * (x_range[1] - x_range[0]);
@@ -265,7 +271,16 @@ inline std::ostream &operator<<(std::ostream &os_, const file &f_) {
     os_ << " viewBox=\"" << viewBox[0] << " " << viewBox[1] << " " << viewBox[2]
         << " " << viewBox[3] << "\"";
     os_ << f_._svg_def_end;
+    // Write the definitions first
+    if (not definitions.empty()) {
+        os_ << "<defs>";
+        for (auto [key, value] : definitions) {
+            os_ << value;
+        }
+        os_ << "</defs>";
+    }
 
+    // Now write the objects
     for (auto &o : f_._objects) {
         os_ << o;
     }

@@ -3,6 +3,7 @@ actsvg_add_test( core
   "arc.cpp"
   "barrel.cpp" 
   "circle.cpp"
+  "copy.cpp"
   "endcap.cpp"
   "grids.cpp"
   "line.cpp"
