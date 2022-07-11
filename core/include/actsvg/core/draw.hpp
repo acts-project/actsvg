@@ -978,6 +978,46 @@ static inline svg::object x_y_axes(
     return axes;
 }
 
+/** Place a copy with different attributes via xling
+ *
+ * @param id_ the identification of this surface
+ * @param ro_ the reference object
+ * @param f_ the fill of the new object
+ * @param s_ the stroke of the new object
+ * @param t_ the transform of the new object
+ *
+ * @return the create object from reference
+ */
+static inline svg::object from_template(
+    const std::string &id_, const svg::object &ro_,
+    const style::fill &f_ = style::fill(),
+    const style::stroke &s_ = style::stroke(),
+    const style::transform t_ = style::transform()) {
+
+    // Create new svg object
+    svg::object nsvg;
+    nsvg._sterile = true;
+    nsvg._id = id_;
+    nsvg._tag = "g";
+
+    // Refer to as the linker object
+    svg::object use_obj;
+    use_obj._tag = "use";
+    use_obj._id = id_ + "_use";
+    use_obj._attribute_map["xlink:href"] = "#" + ro_._id;
+    use_obj._definitions.push_back(ro_);
+
+    // Set the fill attributes
+    use_obj._fill = f_;
+    use_obj._stroke = s_;
+    use_obj._transform = t_;
+
+    // Add it to the main object
+    nsvg.add_object(use_obj);
+
+    return nsvg;
+}
+
 }  // namespace draw
 
 }  // namespace actsvg

@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <cmath>
+
 namespace actsvg {
 
 namespace utils {
@@ -52,6 +54,20 @@ constexpr auto enumerate(container_type &&iterable) {
 static inline std::string id_to_url(const std::string &id_) {
     return std::string("url(#") + id_ + ")";
 }
+
+/** Helper method to rotate a 2-d point
+ * @param p_ the point to be rotated
+ * @param a_ the angle alpha
+ *
+ * @return the rotated point
+ **/
+template <typename point2_type>
+point2_type rotate(const point2_type &p_, scalar a_) {
+    point2_type p_rot;
+    p_rot[0] = std::cos(a_) * p_[0] - std::sin(a_) * p_[1];
+    p_rot[1] = std::sin(a_) * p_[0] + std::cos(a_) * p_[1];
+    return p_rot;
+};
 
 }  // namespace utils
 

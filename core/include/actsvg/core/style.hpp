@@ -51,7 +51,7 @@ struct color {
 struct fill {
 
     /// The fill color
-    color _fc = color{{0,0,0}};
+    color _fc = color{{0, 0, 0}};
     bool _sterile = false;
 
     /// A constructor from @param fc_ color
@@ -98,9 +98,10 @@ struct stroke {
     scalar _width = 0.5;
     /// Dashing definition
     std::vector<int> _dasharray = {};
+    /// Nothing is written out
     bool _sterile = false;
 
-    stroke(const color &c_, scalar w_ = 0.5, const std::vector<int>& d_ = {})
+    stroke(const color &c_, scalar w_ = 0.5, const std::vector<int> &d_ = {})
         : _sc(c_), _width(w_), _dasharray(d_) {}
 
     stroke(bool s_ = false) : _sterile(s_) {}
@@ -171,6 +172,8 @@ struct transform {
     std::array<scalar, 3> _rot = {0., 0., 0.};
     std::array<scalar, 2> _skew = {0., 0.};
     std::array<scalar, 2> _scale = {1., 1.};
+
+    bool _sterile = false;
 
     /** Attrribute conversion
      *

@@ -8,9 +8,9 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
-#include <optional>
 
 #include "actsvg/core/style.hpp"
 #include "actsvg/styles/defaults.hpp"
@@ -60,6 +60,9 @@ struct surface {
 
     /// And their measures
     std::vector<scalar> _measures = {};
+
+    /// A (potential) template for this surface
+    svg::object _template;
 };
 
 }  // namespace proto

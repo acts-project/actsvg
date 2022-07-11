@@ -8,23 +8,21 @@
 
 #pragma once
 
-namespace actsvg
-{
-    static const std::string __l = "<";
-    static const std::string __r = ">\n";
-    static const std::string __el = "</";
-    static const std::string __er = "/>\n";
-    static const std::string __fs = "/";
-    static const std::string __tab = "\t";
-    static const std::string __nl = "\n";
-    static const std::string __blk = " ";
-    static const std::string __c = ",";
-    static const std::string __d = ".";
+namespace actsvg {
+static const std::string __l = "<";
+static const std::string __r = ">\n";
+static const std::string __el = "</";
+static const std::string __er = "/>\n";
+static const std::string __fs = "/";
+static const std::string __tab = "\t";
+static const std::string __nl = "\n";
+static const std::string __blk = " ";
+static const std::string __c = ",";
+static const std::string __d = ".";
 
-    /// @todo make configurable via compile time
-    using scalar = float;
+/// @todo make configurable via compile time
+using scalar = float;
 
-    using point2 = std::array<scalar, 2>;
+using point2 = std::array<scalar, 2>;
 
-
-}
+}  // namespace actsvg

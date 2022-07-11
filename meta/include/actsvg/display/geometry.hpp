@@ -36,6 +36,14 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
     svg::object s;
 
+    // If the surface has a template ... go for it directly
+    if (s_._template.is_defined()) {
+        // Create a surface object from the template
+        s = draw::from_template(id_, s_._template, s_._fill, s_._stroke,
+                                s_._transform);
+        return s;
+    }
+
     // Surface directly
     if (s_._type == surface_type::e_disc) {
 
