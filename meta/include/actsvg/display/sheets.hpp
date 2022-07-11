@@ -9,12 +9,13 @@
 #pragma once
 
 #include <algorithm>
+#include <exception>
 #include <string>
 #include <vector>
 
 #include "actsvg/core.hpp"
-#include "actsvg/display/helpers.hpp"
 #include "actsvg/display/geometry.hpp"
+#include "actsvg/display/helpers.hpp"
 #include "actsvg/proto/cluster.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"
@@ -44,19 +45,51 @@ template <typename point3_container>
 svg::object surface_sheet_xy(const std::string& id_,
                              const proto::surface<point3_container>& s_,
                              const std::array<scalar, 2>& sh_ = {400., 400.},
-                             bool kr_ = true) {
+                             bool kr_ = true) noexcept(false) {
     svg::object so;
     so._tag = "g";
     so._id = id_;
 
+    using point3 = typename point3_container::value_type;
+
     views::x_y x_y_view;
 
     // Add the surface
-    auto surface_contour = x_y_view(s_._vertices);
-
-    std::vector<views::contour> contours = {surface_contour};
+    std::vector<views::contour> contours;
+    if (not s_._vertices.empty()) {
+        auto surface_contour = x_y_view(s_._vertices);
+        contours = {surface_contour};
+    } else if (s_._radii[1] != 0.) {
+        scalar ri = s_._radii[0];
+        scalar ro = s_._radii[1];
+        scalar phi_low = s_._opening[0];
+        scalar phi_high = s_._opening[1];
+        scalar phi = 0.5 * (phi_low + phi_high);
+        scalar cos_phi_low = std::cos(phi_low);
+        scalar sin_phi_low = std::sin(phi_low);
+        scalar cos_phi_high = std::cos(phi_high);
+        scalar sin_phi_high = std::cos(phi_high);
+        point3 A = {ri * cos_phi_low, ri * sin_phi_low, 0.};
+        point3 B = {ri * std::cos(phi), ri * std::sin(phi), 0.};
+        point3 C = {ri * cos_phi_high, ri * sin_phi_high, 0.};
+        point3 D = {ro * cos_phi_high, ro * sin_phi_high, 0.};
+        point3 E = {ro * std::cos(phi), ro * std::sin(phi), 0.};
+        point3 F = {ro * cos_phi_low, ro * sin_phi_low, 0.};
+        std::vector<point3> vertices_disc = {A, B, C, D, E, F};
+        auto surface_contour = x_y_view(vertices_disc);
+        contours = {surface_contour};
+    } else {
+        throw std::invalid_argument(
+            "surface_sheet_xy(...) - could not estimate range.");
+    }
 
     auto [x_axis, y_axis] = display::view_range(contours);
+
+    // Stitch when disc
+    if (s_._type == proto::surface<point3_container>::e_disc) {
+        x_axis[0] = 0.;
+        y_axis[0] = 0.;
+    }
 
     scalar s_x = sh_[0] / (x_axis[1] - x_axis[0]);
     scalar s_y = sh_[1] / (y_axis[1] - y_axis[0]);
@@ -171,7 +204,7 @@ svg::object sheet(const std::string& id_,
             s._fill = s_fill;
             // The template sheet
             auto s_sheet =
-                display::surface_sheet_xy("surface_sheet_" + id_, s, s_sh_);
+                display::surface_sheet_xy(id_ + "_surface_sheet", s, s_sh_);
             style::transform(
                 {{static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
                   0.}})

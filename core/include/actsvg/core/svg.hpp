@@ -77,6 +77,10 @@ struct object {
     /// Range in phi - Detector frame
     std::array<scalar, 2> _phi_range = {std::numeric_limits<scalar>::max(),
                                         std::numeric_limits<scalar>::min()};
+
+    /** An object is defined if a tag is set */
+    bool is_defined() const { return (not _tag.empty()); }
+
     /** Add a sub object and respect the min/max range
      *
      * @param o_ is the object in question

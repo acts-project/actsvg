@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
-#include "actsvg/meta.hpp"
 #include "actsvg/data/odd_pixel_ec.hpp"
+#include "actsvg/meta.hpp"
 
 using namespace actsvg;
 
@@ -88,8 +88,8 @@ TEST(display, endcap_sheet_module_info) {
     endcap._name = "ODD Pixel Endcap (sample)";
 
     // Create the sheet
-    svg::object endcap_sheet =
-        display::endcap_sheet("sheet_odd_endcap", endcap, {600, 600}, display::e_module_info);
+    svg::object endcap_sheet = display::endcap_sheet(
+        "sheet_odd_endcap", endcap, {600, 600}, display::e_module_info);
 
     svg::file endcap_file;
     endcap_file._width = 1000;
@@ -107,8 +107,8 @@ TEST(display, endcap_sheet_grid_info) {
     endcap._name = "ODD Pixel Endcap (sample)";
 
     // Create the sheet
-    svg::object endcap_sheet =
-        display::endcap_sheet("sheet_odd_endcap", endcap, {600, 600}, display::e_grid_info);
+    svg::object endcap_sheet = display::endcap_sheet(
+        "sheet_odd_endcap", endcap, {600, 600}, display::e_grid_info);
 
     svg::file endcap_file;
     endcap_file._width = 1000;
@@ -117,6 +117,113 @@ TEST(display, endcap_sheet_grid_info) {
     // Write out the file
     std::ofstream eout;
     eout.open("sheet_odd_endcap_grid_info.svg");
+    eout << endcap_file;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_module_info_ref) {
+
+    unsigned int sectors = 16;
+    scalar half_opening = static_cast<scalar>(M_PI / sectors);
+
+    proto::surface<point3_container> inner_template_surface;
+    inner_template_surface._name = "inner_surface_";
+    inner_template_surface._type = proto::surface<point3_container>::e_disc;
+    inner_template_surface._radii = {100, 200};
+    inner_template_surface._opening = {-half_opening, half_opening};
+
+    proto::surface<point3_container> outer_template_surface;
+    outer_template_surface._name = "outer_surface_";
+    outer_template_surface._type = proto::surface<point3_container>::e_disc;
+    outer_template_surface._radii = {190, 320};
+    outer_template_surface._opening = {-half_opening, half_opening};
+
+    // Template surfaces
+    std::vector<proto::surface<point3_container>> template_surfaces;
+    template_surfaces.push_back(inner_template_surface);
+    template_surfaces.push_back(outer_template_surface);
+
+    // Actual surfaces
+    std::vector<proto::surface<point3_container>> surfaces;
+    views::x_y x_y_view;
+
+    // Create the endcap volume
+    proto::volume<point3_container> sector_endcap;
+    sector_endcap._name = "Endcap with templates";
+
+    // Loop over the templates and place them
+    for (const auto [is, ts] : utils::enumerate(template_surfaces)) {
+
+        sector_endcap._template_surfaces.push_back(ts);
+
+        // Create the template object
+        auto template_object =
+            display::surface(ts._name + "_template", ts, x_y_view);
+        template_object._sterile = true;
+        // Get the radiii
+        scalar ri = ts._radii[0];
+        scalar ro = ts._radii[1];
+
+        for (unsigned int isc = 0; isc < sectors; ++isc) {
+
+            // Associate the templates
+            sector_endcap._templates.push_back(is);
+
+            // Create the surface from a template
+            proto::surface<point3_container> s;
+            s._name = ts._name + std::to_string(isc);
+
+            // Phi
+            scalar phi = isc * 2 * half_opening;
+            phi -= phi > M_PI ? 2 * M_PI : 0.;
+
+            /// Add some descriptive text
+            s._info = {
+                "module_" + std::to_string(is) + "_" + std::to_string(isc),
+                "phi =" + std::to_string(phi)};
+
+            // The transform
+            style::transform t;
+            t._rot[0] = static_cast<scalar>(phi * 180 / M_PI);
+            s._transform = t;
+
+            // Let's fill some vertices
+            scalar phi_low = phi - half_opening;
+            scalar phi_high = phi + half_opening;
+            scalar cos_phi_low = std::cos(phi_low);
+            scalar sin_phi_low = std::sin(phi_low);
+            scalar cos_phi_high = std::cos(phi_high);
+            scalar sin_phi_high = std::cos(phi_high);
+            point3 A = {ri * cos_phi_low, ri * sin_phi_low, 0.};
+            point3 B = {ri * std::cos(phi), ri * std::sin(phi), 0.};
+            point3 C = {ri * cos_phi_high, ri * sin_phi_high, 0.};
+            point3 D = {ro * cos_phi_high, ro * sin_phi_high, 0.};
+            point3 E = {ro * std::cos(phi), ro * std::sin(phi), 0.};
+            point3 F = {ro * cos_phi_low, ro * sin_phi_low, 0.};
+            s._vertices = {A, B, C, D, E, F};
+
+            // Set the template
+            s._template = template_object;
+
+            surfaces.push_back(s);
+        }
+    }
+
+    // Add the surfaces
+    sector_endcap._surfaces = surfaces;
+
+    // Create the sheet
+    svg::object endcap_sheet =
+        display::endcap_sheet("sector_endcap_sheet", sector_endcap, {600, 600},
+                              display::e_module_info);
+
+    svg::file endcap_file;
+    endcap_file._width = 1000;
+    endcap_file.add_object(endcap_sheet);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_module_templates.svg");
     eout << endcap_file;
     eout.close();
 }

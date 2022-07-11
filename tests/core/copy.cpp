@@ -35,13 +35,13 @@ TEST(core, copy_triangle) {
 
     // A red filled copy
     style::fill red_fill(style::color({{255, 0, 0}}));
-    auto red_copy = draw::create_from_ref("red_copy", original, red_fill);
+    auto red_copy = draw::from_template("red_copy", original, red_fill);
 
     // A blue filled copy, shifted
     style::transform shift_x100;
     shift_x100._tr = {100, 0};
     style::fill blue_fill(style::color({{0, 0, 255}, 0.5}));
-    auto blue_copy = draw::create_from_ref("blue_copy", original, blue_fill,
+    auto blue_copy = draw::from_template("blue_copy", original, blue_fill,
                                            style::stroke(), shift_x100);
 
     // A green filled copy, shifted and rotated
@@ -49,7 +49,7 @@ TEST(core, copy_triangle) {
     shift_x200_r45._tr = {200, 0};
     shift_x200_r45._rot[0] = -10.;
     style::fill green_fill(style::color({{0, 255, 0}, 0.5}));
-    auto green_copy = draw::create_from_ref("green_copy", original, green_fill,
+    auto green_copy = draw::from_template("green_copy", original, green_fill,
                                             style::stroke(), shift_x200_r45);
 
     svg::file of;
