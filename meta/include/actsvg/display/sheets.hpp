@@ -233,22 +233,25 @@ svg::object surface_sheet_xy(const std::string& id_,
                 "annulus shape.");
         }
 
-        /// auto-detect corners - @todo fix 
+        /// auto-detect corners - @todo fix
         size_t corners = s_._vertices.size();
         size_t ilc = 0u;
         size_t irc = static_cast<size_t>(0.5 * corners);
-        //size_t orc = static_cast<size_t>(0.5 * corners + 1u);
-        //size_t olc = static_cast<size_t>(corners - 1u);
-        
-        std::array<scalar, 2> ll = {s_x * s_._vertices[ilc][0], s_y * s_._vertices[ilc][1]};
-        std::array<scalar, 2> lr = {s_x * s_._vertices[irc][0], s_y * s_._vertices[irc][1]};
+        // size_t orc = static_cast<size_t>(0.5 * corners + 1u);
+        // size_t olc = static_cast<size_t>(corners - 1u);
 
-        auto lline = draw::line(id_+"+line_0", {0,0}, ll, __m_stroke_guide );
-        auto rline = draw::line(id_+"+line_1", {0,0}, lr, __m_stroke_guide );
+        std::array<scalar, 2> ll = {
+            static_cast<scalar>(s_x * s_._vertices[ilc][0]),
+            static_cast<scalar>(s_y * s_._vertices[ilc][1])};
+        std::array<scalar, 2> lr = {
+            static_cast<scalar>(s_x * s_._vertices[irc][0]),
+            static_cast<scalar>(s_y * s_._vertices[irc][1])};
+
+        auto lline = draw::line(id_ + "+line_0", {0, 0}, ll, __m_stroke_guide);
+        auto rline = draw::line(id_ + "+line_1", {0, 0}, lr, __m_stroke_guide);
 
         so.add_object(lline);
         so.add_object(rline);
-
     }
 
     return so;
