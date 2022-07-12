@@ -771,7 +771,7 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
         svg::object dot =
             circle(id_, at_, 0.5 * size, marker_._fill, marker_._stroke);
         marker_group.add_object(dot);
-    } else if (marker_._type.find("x")) {
+    } else if (marker_._type.find("x") != std::string::npos) {
         scalar a_x = at_[0];
         scalar a_y = at_[1];
         scalar h_s = 0.5 * size;
@@ -804,7 +804,8 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
- * @param marker_ are the marker parmeters
+ * @param start_marker_ are the marker parmeters at start
+ * @param end_marker_ are the marker parmeters at start
  * @param label_ is the label associated
  * @param font_ are the font parameters
  * @param side_x_ is the x offset of the label
@@ -815,7 +816,8 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
 static inline svg::object measure(
     const std::string &id_, const point2 &start_, const point2 &end_,
     const style::stroke &stroke_ = style::stroke(),
-    const style::marker &marker_ = style::marker({"|<"}),
+    const style::marker &start_marker_ = style::marker({"|<"}),
+    const style::marker &end_marker_ = style::marker({"|<"}),
     const std::string &label_ = "", const style::font &font_ = style::font(),
     int side_x_ = 1, int side_y_ = 1) {
     // Measure group here we go
@@ -834,16 +836,18 @@ static inline svg::object measure(
     }
 
     measure_group.add_object(marker(id_ + "_start_tag", {start_[0], start_[1]},
-                                    marker_,
+                                    start_marker_,
                                     M_PI + static_cast<scalar>(theta)));
     measure_group.add_object(marker(id_ + "_end_tag", {end_[0], end_[1]},
-                                    marker_, static_cast<scalar>(theta)));
+                                    end_marker_, static_cast<scalar>(theta)));
 
     if (not label_.empty()) {
-        scalar size = marker_._size;
+        scalar size = start_marker_._size > end_marker_._size
+                          ? start_marker_._size
+                          : end_marker_._size;
 
-        scalar x_off = side_x_ * 2 * std::abs(std::sin(theta)) * size;
-        scalar y_off = -side_y_ * 2 * std::abs(std::cos(theta)) * size;
+        scalar x_off = side_x_ * 3 * std::abs(std::sin(theta)) * size;
+        scalar y_off = -side_y_ * 3 * std::abs(std::cos(theta)) * size;
 
         scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
         scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;
@@ -861,7 +865,8 @@ static inline svg::object measure(
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line, defines the marker
  * @param stroke_ are the stroke parameters
- * @param marker_ are the marker parmeters
+ * @param start_marker_ are the marker parmeters
+ * @param end_marker_ are the marker parmeters
  * @param label_ is the label associated
  * @param font_ are the font parameters
  * @param side_x_ is the x offset of the label
@@ -872,7 +877,8 @@ static inline svg::object measure(
 static inline svg::object arc_measure(
     const std::string &id_, scalar r_, const point2 &start_, const point2 &end_,
     const style::stroke &stroke_ = style::stroke(),
-    const style::marker &marker_ = style::marker({"|<"}),
+    const style::marker &start_marker_ = style::marker(),
+    const style::marker &end_marker_ = style::marker({"|<"}),
     const std::string &label_ = "", const style::font &font_ = style::font(),
     int side_x_ = 1, int side_y_ = 1) {
 
@@ -885,16 +891,25 @@ static inline svg::object arc_measure(
         arc((id_ + "_arc"), r_, start_, end_, style::fill(), stroke_));
 
     // Arrow is at end point
-    scalar theta = atan2(end_[1], end_[0]) + 0.5 * M_PI;
 
-    measure_group.add_object(marker(id_ + "_end_tag", {end_[0], end_[1]},
-                                    marker_, static_cast<scalar>(theta)));
+    if (not start_marker_._type.empty() and
+        start_marker_._type != std::string("none")) {
+        scalar theta_start = atan2(start_[1], start_[0]);
+        measure_group.add_object(
+            marker(id_ + "_start_tag", {start_[0], start_[1]}, start_marker_,
+                   static_cast<scalar>(theta_start + 0.5 * M_PI)));
+    }
+
+    scalar theta_end = atan2(end_[1], end_[0]);
+    measure_group.add_object(
+        marker(id_ + "_end_tag", {end_[0], end_[1]}, end_marker_,
+               static_cast<scalar>(theta_end + 0.5 * M_PI)));
 
     if (not label_.empty()) {
-        scalar size = marker_._size;
+        scalar size = end_marker_._size;
 
-        scalar x_off = side_x_ * 2 * std::abs(std::sin(theta)) * size;
-        scalar y_off = -side_y_ * 2 * std::abs(std::cos(theta)) * size;
+        scalar x_off = side_x_ * 2 * std::abs(std::sin(theta_end)) * size;
+        scalar y_off = -side_y_ * 2 * std::abs(std::cos(theta_end)) * size;
 
         scalar xl = 0.5 * (start_[0] + end_[0]) + x_off;
         scalar yl = 0.5 * (start_[1] + end_[1]) - y_off;

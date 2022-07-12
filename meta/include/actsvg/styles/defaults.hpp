@@ -27,6 +27,7 @@ static style::stroke __s_stroke;
 // Measure
 static style::marker __m_marker;
 static style::stroke __m_stroke;
+static style::stroke __m_stroke_guide;
 static style::font __m_font;
 
 // Grid information
@@ -60,7 +61,10 @@ static bool create_defaults() {
 
     // Measurement
     __m_stroke = style::stroke();
+    __m_stroke_guide = style::stroke();
+    __m_stroke_guide._dasharray = {1,1};
     __m_marker = style::marker({"|<"});
+
 
     // Grid
     __g_fill._fc._rgb = {200, 200, 200};
