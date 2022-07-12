@@ -21,11 +21,12 @@ TEST(draw, measure) {
     auto pg = test::playground({-400, -400}, {400, 400});
 
     // Measure
-    auto m0 = draw::measure("m0", {100, 10}, {200, 10});
+    auto m0 = draw::measure("m0", {200, 10}, {300, 10});
 
     // Measure with text
-    auto m0_t = draw::measure("m0_t", {100, 100}, {400, 400}, style::stroke(),
-                              style::marker({"|<<"}), "300 mm");
+    auto m0_t =
+        draw::measure("m0_t", {100, 100}, {400, 400}, style::stroke(),
+                      style::marker({"|<<"}), style::marker({"|<<"}), "300 mm");
 
     scalar phi_min = -0.25;
     scalar phi_max = 0.75;
@@ -41,13 +42,28 @@ TEST(draw, measure) {
     arc_marker._stroke = style::stroke{style::color{{255, 0, 0}}};
     auto m_arc = draw::arc_measure("m_arc", r, start, end,
                                    style::stroke{style::color{{255, 0, 0}}, 2},
-                                   arc_marker);
+                                   style::marker(), arc_marker);
+
+    point2 start2 = {static_cast<scalar>(1.5 * r * std::cos(phi_min)),
+                     static_cast<scalar>(1.5 * r * std::sin(phi_min))};
+    point2 end2 = {static_cast<scalar>(1.5 * r * std::cos(phi_max)),
+                   static_cast<scalar>(1.5 * r * std::sin(phi_max))};
+
+    // Add the line
+    style::marker start_marker = style::marker{"|"};
+    start_marker._fill._fc = style::color{{255, 0, 0}};
+    start_marker._size = 10;
+    start_marker._stroke = style::stroke{style::color{{255, 0, 0}}};
+    auto m_arc2 = draw::arc_measure(
+        "m_arc", static_cast<scalar>(1.5 * r), start2, end2,
+        style::stroke{style::color{{255, 0, 0}}, 2}, start_marker, arc_marker);
 
     svg::file mfile;
     mfile.add_object(pg);
     mfile.add_object(m0);
     mfile.add_object(m0_t);
     mfile.add_object(m_arc);
+    mfile.add_object(m_arc2);
 
     std::ofstream tstream;
     tstream.open("test_core_measures.svg");

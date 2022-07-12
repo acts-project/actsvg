@@ -231,7 +231,7 @@ struct transform {
 /// Allowed types are:
 /// - none, <<, <, <|, |<, |<<, o
 struct marker {
-    std::string _type = "none";
+    std::string _type = "";
 
     scalar _size = 4.;
 

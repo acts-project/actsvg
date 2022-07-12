@@ -85,16 +85,22 @@ svg::object surface_sheet_xy(const std::string& id_,
 
     auto [x_axis, y_axis] = display::view_range(contours);
 
-    // Stitch when disc
-    if (s_._type == proto::surface<point3_container>::e_disc) {
+    // Stitch when disc - and make x and y axis similarly long
+    bool full = false;
+    if (s_._type == proto::surface<point3_container>::e_disc or
+        s_._type == proto::surface<point3_container>::e_annulus) {
         x_axis[0] = 0.;
         y_axis[0] = 0.;
+        if (s_._opening == std::array<scalar, 2>({-M_PI, M_PI})) {
+            y_axis[1] = x_axis[1];
+            full = true;
+        }
     }
 
     scalar s_x = sh_[0] / (x_axis[1] - x_axis[0]);
     scalar s_y = sh_[1] / (y_axis[1] - y_axis[0]);
 
-    // Harmonize the view window
+    // Harmonize the view window with equal scales
     if (kr_) {
         s_x = s_x < s_y ? s_x : s_y;
         s_y = s_y < s_x ? s_y : s_x;
@@ -125,21 +131,26 @@ svg::object surface_sheet_xy(const std::string& id_,
         scalar hlx_min = s_._measures[0] * s_x;
         scalar hlx_max = s_._measures[1] * s_x;
         scalar hly = s_._measures[2] * s_y;
-        scalar ms = 2 * __m_marker._size;
+        scalar ms = 2. * __m_marker._size;
+        // Measure names
+        std::string h_x_min = "h_x_min";
+        std::string h_x_max = "h_x_max";
+        std::string h_y = "h_y";
 
         scalar hly_x = hlx_max + 2 * __m_marker._size;
 
         auto measure_hlx_min = draw::measure(
-            "hlx_min", {0, -hly - ms}, {hlx_min, -hly - ms}, __m_stroke,
-            __m_marker, "h_x_min = " + std::to_string(s_._measures[0]),
-            __m_font, 1, -2);
+            id_ + "_hlx_min", {0, -hly - ms}, {hlx_min, -hly - ms}, __m_stroke,
+            __m_marker, __m_marker,
+            h_x_min + " = " + std::to_string(s_._measures[0]), __m_font, 1, -2);
         auto measure_hlx_max = draw::measure(
-            "hlx_max", {0, hly + ms}, {hlx_max, hly + ms}, __m_stroke,
-            __m_marker, "h_x_max = " + std::to_string(s_._measures[1]),
-            __m_font, 1, 1);
+            id_ + "_hlx_max", {0, hly + ms}, {hlx_max, hly + ms}, __m_stroke,
+            __m_marker, __m_marker,
+            h_x_max + " = " + std::to_string(s_._measures[1]), __m_font, 1, 1);
         auto measure_hly = draw::measure(
-            "hly", {hly_x, 0}, {hly_x, hly}, __m_stroke, __m_marker,
-            "h_y = " + std::to_string(s_._measures[2]), __m_font, 1, 1);
+            id_ + "_hly", {hly_x, 0}, {hly_x, hly}, __m_stroke, __m_marker,
+            __m_marker, h_y + " = " + std::to_string(s_._measures[2]), __m_font,
+            1, 1);
         so.add_object(measure_hlx_min);
         so.add_object(measure_hlx_max);
         so.add_object(measure_hly);
@@ -148,16 +159,96 @@ svg::object surface_sheet_xy(const std::string& id_,
 
         scalar hlx = s_._measures[0] * s_x;
         scalar hly = s_._measures[1] * s_y;
-        scalar ms = 2 * __m_marker._size;
+        scalar ms = 2. * __m_marker._size;
+        // Measure names
+        std::string h_x = "h_x";
+        std::string h_y = "h_y";
 
         auto measure_hlx = draw::measure(
-            "hlx", {0, hly + ms}, {hlx, hly + ms}, __m_stroke, __m_marker,
-            "h_x = " + std::to_string(s_._measures[0]), __m_font, 1, 1);
+            id_ + "_hlx", {0, hly + ms}, {hlx, hly + ms}, __m_stroke,
+            __m_marker, __m_marker,
+            h_x + " = " + std::to_string(s_._measures[0]), __m_font, 1, 1);
         auto measure_hly = draw::measure(
-            "hly", {hlx + ms, 0}, {hlx + ms, hly}, __m_stroke, __m_marker,
-            "h_y = " + std::to_string(s_._measures[1]), __m_font, 1, 1);
+            id_ + "_hly", {hlx + ms, 0}, {hlx + ms, hly}, __m_stroke,
+            __m_marker, __m_marker,
+            h_y + " = " + std::to_string(s_._measures[1]), __m_font, 1, 1);
         so.add_object(measure_hlx);
         so.add_object(measure_hly);
+    } else if (s_._type == proto::surface<point3_container>::e_disc and
+               not s_._measures.empty()) {
+
+        std::string dphi = "d(phi)";
+
+        // Where to set the labels and how to label them
+        std::vector<scalar> r_label;
+        scalar phi_span = 0.;
+        if (full) {
+            r_label = {M_PI * 0.25, -M_PI * 0.25};
+        } else {
+            phi_span = s_._opening[1] - s_._opening[0];
+            r_label = {static_cast<scalar>(s_._opening[0]),
+                       static_cast<scalar>(1.05 * s_._opening[1])};
+        }
+
+        scalar r_max = 0.;
+        for (auto [ir, r] : utils::enumerate(s_._measures)) {
+            // Radial labelling
+            if (ir < 2 and
+                std::abs(r) > std::numeric_limits<scalar>::epsilon()) {
+                // Record the maximum radius
+                r_max = r > r_max ? r : r_max;
+                std::string r_o = ir == 0 ? "r" : "R";
+                auto measure_r = draw::measure(
+                    id_ + "_r", {0., 0.},
+                    {static_cast<scalar>(s_x * r * std::cos(r_label[ir])),
+                     static_cast<scalar>(s_y * r * std::sin(r_label[ir]))},
+                    __m_stroke, style::marker(), __m_marker,
+                    r_o + " = " + std::to_string(r), __m_font, 4, 0);
+                so.add_object(measure_r);
+            }
+            // Phi labelling
+            if (ir == 2) {
+                /// place it outside
+                scalar lr = s_x * r_max + 2.05 * __m_marker._size;
+
+                std::array<scalar, 2> start = {
+                    static_cast<scalar>(lr * std::cos(s_._opening[0])),
+                    static_cast<scalar>(lr * std::sin(s_._opening[0]))};
+                std::array<scalar, 2> end = {
+                    static_cast<scalar>(lr * std::cos(s_._opening[1])),
+                    static_cast<scalar>(lr * std::sin(s_._opening[1]))};
+                auto maesure_arc = draw::arc_measure(
+                    id_ + "_arc", lr, start, end, __m_stroke,
+                    style::marker({"|"}), __m_marker,
+                    dphi + " = " + std::to_string(phi_span), __m_font, 8, 0);
+                so.add_object(maesure_arc);
+            }
+        }
+    } else if (s_._type == proto::surface<point3_container>::e_annulus and
+               not s_._measures.empty()) {
+
+        if (s_._measures.size() != 6u) {
+            throw std::invalid_argument(
+                "surface_sheet_xy(...) - incorrect length of <measures> for "
+                "annulus shape.");
+        }
+
+        /// auto-detect corners - @todo fix 
+        size_t corners = s_._vertices.size();
+        size_t ilc = 0u;
+        size_t irc = static_cast<size_t>(0.5 * corners);
+        //size_t orc = static_cast<size_t>(0.5 * corners + 1u);
+        //size_t olc = static_cast<size_t>(corners - 1u);
+        
+        std::array<scalar, 2> ll = {s_x * s_._vertices[ilc][0], s_y * s_._vertices[ilc][1]};
+        std::array<scalar, 2> lr = {s_x * s_._vertices[irc][0], s_y * s_._vertices[irc][1]};
+
+        auto lline = draw::line(id_+"+line_0", {0,0}, ll, __m_stroke_guide );
+        auto rline = draw::line(id_+"+line_1", {0,0}, lr, __m_stroke_guide );
+
+        so.add_object(lline);
+        so.add_object(rline);
+
     }
 
     return so;

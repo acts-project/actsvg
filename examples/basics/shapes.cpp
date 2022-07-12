@@ -108,11 +108,11 @@ int main(int argc, char* argv[]) {
 
     auto measure_hlx_min =
         draw::measure("hlx_min", {0, -210}, {50., -210}, stroke_black,
-                      measure_marker, "hx_min");
+                      measure_marker, measure_marker, "hx_min");
 
     auto measure_hlx_max =
         draw::measure("hlx_max", {0, 210}, {100., 210}, stroke_black,
-                      measure_marker, "hx_max");
+                      measure_marker, measure_marker, "hx_max");
 
     trapezoid_file.add_object(measure_hlx_min);
     trapezoid_file.add_object(measure_hlx_max);
