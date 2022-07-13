@@ -29,7 +29,7 @@ namespace proto {
 template <typename point3_container>
 struct surface {
 
-    enum type { e_annulus, e_cylinder, e_disc, e_rectangle, e_trapez };
+    enum type { e_annulus, e_cylinder, e_disc, e_polygon, e_rectangle, e_trapez };
 
     enum boolean { e_clipping, e_union, e_subtraction, e_none };
 
