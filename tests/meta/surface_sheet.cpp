@@ -176,7 +176,7 @@ TEST(discplay, sheet_annulus) {
         {3.95183, 11.7812, 0.}, {4.90633, 11.0272, 0.}, {5.77959, 10.1804, 0.},
         {6.56264, 9.24955, 0.}, {7.24743, 8.24421, 0.}, {7.82692, 7.17472, 0.}};
 
-    annulus._measures = {7.2, 12.0, 0.74195, 1.33970, -3., 2.};
+    annulus._measures = {7.2, 12.0, 0.74195, 1.33970, 0., -3., 2.};
 
     svg::object surface_sheet =
         display::surface_sheet_xy("sheet_annulus", annulus);

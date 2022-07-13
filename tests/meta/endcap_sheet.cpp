@@ -131,12 +131,14 @@ TEST(display, endcap_sheet_module_info_ref) {
     inner_template_surface._type = proto::surface<point3_container>::e_disc;
     inner_template_surface._radii = {100, 200};
     inner_template_surface._opening = {-half_opening, half_opening};
+    inner_template_surface._measures = {100, 200, half_opening, 0.};
 
     proto::surface<point3_container> outer_template_surface;
     outer_template_surface._name = "outer_surface_";
     outer_template_surface._type = proto::surface<point3_container>::e_disc;
     outer_template_surface._radii = {190, 320};
     outer_template_surface._opening = {-half_opening, half_opening};
+    outer_template_surface._measures = {190, 320, half_opening, 0.};
 
     // Template surfaces
     std::vector<proto::surface<point3_container>> template_surfaces;

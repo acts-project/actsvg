@@ -331,31 +331,168 @@ svg::object surface_sheet_xy(const std::string& id_,
     } else if (s_._type == proto::surface<point3_container>::e_annulus and
                not s_._measures.empty()) {
 
-        if (s_._measures.size() != 6u) {
+        if (s_._measures.size() != 7u) {
             throw std::invalid_argument(
                 "surface_sheet_xy(...) - incorrect length of <measures> for "
                 "annulus shape.");
         }
 
-        /// auto-detect corners - @todo fix
-        size_t corners = s_._vertices.size();
-        size_t ilc = 0u;
-        size_t irc = static_cast<size_t>(0.5 * corners);
-        // size_t orc = static_cast<size_t>(0.5 * corners + 1u);
-        // size_t olc = static_cast<size_t>(corners - 1u);
+        // Special annulus bounds code
+        scalar min_r = s_x * s_._measures[0];
+        scalar max_r = s_x * s_._measures[1];
+        scalar min_phi_rel = s_._measures[2];
+        scalar max_phi_rel = s_._measures[3];
+        // scalar average_phi = s_._measures[4];
+        scalar origin_x = s_x * s_._measures[5];
+        scalar origin_y = s_x * s_._measures[6];
 
-        std::array<scalar, 2> ll = {
-            static_cast<scalar>(s_x * s_._vertices[ilc][0]),
-            static_cast<scalar>(s_y * s_._vertices[ilc][1])};
-        std::array<scalar, 2> lr = {
-            static_cast<scalar>(s_x * s_._vertices[irc][0]),
-            static_cast<scalar>(s_y * s_._vertices[irc][1])};
+        point2 cart_origin = {origin_x, origin_y};
 
-        auto lline = draw::line(id_ + "+line_0", {0, 0}, ll, __m_stroke_guide);
-        auto rline = draw::line(id_ + "+line_1", {0, 0}, lr, __m_stroke_guide);
+        /// Find inner outer radius at edges in STRIP PC
+        ///
+        /// @note have a look at Acts/Surfaces/AnnulusBounds.hpp
+        /// for more information
+        ///
+        auto circIx = [](scalar O_x, scalar O_y, scalar r,
+                         scalar phi) -> point2 {
+            //                      _____________________________________________
+            //                     /      2  2                    2    2  2    2
+            //     O_x + O_y*m - \/  - O_x *m  + 2*O_x*O_y*m - O_y  + m *r  + r
+            // x =
+            // --------------------------------------------------------------
+            //                                  2
+            //                                 m  + 1
+            //
+            // y = m*x
+            //
+            scalar m = std::tan(phi);
+            point2 dir = {std::cos(phi), std::sin(phi)};
+            scalar x1 =
+                (O_x + O_y * m -
+                 std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) +
+                           2 * O_x * O_y * m - std::pow(O_y, 2) +
+                           std::pow(m, 2) * std::pow(r, 2) + std::pow(r, 2))) /
+                (std::pow(m, 2) + 1);
+            scalar x2 =
+                (O_x + O_y * m +
+                 std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) +
+                           2 * O_x * O_y * m - std::pow(O_y, 2) +
+                           std::pow(m, 2) * std::pow(r, 2) + std::pow(r, 2))) /
+                (std::pow(m, 2) + 1);
 
-        so.add_object(lline);
-        so.add_object(rline);
+            point2 v1 = {x1, m * x1};
+            if (v1[0] * dir[0] + v1[1] * dir[1] > 0) {
+                return v1;
+            }
+            return {x2, m * x2};
+        };
+
+        auto out_left_s_xy = circIx(origin_x, origin_y, max_r, max_phi_rel);
+        auto in_left_s_xy = circIx(origin_x, origin_y, min_r, max_phi_rel);
+        auto out_right_s_xy = circIx(origin_x, origin_y, max_r, min_phi_rel);
+        auto in_right_s_xy = circIx(origin_x, origin_y, min_r, min_phi_rel);
+
+        std::vector<point2> corners = {in_right_s_xy, in_left_s_xy,
+                                       out_right_s_xy, out_left_s_xy};
+
+        so.add_object(draw::line(id_ + "_phi_line_l", {0, 0}, in_left_s_xy,
+                                 __m_stroke_guide));
+        so.add_object(draw::line(id_ + "_phi_line_r", {0, 0}, in_right_s_xy,
+                                 __m_stroke_guide));
+
+        std::vector<std::string> phi_labels = {"phi_min_rel", "phi_max_rel"};
+        // Measure the phi values
+        for (unsigned int ic = 0; ic < 2; ++ic) {
+
+            const auto& corner = corners[ic];
+            scalar in_phi = atan2(corner[1], corner[0]);
+
+            scalar in_r = (0.2 + ic * 0.2) * utils::perp(corners[ic]);
+            std::array<scalar, 2> in_start = {in_r, 0.};
+            std::array<scalar, 2> in_end = {
+                static_cast<scalar>(in_r * std::cos(in_phi)),
+                static_cast<scalar>(in_r * std::sin(in_phi))};
+
+            std::array<scalar, 2> in_mend = {
+                static_cast<scalar>(__m_font._size +
+                                    in_r * std::cos(0.5 * in_phi)),
+                static_cast<scalar>(__m_font._size +
+                                    in_r * std::sin(0.5 * in_phi))};
+
+            auto in_phi_arc = draw::arc_measure(
+                id_ + "_in_phi_" + std::to_string(ic), in_r, in_start, in_end,
+                __m_stroke, style::marker(), __m_marker, __m_font,
+                phi_labels[ic] + " = " + utils::to_string(in_phi), in_mend);
+            so.add_object(in_phi_arc);
+        }
+
+        style::marker cart_origin_marker = style::marker({"o"});
+        cart_origin_marker._fill = style::fill(style::color{{255, 0, 0}});
+
+        style::font cart_font = __m_font;
+        cart_font._fc = style::color{{255, 0, 0}};
+
+        style::stroke cart_stroke = __m_stroke;
+        cart_stroke._sc = style::color{{255, 0, 0}};
+
+        style::marker cart_marker = __m_marker;
+        cart_marker._fill = style::fill(style::color{{255, 0, 0}});
+        cart_marker._stroke = cart_stroke;
+
+        // The origin of the cartesian system
+        so.add_object(draw::marker(id_ + "_origin_cart", {origin_x, origin_y},
+                                   cart_origin_marker));
+
+        so.add_object(draw::text(
+            id_ + "_origin_label",
+            {origin_x - 2 * cart_font._size, origin_y - 2 * cart_font._size},
+            {"cart_origin = " + utils::to_string(std::array<scalar, 2>{
+                                    s_._measures[5], s_._measures[6]})},
+            cart_font));
+
+        style::stroke cart_guide = __m_stroke_guide;
+        cart_guide._sc = style::color{{255, 0, 0}};
+
+        std::vector<std::string> rs = {"r", "R"};
+        // Draw the circles
+        for (unsigned int idc = 0; idc < 2; ++idc) {
+
+            const auto& c0 = corners[2 * idc];
+            const auto& c1 = corners[2 * idc + 1];
+
+            point2 cart_c0 = point2{c0[0] - origin_x, c0[1] - origin_y};
+            point2 cart_c1 = point2{c1[0] - origin_x, c1[1] - origin_y};
+            scalar cart_r = utils::perp(cart_c0);
+
+            scalar cart_phi0 = atan2(cart_c0[1], cart_c0[0]) - 0.2;
+            scalar cart_phi1 = atan2(cart_c1[1], cart_c1[0]) + 0.25;
+            scalar cart_phir = cart_phi1 - (2 * idc + 1) * 0.05;
+
+            point2 start_arc = {
+                static_cast<scalar>(origin_x + cart_r * std::cos(cart_phi0)),
+                static_cast<scalar>(origin_y + cart_r * std::sin(cart_phi0))};
+            point2 end_arc = {
+                static_cast<scalar>(origin_x + cart_r * std::cos(cart_phi1)),
+                static_cast<scalar>(origin_y + cart_r * std::sin(cart_phi1))};
+
+            point2 end_r = {
+                static_cast<scalar>(origin_x + cart_r * std::cos(cart_phir)),
+                static_cast<scalar>(origin_y + cart_r * std::sin(cart_phir))};
+
+            auto helper_r =
+                draw::arc(id_ + "_arc_helper_" + std::to_string(idc), cart_r,
+                          start_arc, end_arc, style::fill(), cart_guide);
+            so.add_object(helper_r);
+
+            auto measure_r = draw::measure(
+                id_ + "_measure_r_" + std::to_string(idc), cart_origin, end_r,
+                cart_stroke, style::marker(), cart_marker, cart_font,
+                rs[idc] + " = " +
+                    utils::to_string(static_cast<scalar>(cart_r / s_x)),
+                {static_cast<scalar>(__m_font._size + end_r[0]),
+                 static_cast<scalar>(__m_font._size + end_r[1])});
+            so.add_object(measure_r);
+        }
     }
 
     return so;

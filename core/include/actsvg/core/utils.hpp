@@ -50,6 +50,17 @@ constexpr auto enumerate(container_type &&iterable) {
     return iterable_wrapper{std::forward<container_type>(iterable)};
 }
 
+/** Helper for perp
+ *
+ * @param p_ the point
+ *
+ * @return a scalar of the norm
+ **/
+template <typename point2_type>
+scalar perp(const point2_type &p_) {
+    return std::sqrt(p_[0] * p_[0] + p_[1] * p_[1]);
+}
+
 /** Helper from id to url
  * @param id_ the idnetification to be transformed
  **/
