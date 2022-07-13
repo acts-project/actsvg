@@ -141,16 +141,22 @@ svg::object surface_sheet_xy(const std::string& id_,
 
         auto measure_hlx_min = draw::measure(
             id_ + "_hlx_min", {0, -hly - ms}, {hlx_min, -hly - ms}, __m_stroke,
-            __m_marker, __m_marker,
-            h_x_min + " = " + std::to_string(s_._measures[0]), __m_font, 1, -2);
+            __m_marker, __m_marker, __m_font,
+            h_x_min + " = " + utils::to_string(s_._measures[0]),
+            {static_cast<scalar>(0.5 * hlx_min),
+             static_cast<scalar>((-hly - ms - 2.2 * __m_font._size))});
         auto measure_hlx_max = draw::measure(
             id_ + "_hlx_max", {0, hly + ms}, {hlx_max, hly + ms}, __m_stroke,
-            __m_marker, __m_marker,
-            h_x_max + " = " + std::to_string(s_._measures[1]), __m_font, 1, 1);
-        auto measure_hly = draw::measure(
-            id_ + "_hly", {hly_x, 0}, {hly_x, hly}, __m_stroke, __m_marker,
-            __m_marker, h_y + " = " + std::to_string(s_._measures[2]), __m_font,
-            1, 1);
+            __m_marker, __m_marker, __m_font,
+            h_x_max + " = " + utils::to_string(s_._measures[1]),
+            {static_cast<scalar>(0.5 * hlx_max),
+             static_cast<scalar>(1.2 * __m_font._size + (hly + ms))});
+        auto measure_hly =
+            draw::measure(id_ + "_hly", {hly_x, 0}, {hly_x, hly}, __m_stroke,
+                          __m_marker, __m_marker, __m_font,
+                          h_y + " = " + utils::to_string(s_._measures[2]),
+                          {static_cast<scalar>(__m_font._size + hly_x),
+                           static_cast<scalar>(0.5 * hly)});
         so.add_object(measure_hlx_min);
         so.add_object(measure_hlx_max);
         so.add_object(measure_hly);
@@ -166,62 +172,160 @@ svg::object surface_sheet_xy(const std::string& id_,
 
         auto measure_hlx = draw::measure(
             id_ + "_hlx", {0, hly + ms}, {hlx, hly + ms}, __m_stroke,
-            __m_marker, __m_marker,
-            h_x + " = " + std::to_string(s_._measures[0]), __m_font, 1, 1);
-        auto measure_hly = draw::measure(
-            id_ + "_hly", {hlx + ms, 0}, {hlx + ms, hly}, __m_stroke,
-            __m_marker, __m_marker,
-            h_y + " = " + std::to_string(s_._measures[1]), __m_font, 1, 1);
+            __m_marker, __m_marker, __m_font,
+            h_x + " = " + utils::to_string(s_._measures[0]),
+            {static_cast<scalar>(0.5 * hlx),
+             static_cast<scalar>((hly + ms + 1.2 * __m_font._size))});
+        auto measure_hly =
+            draw::measure(id_ + "_hly", {hlx + ms, 0}, {hlx + ms, hly},
+                          __m_stroke, __m_marker, __m_marker, __m_font,
+                          h_y + " = " + utils::to_string(s_._measures[1]),
+                          {static_cast<scalar>(hlx + 1.2 * __m_font._size),
+                           static_cast<scalar>(0.5 * hly)});
         so.add_object(measure_hlx);
         so.add_object(measure_hly);
+    } else if (s_._type == proto::surface<point3_container>::e_polygon and
+               s_._measures.size() == 2 * s_._vertices.size()) {
+
+        point2 gcenter = {0., 0.};
+
+        for (unsigned int iv = 0; iv < s_._vertices.size(); ++iv) {
+            auto v = draw::marker(
+                id_ + "_vertex_" + std::to_string(iv),
+                {static_cast<scalar>(s_x * s_._measures[2 * iv]),
+                 static_cast<scalar>(s_y * s_._measures[2 * iv + 1u])},
+                style::marker({"o"}));
+
+            gcenter[0] += s_x * s_._measures[2 * iv];
+            gcenter[1] += s_y * s_._measures[2 * iv + 1u];
+
+            so.add_object(v);
+        }
+
+        gcenter[0] /= s_._vertices.size();
+        gcenter[1] /= s_._vertices.size();
+
+        for (unsigned int iv = 0; iv < s_._vertices.size(); ++iv) {
+            scalar x = s_x * s_._measures[2 * iv];
+            scalar y = s_x * s_._measures[2 * iv + 1];
+
+            scalar dx = x - gcenter[0];
+            scalar dy = y - gcenter[1];
+
+            scalar dnorm = std::sqrt(dx * dx + dy * dy);
+            dx /= dnorm;
+            dy /= dnorm;
+
+            std::string label_v = "v" + std::to_string(iv) + " = ";
+            label_v += utils::to_string(std::array<scalar, 2>{
+                s_._measures[2 * iv], s_._measures[2 * iv + 1]});
+
+            scalar offx = dx > 0 ? 2. * __m_font._size * dx
+                                 : 0.5 * label_v.size() * __m_font._size * dx;
+            scalar offy = 2 * __m_font._size * dy;
+
+            so.add_object(draw::text(id_ + "_label_v" + std::to_string(iv),
+                                     {x + offx, y + offy}, {label_v}));
+        }
+
     } else if (s_._type == proto::surface<point3_container>::e_disc and
                not s_._measures.empty()) {
 
-        std::string dphi = "d(phi)";
+        std::string dphi = "h_phi";
+        std::string aphi = "avg_phi";
 
         // Where to set the labels and how to label them
         std::vector<scalar> r_label;
-        scalar phi_span = 0.;
+        scalar phi_span = 2 * M_PI;
+
         if (full) {
             r_label = {M_PI * 0.25, -M_PI * 0.25};
         } else {
             phi_span = s_._opening[1] - s_._opening[0];
-            r_label = {static_cast<scalar>(s_._opening[0]),
-                       static_cast<scalar>(1.05 * s_._opening[1])};
+            r_label = {static_cast<scalar>(s_._opening[0] - 0.1),
+                       static_cast<scalar>(s_._opening[1] + 0.1)};
         }
-
+        // Start/end parameters of the labels
         scalar r_max = 0.;
         for (auto [ir, r] : utils::enumerate(s_._measures)) {
+
+            std::array<scalar, 2> xs = {
+                static_cast<scalar>(s_x * r * std::cos(r_label[0])),
+                static_cast<scalar>(s_x * r * std::cos(r_label[1]))};
+            std::array<scalar, 2> ys = {
+                static_cast<scalar>(s_y * r * std::sin(r_label[0])),
+                static_cast<scalar>(s_y * r * std::sin(r_label[1]))};
+
             // Radial labelling
             if (ir < 2 and
                 std::abs(r) > std::numeric_limits<scalar>::epsilon()) {
+                // Create a measurement helper
+                if (not full) {
+                    auto helper_r = draw::arc(id_ + "_arc_helper", s_x * r,
+                                              {xs[0], ys[0]}, {xs[1], ys[1]},
+                                              style::fill(), __m_stroke_guide);
+                    so.add_object(helper_r);
+                }
+
                 // Record the maximum radius
                 r_max = r > r_max ? r : r_max;
                 std::string r_o = ir == 0 ? "r" : "R";
                 auto measure_r = draw::measure(
-                    id_ + "_r", {0., 0.},
-                    {static_cast<scalar>(s_x * r * std::cos(r_label[ir])),
-                     static_cast<scalar>(s_y * r * std::sin(r_label[ir]))},
-                    __m_stroke, style::marker(), __m_marker,
-                    r_o + " = " + std::to_string(r), __m_font, 4, 0);
+                    id_ + "_r", {0., 0.}, {xs[ir], ys[ir]}, __m_stroke,
+                    style::marker(), __m_marker, __m_font,
+                    r_o + " = " + utils::to_string(r),
+                    {static_cast<scalar>(__m_font._size + xs[ir]),
+                     static_cast<scalar>(__m_font._size + ys[ir])});
                 so.add_object(measure_r);
             }
             // Phi labelling
-            if (ir == 2) {
-                /// place it outside
-                scalar lr = s_x * r_max + 2.05 * __m_marker._size;
+            if (ir == 2 and not full) {
 
-                std::array<scalar, 2> start = {
+                // Place it outside
+                scalar lr = s_x * r_max + 2. * __m_marker._size;
+
+                point2 start = {
                     static_cast<scalar>(lr * std::cos(s_._opening[0])),
                     static_cast<scalar>(lr * std::sin(s_._opening[0]))};
-                std::array<scalar, 2> end = {
-                    static_cast<scalar>(lr * std::cos(s_._opening[1])),
-                    static_cast<scalar>(lr * std::sin(s_._opening[1]))};
+
+                // Medium phi arc and line
+                scalar mphi = 0.5 * (s_._opening[0] + s_._opening[1]);
+                point2 end = {static_cast<scalar>(lr * std::cos(mphi)),
+                              static_cast<scalar>(lr * std::sin(mphi))};
+
+                scalar mmphi = 0.5 * (s_._opening[0] + mphi);
+                point2 mend = {
+                    static_cast<scalar>(__m_font._size + lr * std::cos(mmphi)),
+                    static_cast<scalar>(__m_font._size + lr * std::sin(mmphi))};
+
                 auto maesure_arc = draw::arc_measure(
-                    id_ + "_arc", lr, start, end, __m_stroke,
-                    style::marker({"|"}), __m_marker,
-                    dphi + " = " + std::to_string(phi_span), __m_font, 8, 0);
+                    id_ + "_arc", lr, start, end, __m_stroke, __m_marker,
+                    __m_marker, __m_font,
+                    dphi + " = " + utils::to_string(phi_span), mend);
                 so.add_object(maesure_arc);
+
+                auto medium_phi_line = draw::line(id_ + "medium_phi", {0., 0.},
+                                                  end, __m_stroke_guide);
+                so.add_object(medium_phi_line);
+
+                // Measure to the medium phi
+                scalar r_avg_phi = 0.2 * s_x * r_max;
+                std::array<scalar, 2> r_avg_start = {r_avg_phi, 0.};
+                std::array<scalar, 2> r_avg_end = {
+                    static_cast<scalar>(r_avg_phi * std::cos(mphi)),
+                    static_cast<scalar>(r_avg_phi * std::sin(mphi))};
+
+                std::array<scalar, 2> r_avg_mend = {
+                    static_cast<scalar>(__m_font._size +
+                                        r_avg_phi * std::cos(0.5 * mphi)),
+                    static_cast<scalar>(__m_font._size +
+                                        r_avg_phi * std::sin(0.5 * mphi))};
+
+                auto measure_avg_phi = draw::arc_measure(
+                    id_ + "_avg_phi", r_avg_phi, r_avg_start, r_avg_end,
+                    __m_stroke, style::marker(), __m_marker, __m_font,
+                    aphi + " = " + utils::to_string(mphi), r_avg_mend);
+                so.add_object(measure_avg_phi);
             }
         }
     } else if (s_._type == proto::surface<point3_container>::e_annulus and

@@ -9,6 +9,8 @@
 #pragma once
 
 #include <cmath>
+#include <iostream>
+#include <strstream>
 
 namespace actsvg {
 
@@ -53,6 +55,33 @@ constexpr auto enumerate(container_type &&iterable) {
  **/
 static inline std::string id_to_url(const std::string &id_) {
     return std::string("url(#") + id_ + ")";
+}
+
+/** Helper to format point2
+ *
+ * @param s_ the scalar
+ * @param pr_ the precision
+ *
+ * @return a string
+ */
+static inline std::string to_string(const scalar &s_, size_t pr_ = 4) {
+    std::stringstream sstream;
+    sstream << std::setw(pr_) << s_;
+    return sstream.str();
+}
+
+/** Helper to format point2
+ *
+ * @param p_ the point
+ * @param pr_ the precision
+ *
+ * @return a string
+ */
+template <typename point2_type>
+std::string to_string(const point2_type &p_, size_t pr_ = 4) {
+    std::stringstream sstream;
+    sstream << std::setw(pr_) << "(" << p_[0] << "," << p_[1] << ")";
+    return sstream.str();
 }
 
 /** Helper method to rotate a 2-d point

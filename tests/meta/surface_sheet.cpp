@@ -61,6 +61,33 @@ TEST(display, sheet_trapezoid) {
     sout.close();
 }
 
+TEST(discplay, sheet_polygon) {
+
+    proto::surface<point3_container> polygon;
+    polygon._type = proto::surface<point3_container>::e_polygon;
+    polygon._vertices = {{-40., -40., 0.},
+                         {60., -40., 0.},
+                         {100., 80., 0.},
+                         {0., 150, 0.},
+                         {-100., 70., 0.}};
+
+    for (const auto& v : polygon._vertices) {
+        polygon._measures.push_back(v[0]);
+        polygon._measures.push_back(v[1]);
+    }
+
+    svg::object surface_sheet =
+        display::surface_sheet_xy("sheet_polygon", polygon);
+    svg::file surface_file;
+    surface_file.add_object(surface_sheet);
+
+    // Write out the file
+    std::ofstream sout;
+    sout.open("sheet_polygon.svg");
+    sout << surface_file;
+    sout.close();
+}
+
 TEST(display, sheet_full_disc) {
 
     proto::surface<point3_container> full_disc;

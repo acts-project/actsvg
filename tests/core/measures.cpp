@@ -26,7 +26,7 @@ TEST(draw, measure) {
     // Measure with text
     auto m0_t =
         draw::measure("m0_t", {100, 100}, {400, 400}, style::stroke(),
-                      style::marker({"|<<"}), style::marker({"|<<"}), "300 mm");
+                      style::marker({"|<<"}), style::marker({"|<<"}), style::font(), "300 mm", {270., 270.});
 
     scalar phi_min = -0.25;
     scalar phi_max = 0.75;
