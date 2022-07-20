@@ -62,19 +62,19 @@ struct object {
     /// Contains definintions
     std::vector<object> _definitions = {};
 
-    /// Barycenter - Detector frame
-    std::array<scalar, 2> _real_barycenter = {0., 0.};
+    /// Barycenter from vertices
+    std::array<scalar, 2> _barycenter = {0.,0.};
 
-    /// Range in x - Detector frame
+    /// Range in x - view frame
     std::array<scalar, 2> _x_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
-    /// Range in y - Detector frame
+    /// Range in y - view frame
     std::array<scalar, 2> _y_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
-    /// Range in r  - Detector frame
+    /// Range in r  - view frame
     std::array<scalar, 2> _r_range = {std::numeric_limits<scalar>::max(),
                                       std::numeric_limits<scalar>::min()};
-    /// Range in phi - Detector frame
+    /// Range in phi - view frame
     std::array<scalar, 2> _phi_range = {std::numeric_limits<scalar>::max(),
                                         std::numeric_limits<scalar>::min()};
 
@@ -183,7 +183,7 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
         } else {
             for (const auto &fl : o_copy._field) {
                 os_ << "<tspan x=\"";
-                os_ << o_copy._real_barycenter[0] << "\"";
+                os_ << o_copy._x_range[0] << "\"";
                 os_ << " dy=\"" << o_copy._field_span << "\">";
                 os_ << fl;
                 os_ << "</tspan>" << __nl;

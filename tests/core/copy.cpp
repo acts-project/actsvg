@@ -42,22 +42,29 @@ TEST(core, copy_triangle) {
     shift_x100._tr = {100, 0};
     style::fill blue_fill(style::color({{0, 0, 255}, 0.5}));
     auto blue_copy = draw::from_template("blue_copy", original, blue_fill,
-                                           style::stroke(), shift_x100);
+                                         style::stroke(), shift_x100);
 
     // A green filled copy, shifted and rotated
     style::transform shift_x200_r45;
     shift_x200_r45._tr = {200, 0};
-    shift_x200_r45._rot[0] = -10.;
+    shift_x200_r45._rot[0] = -45.;
     style::fill green_fill(style::color({{0, 255, 0}, 0.5}));
     auto green_copy = draw::from_template("green_copy", original, green_fill,
-                                            style::stroke(), shift_x200_r45);
+                                          style::stroke(), shift_x200_r45);
+
+    // Label
+    auto descr = draw::text(
+        "descr", {-350, 300},
+        {"[-] original (sterile) triganle: not shown", "[x] red copy at (0,0)",
+         "[x] blue copy shifted by (100, 0)",
+         "[x] green copy shifted by (200,0), rotated for 45 degrees"});
 
     svg::file of;
     of.add_object(pg);
     of.add_object(red_copy);
     of.add_object(blue_copy);
     of.add_object(green_copy);
-
+    of.add_object(descr);
     fo << of;
     fo.close();
 }

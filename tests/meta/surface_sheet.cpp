@@ -134,7 +134,7 @@ TEST(display, sheet_wedge) {
     wedge._opening = {-0.1, 0.7};
     wedge._measures = {0., 30., 0.8};
 
-    svg::object surface_sheet = display::surface_sheet_xy("sheet_wedge", wedge);
+    svg::object surface_sheet = display::surface_sheet_xy("sheet_wedge", wedge, {600,600}, false);
     svg::file surface_file;
     surface_file.add_object(surface_sheet);
 
@@ -154,7 +154,7 @@ TEST(display, sheet_sector) {
     sector._measures = {10., 30., 0.7};
 
     svg::object surface_sheet =
-        display::surface_sheet_xy("sheet_sector", sector);
+        display::surface_sheet_xy("sheet_sector", sector, {600,600}, false);
     svg::file surface_file;
     surface_file.add_object(surface_sheet);
 
@@ -178,6 +178,7 @@ TEST(discplay, sheet_annulus) {
 
     annulus._measures = {7.2, 12.0, 0.74195, 1.33970, 0., -3., 2.};
 
+    // Focus on the sheet 
     svg::object surface_sheet =
         display::surface_sheet_xy("sheet_annulus", annulus);
     svg::file surface_file;
@@ -188,4 +189,6 @@ TEST(discplay, sheet_annulus) {
     sout.open("sheet_annulus.svg");
     sout << surface_file;
     sout.close();
+
+
 }

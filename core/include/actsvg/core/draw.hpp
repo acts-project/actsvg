@@ -66,7 +66,11 @@ namespace draw {
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
+ *
  * @param transform_ is an optional transform of the object
+ *
+ * @note transform is directly applied and not attached as property
+ * for raw drawing objects
  *
  * @return an svg object for the line
  */
@@ -79,6 +83,7 @@ static inline svg::object line(
     l._id = id_;
 
     // Apply the transform & scale
+    // - the line needs the scale direcly applied
     scalar tx = transform_._tr[0];
     scalar ty = transform_._tr[1];
     scalar sx = transform_._scale[0];
@@ -89,11 +94,14 @@ static inline svg::object line(
     scalar en_x = sy * (end_[0] + ty);
     scalar en_y = sy * (-end_[1] - ty);
 
+    l._barycenter =
+        utils::barycenter<std::array<scalar, 2>>({{st_x, st_y}, {en_x, en_y}});
+
     // Draw the line, remember the sign flip
-    l._attribute_map["x1"] = std::to_string(st_x);
-    l._attribute_map["y1"] = std::to_string(st_y);
-    l._attribute_map["x2"] = std::to_string(en_x);
-    l._attribute_map["y2"] = std::to_string(en_y);
+    l._attribute_map["x1"] = utils::to_string(st_x);
+    l._attribute_map["y1"] = utils::to_string(st_y);
+    l._attribute_map["x2"] = utils::to_string(en_x);
+    l._attribute_map["y2"] = utils::to_string(en_y);
 
     // Adapt the range of this object
     detail::adapt_range(l, {{st_x, st_y}, {en_x, en_y}});
@@ -111,6 +119,10 @@ static inline svg::object line(
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
  *
+ *
+ * @note transform is directly applied and not attached as property
+ * for raw drawing objects
+ *
  * @return an svg object for the line
  */
 static inline svg::object arc(
@@ -123,6 +135,7 @@ static inline svg::object arc(
     a._id = id_;
 
     // Apply the transform & scale
+    // - the arc needs the scale directly attached
     scalar tx = transform_._tr[0];
     scalar ty = transform_._tr[1];
     scalar sx = transform_._scale[0];
@@ -134,15 +147,19 @@ static inline svg::object arc(
     scalar y_max = -sy * (end_[1] + ty);
 
     std::string arc_string =
-        "M " + std::to_string(x_min) + " " + std::to_string(y_min);
+        "M " + utils::to_string(x_min) + " " + utils::to_string(y_min);
     arc_string +=
-        " A " + std::to_string(sx * r_) + " " + std::to_string(sy * r_);
+        " A " + utils::to_string(sx * r_) + " " + utils::to_string(sy * r_);
     arc_string += " 0 0 0 ";
-    arc_string += std::to_string(x_max) + " " + std::to_string(y_max);
+    arc_string += utils::to_string(x_max) + " " + utils::to_string(y_max);
     a._attribute_map["d"] = arc_string;
 
     // Adapt the range of this object
     detail::adapt_range(a, {{x_min, y_min}, {x_max, y_max}});
+
+    /// @todo add sagitta
+    a._barycenter = utils::barycenter<std::array<scalar, 2>>(
+        {{x_min, y_min}, {x_max, y_max}});
 
     // Remember the stroke attributes and add them
     a._stroke = stroke_;
@@ -160,6 +177,9 @@ static inline svg::object arc(
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
  *
+ * @note transform is directly applied and not attached as property
+ * for raw drawing objects
+ *
  * @return an svg object for the circle
  */
 static inline svg::object circle(
@@ -173,25 +193,27 @@ static inline svg::object circle(
     e._id = id_;
 
     // Apply the transform & scale
+
     scalar sx = transform_._scale[0];
     scalar sy = transform_._scale[1];
     scalar cx = sx * (p_[0] + transform_._tr[0]);
     scalar cy = sy * (-p_[1] - transform_._tr[1]);
 
     // Fill the points attributes
-    e._attribute_map["cx"] = std::to_string(cx);
-    e._attribute_map["cy"] = std::to_string(cy);
-    e._attribute_map["rx"] = std::to_string(r_ * sx);
-    e._attribute_map["ry"] = std::to_string(r_ * sy);
+    e._attribute_map["cx"] = utils::to_string(cx);
+    e._attribute_map["cy"] = utils::to_string(cy);
+    e._attribute_map["rx"] = utils::to_string(r_ * sx);
+    e._attribute_map["ry"] = utils::to_string(r_ * sy);
 
     // Adapt the range of this object
     detail::adapt_range(
         e, {{cx - sx * r_, cy - sy * r_}, {cx + sx * r_, cy + sy * r_}});
 
+    e._barycenter = {cx, cy};
+
     // Attach fill, stroke & transform attributes and apply
     e._fill = fill_;
     e._stroke = stroke_;
-    e._transform = transform_;
 
     // The svg object is now set up
     return e;
@@ -205,6 +227,9 @@ static inline svg::object circle(
  * @param fill_ is the fill style
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
+ *
+ * @note transform is directly applied and not attached as property
+ * for raw drawing objects
  *
  * @return an svg object for the ellipse
  */
@@ -226,19 +251,21 @@ static inline svg::object ellipse(
     scalar cy = sy * (-p_[1] - transform_._tr[1]);
 
     // Fill the points attributes
-    e._attribute_map["cx"] = std::to_string(cx);
-    e._attribute_map["cy"] = std::to_string(cy);
-    e._attribute_map["rx"] = std::to_string(rs_[0] * sx);
-    e._attribute_map["ry"] = std::to_string(rs_[1] * sy);
+    e._attribute_map["cx"] = utils::to_string(cx);
+    e._attribute_map["cy"] = utils::to_string(cy);
+    e._attribute_map["rx"] = utils::to_string(rs_[0] * sx);
+    e._attribute_map["ry"] = utils::to_string(rs_[1] * sy);
 
     // Adapt the range of this object
     detail::adapt_range(e, {{cx - sx * rs_[0], cy - sy * rs_[1]},
                             {cx + sx * rs_[0], cy + sy * rs_[1]}});
 
+    // Barycenter
+    e._barycenter = {cx, cy};
+
     // Attach fill, stroke & transform attributes and apply
     e._fill = fill_;
     e._stroke = stroke_;
-    e._transform = transform_;
     // The svg object is now set up
     return e;
 }
@@ -250,6 +277,9 @@ static inline svg::object ellipse(
  * @param fill_ is the fill style
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
+ *
+ * @note transform is directly applied and not attached as property
+ * for raw drawing objects
  *
  * @return an svg object for the polygon
  */
@@ -271,31 +301,38 @@ static inline svg::object polygon(
     scalar sy = transform_._scale[1];
     // Write attributes and measure object size, length
     std::string svg_points_string;
-    for (auto [x, y] : polygon_) {
-        // Add to the real barycenter (without display scaling)
-        p._real_barycenter[0] += x + tx;
-        p._real_barycenter[1] += y + ty;
+    std::vector<point2> display_vertices;
+    display_vertices.reserve(polygon_.size());
+    for (auto v : polygon_) {
+        scalar alpha = transform_._rot[0];
+        if (alpha != 0.) {
+            scalar alpha_rad = static_cast<scalar>(alpha / 180. * M_PI);
+            v = utils::rotate(v, alpha_rad);
+        }
+
         // Add display scaling
-        x *= sx;
-        y *= sy;
+        v[0] *= sx;
+        v[1] *= sy;
+        // Add scaled * translation
+        v[0] += sx * tx;
+        v[1] += sy * ty;
+        v[1] *= -1;
         // Per vertex range estimation
-        detail::adapt_range(p, {{x, -y}});
+        detail::adapt_range(p, {v});
 
         // Convert to string attributes, y-switch
-        svg_points_string += std::to_string(x);
+        svg_points_string += utils::to_string(v[0]);
         svg_points_string += ",";
-        svg_points_string += std::to_string(-y);
+        svg_points_string += utils::to_string(v[1]);
         svg_points_string += " ";
     }
-    // Re-normalize the barycenter
-    p._real_barycenter[0] /= polygon_.size();
-    p._real_barycenter[1] /= polygon_.size();
+    // Barycenter
+    p._barycenter = utils::barycenter(display_vertices);
     // Fill the points attributes
     p._attribute_map["points"] = svg_points_string;
     // Attach fill, stroke & transform attributes and apply
     p._fill = fill_;
     p._stroke = stroke_;
-    p._transform = transform_;
     // The svg object is now set up
     return p;
 }
@@ -323,8 +360,6 @@ static inline svg::object text(
     // Apply the scale
     scalar x = p_[0];
     scalar y = p_[1];
-    // Real barycenter
-    t._real_barycenter = {x, -y};
 
     x *= transform_._scale[0];
     y *= transform_._scale[1];
@@ -333,8 +368,8 @@ static inline svg::object text(
 
     // Fill the field
     t._field = text_;
-    t._attribute_map["x"] = std::to_string(x);
-    t._attribute_map["y"] = std::to_string(-y);
+    t._attribute_map["x"] = utils::to_string(x);
+    t._attribute_map["y"] = utils::to_string(-y);
     t._attribute_map["font-family"] = font_._family;
 
     t._field_span = font_._size * font_._line_spacing;
@@ -346,7 +381,12 @@ static inline svg::object text(
 
     scalar fs = font_._size;
 
-    detail::adapt_range(t, {{x, -y + l}, {x + fs * l, -y - l}});
+    detail::adapt_range(
+        t, {{x, y - l}, {static_cast<scalar>(x + 0.7 * fs * l), y + l}});
+
+    t._barycenter = utils::barycenter<std::array<scalar, 2>>(
+        {{x, y - l}, {static_cast<scalar>(x + 0.7 * fs * l), y + l}});
+
     return t;
 }
 
@@ -456,7 +496,6 @@ static inline svg::object tiled_cartesian_grid(
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
-
     // The grid group object
     svg::object grid;
     grid._tag = "g";
@@ -502,7 +541,6 @@ static inline svg::object fan_grid(
     const std::vector<scalar> &y_edges_,
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) noexcept(false) {
-
     // The list of grid sectors
     svg::object grid;
     grid._tag = "g";
@@ -566,7 +604,6 @@ static inline svg::object tiled_fan_grid(
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) noexcept(false) {
-
     svg::object grid;
     grid._tag = "g";
     grid._id = id_;
@@ -692,7 +729,6 @@ static inline svg::object tiled_polar_grid(
     const style::fill &fill_ = style::fill(),
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
-
     svg::object grid;
     grid._tag = "g";
     grid._id = id_;
@@ -710,10 +746,6 @@ static inline svg::object tiled_polar_grid(
             auto grid_sector =
                 polygon(gs + std::to_string(iphi - 1), sector_contour, fill_,
                         stroke_, transform_);
-            scalar r = r_edges_[ir - 1];
-            scalar phi = phi_edges_[iphi - 1];
-            grid_sector._real_barycenter = {r * std::cos(phi),
-                                            r * std::sin(phi)};
             grid.add_object(grid_sector);
         }
     }
@@ -809,7 +841,7 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
  * @param font_ are the font parameters
  * @param label_ is the label associated
  * @param label_pos_ is the label position
- * 
+ *
  * @return an svg object for the measurexs
  */
 static inline svg::object measure(
@@ -817,9 +849,8 @@ static inline svg::object measure(
     const style::stroke &stroke_ = style::stroke(),
     const style::marker &start_marker_ = style::marker({"|<"}),
     const style::marker &end_marker_ = style::marker({"|<"}),
-    const style::font &font_ = style::font(),
-    const std::string &label_ = "", 
-    const point2& label_pos_ = {0., 0.}) {
+    const style::font &font_ = style::font(), const std::string &label_ = "",
+    const point2 &label_pos_ = {0., 0.}) {
     // Measure group here we go
     svg::object measure_group;
     measure_group._tag = "g";
@@ -845,7 +876,6 @@ static inline svg::object measure(
         auto ltext = text(id_ + "_label", label_pos_, {label_}, font_);
         measure_group.add_object(ltext);
     }
-
     return measure_group;
 }
 
@@ -869,10 +899,8 @@ static inline svg::object arc_measure(
     const style::stroke &stroke_ = style::stroke(),
     const style::marker &start_marker_ = style::marker(),
     const style::marker &end_marker_ = style::marker({"|<"}),
-    const style::font &font_ = style::font(),
-    const std::string &label_ = "", 
-    const point2& label_pos_ = {0., 0.}) {
-
+    const style::font &font_ = style::font(), const std::string &label_ = "",
+    const point2 &label_pos_ = {0., 0.}) {
     // Measure group here we go
     svg::object measure_group;
     measure_group._tag = "g";
@@ -882,7 +910,6 @@ static inline svg::object arc_measure(
         arc((id_ + "_arc"), r_, start_, end_, style::fill(), stroke_));
 
     // Arrow is at end point
-
     if (not start_marker_._type.empty() and
         start_marker_._type != std::string("none")) {
         scalar theta_start = atan2(start_[1], start_[0]);
@@ -948,7 +975,7 @@ static inline svg::object x_y_axes(
     auto add_marker = [&](const point2 &p_, unsigned int b0_, unsigned int b1_,
                           scalar rot_, const std::string &mid_) -> void {
         auto lmarker = markers_[b0_][b1_];
-        if (lmarker._type != "none") {
+        if (not lmarker._type.empty()) {
             axes.add_object(marker(mid_, {p_[0], p_[1]}, lmarker, rot_));
         }
     };
@@ -992,7 +1019,6 @@ static inline svg::object from_template(
     const style::fill &f_ = style::fill(),
     const style::stroke &s_ = style::stroke(),
     const style::transform t_ = style::transform()) {
-
     // Create new svg object
     svg::object nsvg;
     nsvg._sterile = true;
@@ -1005,6 +1031,10 @@ static inline svg::object from_template(
     use_obj._id = id_ + "_use";
     use_obj._attribute_map["xlink:href"] = "#" + ro_._id;
     use_obj._definitions.push_back(ro_);
+
+    // Barycenter is shifted
+    use_obj._barycenter = {(ro_._barycenter[0] + t_._tr[0]),
+                           (ro_._barycenter[1] + t_._tr[1])};
 
     // Set the fill attributes
     use_obj._fill = f_;

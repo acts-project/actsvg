@@ -18,9 +18,6 @@
 using namespace actsvg;
 
 TEST(core, circle_plain) {
-
-    svg::file ftemplate;
-
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
 
@@ -28,26 +25,26 @@ TEST(core, circle_plain) {
     std::ofstream fo;
     fo.open("test_core_circle.svg");
 
-    fo << ftemplate._html_head;
-    fo << ftemplate._svg_head;
-    fo << " width=\"900\" height=\"900\" viewBox=\"-450 -450 900 900\"";
-    fo << ftemplate._svg_def_end;
-    // Add the playground
-    fo << pg;
     // Draw the circles
-    fo << draw::circle("cc", {0., 0.}, 10,
-                       style::fill(style::color{{255, 255, 255}}));
-    fo << draw::circle("c", {40., -20.}, 25.,
-                       style::fill{style::color{{0, 125, 0}}});
-    // Close the file
-    fo << ftemplate._svg_tail;
-    fo << ftemplate._html_tail;
+    auto cc = draw::circle("cc", {0., 0.}, 10,
+                           style::fill(style::color{{255, 255, 255}}));
+    auto c = draw::circle("c", {40., -20.}, 25.,
+                          style::fill{style::color{{0, 125, 0}}});
+    // Label
+    auto descr = draw::text("descr", {100, 100},
+                            {"one circle in white with r=10 at (0,0)",
+                             "one circle in green with r = 25 at (40,-20)"});
+
+    svg::file of;
+    of.add_object(pg);
+    of.add_object(cc);
+    of.add_object(c);
+    of.add_object(descr);
+    fo << of;
     fo.close();
 }
 
 TEST(core, circle_shifted) {
-
-    svg::file ftemplate;
 
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
@@ -58,48 +55,45 @@ TEST(core, circle_shifted) {
     std::ofstream fo;
     fo.open("test_core_circle_shifted.svg");
 
-    fo << ftemplate._html_head;
-    fo << ftemplate._svg_head;
-    fo << " width=\"900\" height=\"900\" viewBox=\"-450 -450 900 900\"";
-    fo << ftemplate._svg_def_end;
-    // Add the playground
-    fo << pg;
-    // Add the circle
-    fo << draw::circle("c", {40., -20.}, 25.,
-                       style::fill{style::color{{0, 125, 0}}},
-                       style::stroke{style::color{{0, 0, 0}}}, t);
-    // Close the file
-    fo << ftemplate._svg_tail;
-    fo << ftemplate._html_tail;
+    auto c = draw::circle("c", {40., -20.}, 25.,
+                          style::fill{style::color{{0, 125, 0}}},
+                          style::stroke{style::color{{0, 0, 0}}}, t);
+    // Label
+    auto descr = draw::text("descr", {20, 140},
+                            {"shifted circle to (140, 80) with r=25"});
+
+    svg::file of;
+    of.add_object(pg);
+    of.add_object(c);
+    of.add_object(descr);
+    fo << of;
     fo.close();
 }
 
 TEST(core, circle_scaled) {
 
-    svg::file ftemplate;
-
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
 
     style::transform t{{0, 0}};
-    t._scale = {10, 10};
+    t._scale = {25, 25};
 
     // Write out the file
     std::ofstream fo;
     fo.open("test_core_circle_scaled.svg");
 
-    fo << ftemplate._html_head;
-    fo << ftemplate._svg_head;
-    fo << " width=\"900\" height=\"900\" viewBox=\"-450 -450 900 900\"";
-    fo << ftemplate._svg_def_end;
-    // Add the playground
-    fo << pg;
-    // Add the circle
-    fo << draw::circle("c", {4., -2.}, 2.5,
-                       style::fill{style::color{{0, 125, 0}}},
-                       style::stroke{style::color{{0, 0, 0}}}, t);
-    // Close the file
-    fo << ftemplate._svg_tail;
-    fo << ftemplate._html_tail;
+    auto c = draw::circle("c", {-10., -10.}, 4,
+                          style::fill{style::color{{0, 125, 0}}},
+                          style::stroke{style::color{{0, 0, 0}}}, t);
+
+    // Label
+    auto descr = draw::text("descr", {20, 140},
+                            {"scaled circle at (-250, -250) with r=50"});
+
+    svg::file of;
+    of.add_object(pg);
+    of.add_object(c);
+    of.add_object(descr);
+    fo << of;
     fo.close();
 }
