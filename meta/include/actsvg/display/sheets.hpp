@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <exception>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,7 @@ enum sheet_type { e_module_info = 0, e_grid_info = 1 };
  * @param id_ is the identifcation tag
  * @param s_ is the surface to be displayed
  * @param sh_ is the sheet size for displaying
- * @param kr_ is a directive to keep the ratio
+ * @param fs_ is a directive to focus on the object (instead of axis)
  *
  * @return a surface sheet svg object
  **/
@@ -45,7 +46,7 @@ template <typename point3_container>
 svg::object surface_sheet_xy(const std::string& id_,
                              const proto::surface<point3_container>& s_,
                              const std::array<scalar, 2>& sh_ = {400., 400.},
-                             bool kr_ = true) noexcept(false) {
+                             bool fs_ = false) noexcept(false) {
     svg::object so;
     so._tag = "g";
     so._id = id_;
@@ -54,57 +55,25 @@ svg::object surface_sheet_xy(const std::string& id_,
 
     views::x_y x_y_view;
 
-    // Add the surface
-    std::vector<views::contour> contours;
-    if (not s_._vertices.empty()) {
-        auto surface_contour = x_y_view(s_._vertices);
-        contours = {surface_contour};
-    } else if (s_._radii[1] != 0.) {
-        scalar ri = s_._radii[0];
-        scalar ro = s_._radii[1];
-        scalar phi_low = s_._opening[0];
-        scalar phi_high = s_._opening[1];
-        scalar phi = 0.5 * (phi_low + phi_high);
-        scalar cos_phi_low = std::cos(phi_low);
-        scalar sin_phi_low = std::sin(phi_low);
-        scalar cos_phi_high = std::cos(phi_high);
-        scalar sin_phi_high = std::cos(phi_high);
-        point3 A = {ri * cos_phi_low, ri * sin_phi_low, 0.};
-        point3 B = {ri * std::cos(phi), ri * std::sin(phi), 0.};
-        point3 C = {ri * cos_phi_high, ri * sin_phi_high, 0.};
-        point3 D = {ro * cos_phi_high, ro * sin_phi_high, 0.};
-        point3 E = {ro * std::cos(phi), ro * std::sin(phi), 0.};
-        point3 F = {ro * cos_phi_low, ro * sin_phi_low, 0.};
-        std::vector<point3> vertices_disc = {A, B, C, D, E, F};
-        auto surface_contour = x_y_view(vertices_disc);
-        contours = {surface_contour};
-    } else {
-        throw std::invalid_argument(
-            "surface_sheet_xy(...) - could not estimate range.");
-    }
-
+    std::vector<views::contour> contours = {range_contour(s_, fs_)};
     auto [x_axis, y_axis] = display::view_range(contours);
 
     // Stitch when disc - and make x and y axis similarly long
-    bool full = false;
+    bool full = (s_._type == proto::surface<point3_container>::e_disc and
+                 s_._opening == std::array<scalar, 2>({-M_PI, M_PI}));
+
+    bool draw_axes = true;
     if (s_._type == proto::surface<point3_container>::e_disc or
         s_._type == proto::surface<point3_container>::e_annulus) {
-        x_axis[0] = 0.;
-        y_axis[0] = 0.;
-        if (s_._opening == std::array<scalar, 2>({-M_PI, M_PI})) {
-            y_axis[1] = x_axis[1];
-            full = true;
-        }
+        draw_axes = not fs_;
     }
 
     scalar s_x = sh_[0] / (x_axis[1] - x_axis[0]);
     scalar s_y = sh_[1] / (y_axis[1] - y_axis[0]);
 
     // Harmonize the view window with equal scales
-    if (kr_) {
-        s_x = s_x < s_y ? s_x : s_y;
-        s_y = s_y < s_x ? s_y : s_x;
-    }
+    s_x = s_x < s_y ? s_x : s_y;
+    s_y = s_y < s_x ? s_y : s_x;
 
     // Create the scale transform
     style::transform scale_transform;
@@ -113,15 +82,25 @@ svg::object surface_sheet_xy(const std::string& id_,
     // Copy in order to modify the transform
     proto::surface<point3_container> draw_surface = s_;
     draw_surface._transform._scale = {s_x, s_y};
-    auto surface = display::surface(s_._name, draw_surface, x_y_view);
+    // If this is a disc surface, clear the vertices (will be re-generated)
+    if (draw_surface._type == decltype(draw_surface)::e_disc) {
+        draw_surface._vertices.clear();
+    }
+    // The boolean parameters are : we draw the surface with booleans, focusses,
+    // scaled, and as template
+    auto surface = display::surface(s_._name + "_in_sheet", draw_surface,
+                                    x_y_view, true, true, true, true);
     so.add_object(surface);
 
-    display::prepare_axes(x_axis, y_axis, s_x, s_y, 30., 30.);
-    auto axis_font = __a_font;
-    axis_font._size = 10;
+    // disc/annulus may overwrite axis drawing
+    if (draw_axes) {
+        display::prepare_axes(x_axis, y_axis, s_x, s_y, 30., 30.);
+        auto axis_font = __a_font;
+        axis_font._size = 10;
 
-    so.add_object(draw::x_y_axes(id_ + "_axes_xy", x_axis, y_axis, __a_stroke,
-                                 "x", "y", axis_font));
+        so.add_object(draw::x_y_axes(id_ + "_axes_xy", x_axis, y_axis,
+                                     __a_stroke, "x", "y", axis_font));
+    }
 
     // The measures
     // - Trapezoid
@@ -246,6 +225,7 @@ svg::object surface_sheet_xy(const std::string& id_,
                        static_cast<scalar>(s_._opening[1] + 0.1)};
         }
         // Start/end parameters of the labels
+        scalar r_min = std::numeric_limits<scalar>::max();
         scalar r_max = 0.;
         for (auto [ir, r] : utils::enumerate(s_._measures)) {
 
@@ -269,9 +249,17 @@ svg::object surface_sheet_xy(const std::string& id_,
 
                 // Record the maximum radius
                 r_max = r > r_max ? r : r_max;
+                r_min = r < r_min ? r : r_min;
                 std::string r_o = ir == 0 ? "r" : "R";
+
+                scalar rfs = (fs_ and not full) ? s_x * 0.85 * r_min : 0.;
+                scalar rfs_phi = std::atan2(ys[ir], xs[ir]);
+
+                point2 rstart = {static_cast<scalar>(rfs * std::cos(rfs_phi)),
+                                 static_cast<scalar>(rfs * std::sin(rfs_phi))};
+
                 auto measure_r = draw::measure(
-                    id_ + "_r", {0., 0.}, {xs[ir], ys[ir]}, __m_stroke,
+                    id_ + "_r", rstart, {xs[ir], ys[ir]}, __m_stroke,
                     style::marker(), __m_marker, __m_font,
                     r_o + " = " + utils::to_string(r),
                     {static_cast<scalar>(__m_font._size + xs[ir]),
@@ -280,6 +268,9 @@ svg::object surface_sheet_xy(const std::string& id_,
             }
             // Phi labelling
             if (ir == 2 and not full) {
+
+                // Focal or not focal
+                scalar rfs = (fs_ and not full) ? s_x * 0.85 * r_min : 0.;
 
                 // Place it outside
                 scalar lr = s_x * r_max + 2. * __m_marker._size;
@@ -302,9 +293,13 @@ svg::object surface_sheet_xy(const std::string& id_,
                     id_ + "_arc", lr, start, end, __m_stroke, __m_marker,
                     __m_marker, __m_font,
                     dphi + " = " + utils::to_string(phi_span), mend);
+
                 so.add_object(maesure_arc);
 
-                auto medium_phi_line = draw::line(id_ + "medium_phi", {0., 0.},
+                point2 mstart = {static_cast<scalar>(rfs * std::cos(mphi)),
+                                 static_cast<scalar>(rfs * std::sin(mphi))};
+
+                auto medium_phi_line = draw::line(id_ + "medium_phi", mstart,
                                                   end, __m_stroke_guide);
                 so.add_object(medium_phi_line);
 
@@ -321,11 +316,14 @@ svg::object surface_sheet_xy(const std::string& id_,
                     static_cast<scalar>(__m_font._size +
                                         r_avg_phi * std::sin(0.5 * mphi))};
 
-                auto measure_avg_phi = draw::arc_measure(
-                    id_ + "_avg_phi", r_avg_phi, r_avg_start, r_avg_end,
-                    __m_stroke, style::marker(), __m_marker, __m_font,
-                    aphi + " = " + utils::to_string(mphi), r_avg_mend);
-                so.add_object(measure_avg_phi);
+                if (std::abs(mphi) >
+                    5 * std::numeric_limits<scalar>::epsilon()) {
+                    auto measure_avg_phi = draw::arc_measure(
+                        id_ + "_avg_phi", r_avg_phi, r_avg_start, r_avg_end,
+                        __m_stroke, style::marker(), __m_marker, __m_font,
+                        aphi + " = " + utils::to_string(mphi), r_avg_mend);
+                    so.add_object(measure_avg_phi);
+                }
             }
         }
     } else if (s_._type == proto::surface<point3_container>::e_annulus and
@@ -494,7 +492,6 @@ svg::object surface_sheet_xy(const std::string& id_,
             so.add_object(measure_r);
         }
     }
-
     return so;
 }
 
@@ -507,49 +504,50 @@ svg::object surface_sheet_xy(const std::string& id_,
  * @param sh_ is the sheet size for displaying
  * @param t_ is the sheet type
  * @param s_sh_ is the surface sheet sub display size
+ *
  **/
 template <typename point3_container, typename view_type, layer_type lT>
 svg::object sheet(const std::string& id_,
                   const proto::volume<point3_container>& v_,
                   const std::array<scalar, 2>& sh_ = {600., 600.},
                   sheet_type t_ = e_module_info,
-                  const std::array<scalar, 2>& s_sh_ = {200., 400.}) {
+                  const std::array<scalar, 2>& s_sh_ = {600., 600.}) {
 
-    svg::object eo;
-    eo._tag = "g";
-    eo._id = id_;
+    svg::object o_sheet;
+    o_sheet._tag = "g";
+    o_sheet._id = id_;
 
     view_type view;
 
-    auto [modules, scale_transform, axes] = process_modules(v_, view, sh_);
+    // The modules are drawn and axes set
+    auto [modules, scale_transform, axes] =
+        process_modules(v_, view, sh_, lT == e_endcap);
     auto x_axis = axes[0];
     auto y_axis = axes[1];
 
     std::vector<svg::object> extra_objects;
 
     // Draw the template module surfaces
-    if (t_ == e_module_info and not v_._template_surfaces.empty()) {
-        // The templates
-        std::vector<svg::object> templates;
-        for (auto s : v_._template_surfaces) {
+    if (t_ == e_module_info) {
+        // The sheets per module
+        std::vector<svg::object> s_sheets;
+        for (auto s : v_._surfaces) {
             // Use a local copy of the surface to modify color
             style::fill s_fill;
             s_fill._fc._rgb = s._fill._fc._hl_rgb;
             s_fill._fc._opacity = s._fill._fc._opacity;
             s._fill = s_fill;
             // The template sheet
-            auto s_sheet =
-                display::surface_sheet_xy(id_ + "_surface_sheet", s, s_sh_);
+            auto s_sheet = display::surface_sheet_xy(s._name + "_surface_sheet",
+                                                     s, s_sh_, true);
             style::transform(
                 {{static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
                   0.}})
                 .attach_attributes(s_sheet);
-            templates.push_back(s_sheet);
+            s_sheets.push_back(s_sheet);
         }
         // Connect the surface sheets
-        if (v_._surfaces.size() == v_._templates.size()) {
-            connect_surface_sheets(v_, templates, eo, 0.5 * sh_[1]);
-        }
+        connect_surface_sheets(v_, s_sheets, o_sheet);
     } else if (t_ == e_grid_info and not v_._surface_grid._edges_0.empty() and
                not v_._surface_grid._edges_1.empty()) {
 
@@ -573,26 +571,26 @@ svg::object sheet(const std::string& id_,
     }
 
     // Add the modules & eventual extra objects
-    eo.add_objects(modules);
-    eo.add_objects(extra_objects);
+    o_sheet.add_objects(modules);
+    o_sheet.add_objects(extra_objects);
 
     // Add the axes on top
     auto axis_font = __a_font;
     axis_font._size = 10;
-    eo.add_object(draw::x_y_axes("xy", x_axis, y_axis, __a_stroke,
-                                 view._axis_names[0], view._axis_names[1],
-                                 axis_font));
+    o_sheet.add_object(draw::x_y_axes(id_ + "_xy", x_axis, y_axis, __a_stroke,
+                                      view._axis_names[0], view._axis_names[1],
+                                      axis_font));
 
     //  Add the title text
     auto title_font = __t_font;
     title_font._size = 0.03 * sh_[0];
-    auto title = draw::text("sheet_title",
+    auto title = draw::text(id_ + "sheet_title",
                             {static_cast<scalar>(-0.55 * sh_[0]),
                              static_cast<scalar>(0.55 * sh_[1])},
                             {v_._name}, title_font);
-    eo.add_object(title);
+    o_sheet.add_object(title);
 
-    return eo;
+    return o_sheet;
 }
 
 /** Make a summary sheet for an endcap type volume

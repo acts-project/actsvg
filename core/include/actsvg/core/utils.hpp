@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 #include <strstream>
 
 namespace actsvg {
@@ -77,7 +78,7 @@ static inline std::string id_to_url(const std::string &id_) {
  */
 static inline std::string to_string(const scalar &s_, size_t pr_ = 4) {
     std::stringstream sstream;
-    sstream << std::setw(pr_) << s_;
+    sstream << std::setprecision(pr_) << s_;
     return sstream.str();
 }
 
@@ -91,9 +92,28 @@ static inline std::string to_string(const scalar &s_, size_t pr_ = 4) {
 template <typename point2_type>
 std::string to_string(const point2_type &p_, size_t pr_ = 4) {
     std::stringstream sstream;
-    sstream << std::setw(pr_) << "(" << p_[0] << "," << p_[1] << ")";
+    sstream << std::setprecision(pr_) << "(" << p_[0] << "," << p_[1] << ")";
     return sstream.str();
 }
+
+/** Helper method to calculate the barycenter
+ * 
+ * @param vs_ vertices
+ * 
+ * @return a new barycenter
+ **/
+template <typename point2_type>
+point2_type barycenter(const std::vector<point2_type>& vs_){
+    point2_type rv = { 0., 0.};
+    for (const auto& v : vs_){
+        rv[0] += v[0];
+        rv[1] += v[1];
+    }
+    rv[0] /= vs_.size();
+    rv[1] /= vs_.size();
+    return rv;
+}
+
 
 /** Helper method to rotate a 2-d point
  * @param p_ the point to be rotated

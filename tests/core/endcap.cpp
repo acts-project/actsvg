@@ -96,14 +96,11 @@ TEST(endcap, x_y_view) {
         modules.push_back(module);
         std::string module_txt = "Module " + std::to_string(m);
         std::string center_txt =
-            "Center (" + std::to_string(module._real_barycenter[0]);
-        center_txt += __c + std::to_string(module._real_barycenter[1]);
+            "Center (" + utils::to_string(module._barycenter[0]);
+        center_txt += __c + utils::to_string(module._barycenter[1]);
         center_txt += ")";
-        std::vector<std::string> text = {"Module " + std::to_string(m),
-                                         "Center "};
-
         auto ctext = draw::connected_text(
-            t_id, module._real_barycenter, {module_txt, center_txt},
+            t_id, { module._barycenter[0], module._barycenter[1] },  {module_txt, center_txt},
             style::font(), style::transform(), module);
         labels.push_back(ctext);
     }
@@ -179,13 +176,12 @@ TEST(endcap, x_y_view_grid) {
         for (auto [is, s] : utils::enumerate(modules)) {
             // phi matching only
             scalar g_phi =
-                std::atan2(g._real_barycenter[1], g._real_barycenter[0]);
-            scalar s_phi =
-                std::atan2(s._real_barycenter[1], s._real_barycenter[0]);
+                std::atan2(g._barycenter[1], g._barycenter[0]);
+             scalar s_phi =
+                std::atan2(s._barycenter[1], s._barycenter[0]);
             if (std::abs(g_phi - s_phi) < close_by_phi or
                 std::abs(g_phi - s_phi) > (2 * M_PI - close_by_phi)) {
                 sector_associations.push_back(is);
-                std::cout << is << ",";
             }
         };
         associations.push_back(sector_associations);
@@ -206,7 +202,7 @@ TEST(endcap, x_y_view_grid) {
 
     // File output
     std::ofstream ec_stream;
-    ec_stream.open("test_core_encap_grid_xy.svg");
+    ec_stream.open("test_core_endcap_grid_xy.svg");
     ec_stream << ec_file;
     ec_stream.close();
 }

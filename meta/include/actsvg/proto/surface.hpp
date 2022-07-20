@@ -10,6 +10,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "actsvg/core/style.hpp"
@@ -29,7 +30,14 @@ namespace proto {
 template <typename point3_container>
 struct surface {
 
-    enum type { e_annulus, e_cylinder, e_disc, e_polygon, e_rectangle, e_trapez };
+    enum type {
+        e_annulus,
+        e_cylinder,
+        e_disc,
+        e_polygon,
+        e_rectangle,
+        e_trapez
+    };
 
     enum boolean { e_clipping, e_union, e_subtraction, e_none };
 
@@ -62,7 +70,32 @@ struct surface {
     std::vector<scalar> _measures = {};
 
     /// A (potential) template for this surface
-    svg::object _template;
+    svg::object _template_object;
+
+    using point3_type = typename point3_container::value_type;
+
+    /** Static constructor from a templat
+     * @param t_ the template
+     * @param o_ the tempalte object
+     * @param name_ the new name
+     **/
+    static surface<point3_container> from_template(
+        const surface<point3_container>& t_, const svg::object& o_,
+        const std::string& name_) {
+        surface<point3_container> s;
+        s._name = name_;
+        s._type = t_._type;
+        s._info = t_._info;
+        s._vertices = t_._vertices;
+        s._measures = t_._measures;
+        s._radii = t_._radii;
+        s._opening = t_._opening;
+        s._fill = t_._fill;
+        s._stroke = t_._stroke;
+        s._transform = t_._transform;
+        s._template_object = o_;
+        return s;
+    }
 };
 
 }  // namespace proto

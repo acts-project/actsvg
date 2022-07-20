@@ -38,13 +38,10 @@ proto::volume<point3_container_type> generate_barrel_volume() {
     barrel_module_template._measures = {8.4, 36.};
     barrel_module_template._type =
         proto::surface<point3_container>::e_rectangle;
-    barrel._template_surfaces.push_back(barrel_module_template);
 
     size_t number_of_modules = data::odd_pixel_barrel.size() / 4u;
     barrel._surfaces.reserve(number_of_modules);
     for (size_t im = 0; im < number_of_modules; ++im) {
-        // Register the templates - always first
-        barrel._templates.push_back(0u);
         // Create the module surface
         proto::surface<point3_container> barrel_module;
         barrel_module._name = "module_" + std::to_string(im);
@@ -136,25 +133,6 @@ proto::volume<point3_container_type> generate_barrel_volume() {
 }
 
 auto barrel = generate_barrel_volume<>();
-
-TEST(display, barrel_sheet_module_info) {
-
-    barrel._name = "ODD Pixel Barrel (sample)";
-
-    // Create the sheet
-    svg::object barrel_sheet = display::barrel_sheet(
-        "sheet_odd_barrel", barrel, {600, 600}, display::e_module_info);
-
-    svg::file barrel_file;
-    barrel_file._width = 1000;
-    barrel_file.add_object(barrel_sheet);
-
-    // Write out the file
-    std::ofstream eout;
-    eout.open("sheet_odd_barrel_module_info.svg");
-    eout << barrel_file;
-    eout.close();
-}
 
 TEST(display, barrel_sheet_grid_info) {
 

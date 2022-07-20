@@ -44,12 +44,8 @@ struct volume {
     /// Auxiliary information 
     std::vector<std::string> _info = {};
 
-    /// The contained surfaces & their templates
+    /// The contained surfaces & embedded templates
     std::vector<surface<point3_container>> _surfaces = {};
-
-    /// This is the template surfaces for surface sheet displays
-    std::vector<unsigned int> _templates = {};
-    std::vector<surface<point3_container>> _template_surfaces = {};
     
     /// The portals 
     std::vector<surface<point3_container>> _portals = {};

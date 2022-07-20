@@ -28,21 +28,38 @@ namespace display {
  * @param s_ the surface type
  * @param v_ the view type
  * @param b_ draw the boolean
- *
+ * @param fs_ draw as focus
+ * @param sc_ draw at scale 
+ * @param dt_ draw as template
  */
 template <typename surface_type, typename view_type>
 svg::object surface(const std::string& id_, const surface_type& s_,
-                    const view_type& v_, bool _b = true) {
+                    const view_type& v_, bool _b = true, bool fs_ = false, bool sc_ = false, bool dt_ = false) {
 
     svg::object s;
 
-    // If the surface has a template ... go for it directly
-    if (s_._template.is_defined()) {
+    // If the surface has a template ... go for it directly if not focussed
+    if (s_._template_object.is_defined()) {
+
+        style::transform draw_transform = s_._transform; 
+        // No rotation nor shift as template 
+        if (dt_) {
+            draw_transform._tr = {0.,0.};
+            draw_transform._rot = {0., 0., 0.};
+        }
+        // Apply scale or not 
+        if (not sc_) {
+            draw_transform._scale = {1., 1.};
+        } 
+
         // Create a surface object from the template
-        s = draw::from_template(id_, s_._template, s_._fill, s_._stroke,
-                                s_._transform);
+        s = draw::from_template(id_, s_._template_object, s_._fill, s_._stroke,
+                                draw_transform);
         return s;
-    }
+    } 
+
+    style::transform draw_transform = fs_ ? style::transform{} : s_._transform;
+    draw_transform._scale = s_._transform._scale;
 
     // Surface directly
     if (s_._type == surface_type::e_disc) {
@@ -54,11 +71,11 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             auto view_vertices = generators::sector_contour(
                 s_._radii[0], s_._radii[1], s_._opening[0], s_._opening[1]);
             s = draw::polygon(id_, view_vertices, s_._fill, s_._stroke,
-                              s_._transform);
+                              draw_transform);
 
         } else {
             s = draw::circle(id_, {0., 0.}, s_._radii[1u], s_._fill, s_._stroke,
-                             s_._transform);
+                             draw_transform);
 
             // A ring is present
             if (s_._radii[0u]) {
@@ -99,7 +116,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     } else {
         auto view_vertices = v_(s_._vertices);
         s = draw::polygon(id_, view_vertices, s_._fill, s_._stroke,
-                          s_._transform);
+                          draw_transform);
     }
 
     if (_b) {

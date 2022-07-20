@@ -74,7 +74,7 @@ struct fill {
 
         if (not _sterile) {
             o_._attribute_map["fill"] = rgb_attr(_fc._rgb);
-            o_._attribute_map["fill-opacity"] = std::to_string(_fc._opacity);
+            o_._attribute_map["fill-opacity"] = utils::to_string(_fc._opacity);
         }
 
         if (_fc._highlight.size() == 2u) {
@@ -117,8 +117,9 @@ struct stroke {
 
         if (not _sterile) {
             o_._attribute_map["stroke"] = rgb_attr(_sc._rgb);
-            o_._attribute_map["stroke-opacity"] = std::to_string(_sc._opacity);
-            o_._attribute_map["stroke-width"] = std::to_string(_width);
+            o_._attribute_map["stroke-opacity"] =
+                utils::to_string(_sc._opacity);
+            o_._attribute_map["stroke-width"] = utils::to_string(_width);
             if (not _dasharray.empty()) {
                 std::string da_str;
                 for (auto [i, d] : utils::enumerate(_dasharray)) {
@@ -155,7 +156,7 @@ struct font {
     template <typename object_type>
     void attach_attributes(object_type &o_) const {
         o_._attribute_map["fill"] = rgb_attr(_fc._rgb);
-        o_._attribute_map["font-size"] = std::to_string(_size);
+        o_._attribute_map["font-size"] = utils::to_string(_size);
         if (not _family.empty()) {
             o_._attribute_map["font-family"] = _family;
         }
@@ -187,20 +188,27 @@ struct transform {
         bool skew = (_skew[0] != 0. or _skew[1] != 0.);
         std::stringstream tr_str;
         if (translate) {
-            tr_str << "translate(" << _tr[0] << __c << -_tr[1] << ")";
+            tr_str << "translate(" << utils::to_string(_scale[0]*_tr[0]) << __c
+                   << utils::to_string(-_scale[0]*_tr[1]) << ")";
             if (rotate or scale or skew) {
                 tr_str << __blk;
             }
         }
         if (rotate) {
-            tr_str << "rotate(" << -_rot[0] << __c << _rot[1] << __c << -_rot[2]
-                   << ")";
+            tr_str << "rotate(" << utils::to_string(-_rot[0]) << __c
+                   << utils::to_string(_rot[1]) << __c
+                   << utils::to_string(-_rot[2]) << ")";
             if (scale or skew) {
                 tr_str << __blk;
             }
         }
         if (skew) {
-            tr_str << "skewX(" << _skew[0] << ") skewY(" << _skew[1] << ")";
+            tr_str << "skewX(" << utils::to_string(_skew[0]) << ") skewY("
+                   << utils::to_string(_skew[1]) << ")";
+        }
+        if (scale) {
+            tr_str << "scale(" << utils::to_string(_scale[0]) << ","
+                   << utils::to_string(_scale[1]) << ")";
         }
         return tr_str.str();
     }

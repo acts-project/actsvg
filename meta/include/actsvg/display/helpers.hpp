@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
+#include "actsvg/display/geometry.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"
 #include "actsvg/styles/defaults.hpp"
-#include "actsvg/display/geometry.hpp"
 
 namespace actsvg {
 
@@ -73,6 +73,72 @@ static inline void prepare_axes(std::array<scalar, 2>& first_,
     second_[1] += ay_;
 }
 
+/** Helper method to get the contours
+ *
+ * @param s_ is the surface
+ * @param fs_ draw in focus mode
+ *
+ * @return a vector of contours;
+ **/
+template <typename surface_type, typename view_type = views::x_y>
+views::contour range_contour(const surface_type& s_,
+                             bool fs_ = false) noexcept(false) {
+
+    view_type view;
+
+    using point3 = typename surface_type::point3_type;
+
+    // Add the surface
+    views::contour contour;
+    if (s_._template_object.is_defined() and not fs_) {
+        // Use a bounding box trick
+        // Get the contour from the template as bounding box
+        point2 bbl = {s_._template_object._x_range[0],
+                      s_._template_object._y_range[0]};
+        point2 bbr = {s_._template_object._x_range[1],
+                      s_._template_object._y_range[1]};
+        bbl[0] += s_._transform._tr[0];
+        bbl[1] += s_._transform._tr[1];
+        bbr[0] += s_._transform._tr[0];
+        bbr[1] += s_._transform._tr[1];
+        scalar alpha = s_._transform._rot[0];
+        if (alpha != 0.){
+            scalar alpha_rad = static_cast<scalar>(alpha/M_PI * 180.);
+            bbl = utils::rotate(bbl, alpha_rad);
+            bbr = utils::rotate(bbr, alpha_rad);
+        }
+        contour = {bbl, bbr};
+    } else if (not s_._vertices.empty()) {
+        // Plain contours are present
+        contour = view(s_._vertices);
+    } else if (s_._radii[1] != 0.) {
+        // Create a contour
+        scalar ri = s_._radii[0];
+        scalar ro = s_._radii[1];
+        scalar phi_low = s_._opening[0];
+        scalar phi_high = s_._opening[1];
+        scalar phi = 0.5 * (phi_low + phi_high);
+        scalar cos_phi_low = std::cos(phi_low);
+        scalar sin_phi_low = std::sin(phi_low);
+        scalar cos_phi_high = std::cos(phi_high);
+        scalar sin_phi_high = std::cos(phi_high);
+        /// @todo add transform
+        point3 A = {ri * cos_phi_low, ri * sin_phi_low, 0.};
+        point3 B = {ri * std::cos(phi), ri * std::sin(phi), 0.};
+        point3 C = {ri * cos_phi_high, ri * sin_phi_high, 0.};
+        point3 D = {ro * cos_phi_high, ro * sin_phi_high, 0.};
+        point3 E = {ro * std::cos(phi), ro * std::sin(phi), 0.};
+        point3 F = {ro * cos_phi_low, ro * sin_phi_low, 0.};
+
+        std::vector<point3> vertices_disc = {A, B, C, D, E, F};
+        contour = view(vertices_disc);
+    } else {
+        throw std::invalid_argument(
+            "surface_sheet_xy(...) - could not estimate range.");
+    }
+    return contour;
+}
+
 /** Helper method to scale the axis accordingly
  *
  * @param cc_ is an iterable container of contours
@@ -102,6 +168,7 @@ static std::array<std::array<scalar, 2>, 2> view_range(
  * @param v_ volume of the detector
  * @param view_ the view used for this
  * @param sh_ the sheet size
+ * @param es_ is the equal scale
  *
  * @returns the modules, a scale transform & the axes
  **/
@@ -109,22 +176,29 @@ template <typename volume_type, typename view_type>
 std::tuple<std::vector<svg::object>, style::transform,
            std::array<std::array<scalar, 2>, 2> >
 process_modules(const volume_type& v_, const view_type& view_,
-                const std::array<scalar, 2>& sh_ = {600., 600.}) {
+                const std::array<scalar, 2>& sh_ = {600., 600.},
+                bool es_ = false) {
 
     using surface_type = typename volume_type::surface_type;
 
     // Axis range & pre-loop
     std::vector<views::contour> contours;
     contours.reserve(v_._surfaces.size());
-    for (auto [is, s] : utils::enumerate(v_._surfaces)) {
-        auto surface_contour = view_(s._vertices);
-        contours.push_back(surface_contour);
+    for (const auto& s : v_._surfaces) {
+        contours.push_back(range_contour(s));
     }
 
     // Get the scaling right
     auto axes = display::view_range(contours);
+
     scalar s_x = sh_[0] / (axes[0][1] - axes[0][0]);
     scalar s_y = sh_[1] / (axes[1][1] - axes[1][0]);
+
+    if (es_) {
+        // Harmonize the view window with equal scales
+        s_x = s_x < s_y ? s_x : s_y;
+        s_y = s_y < s_x ? s_y : s_x;
+    }
 
     // Create the scale transform
     style::transform scale_transform;
@@ -136,7 +210,8 @@ process_modules(const volume_type& v_, const view_type& view_,
     for (auto [ic, c] : utils::enumerate(contours)) {
         surface_type draw_surface = v_._surfaces[ic];
         draw_surface._transform._scale = {s_x, s_y};
-        auto surface_module = display::surface(draw_surface._name, draw_surface, view_);
+        auto surface_module = display::surface(draw_surface._name, draw_surface,
+                                               view_, true, false, true, false);
         modules.push_back(surface_module);
     }
 
@@ -154,27 +229,30 @@ process_modules(const volume_type& v_, const view_type& view_,
  * @param v_ the input volume
  * @param templates_ the given module templtes
  * @param o_ the object to which they are attached
- * @param yt_ is the position of the title text in y
  *
  **/
 template <typename volume_type>
 void connect_surface_sheets(const volume_type& v_,
                             std::vector<svg::object>& templates_,
-                            svg::object& o_, scalar yt_ = 200.) {
+                            svg::object& o_) {
     // Now create an item per surface
     for (auto [is, s] : utils::enumerate(v_._surfaces)) {
         std::string sid = s._name;
 
-        // Template copy
-        size_t it = v_._templates[is];
-        if (it >= v_._templates.size()) {
-            continue;
-        }
-        svg::object s_sheet_s = templates_[v_._templates[is]];
-
+        svg::object s_sheet_s = templates_[is];
         s_sheet_s._attribute_map["display"] = "none";
 
-        auto surface_info = draw::text("info_" + s._name, {0, yt_}, s._info);
+        scalar x_min = std::numeric_limits<scalar>::max();
+        scalar y_max = std::numeric_limits<scalar>::min();
+
+        for (const auto& so : s_sheet_s._sub_objects) {
+            x_min = so._x_range[0] < x_min ? so._x_range[0] : x_min;
+            y_max = so._y_range[1] > y_max ? so._y_range[1] : y_max;
+        }
+        point2 labelp = {static_cast<scalar>(x_min - 0.2 * std::abs(x_min)),
+                         static_cast<scalar>(y_max + 0.2 * std::abs(y_max))};
+
+        auto surface_info = draw::text("info_" + s._name, labelp, s._info);
         s_sheet_s.add_object(surface_info);
 
         // Object information to appear

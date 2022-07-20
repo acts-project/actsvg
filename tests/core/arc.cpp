@@ -17,9 +17,6 @@
 using namespace actsvg;
 
 TEST(core, arc_plain) {
-
-    svg::file ftemplate;
-
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
 
@@ -27,25 +24,25 @@ TEST(core, arc_plain) {
     std::ofstream fo;
     fo.open("test_core_arc.svg");
 
-    fo << ftemplate._html_head;
-    fo << ftemplate._svg_head;
-    fo << " width=\"900\" height=\"900\" viewBox=\"-450 -450 900 900\"";
-    fo << ftemplate._svg_def_end;
-    // Add the playground
-    fo << pg;
-
     scalar phi_min = -0.25;
     scalar phi_max = 0.75;
     scalar r = 125.;
 
-    point2 start = { r * std::cos(phi_min), r * std::sin(phi_min)};
-    point2 end = { r * std::cos(phi_max), r * std::sin(phi_max)};
+    point2 start = {r * std::cos(phi_min), r * std::sin(phi_min)};
+    point2 end = {r * std::cos(phi_max), r * std::sin(phi_max)};
 
     // Add the line
-    fo << draw::arc("a", r, start, end, style::fill(),
-                     style::stroke{{{255, 0, 0}}, 2});
-    // Close the file
-    fo << ftemplate._svg_tail;
-    fo << ftemplate._html_tail;
+    auto a =  draw::arc("a", r, start, end, style::fill(),
+                    style::stroke{{{255, 0, 0}}, 2});
+
+    auto descr = draw::text(
+        "descr", {150, 100},
+        {"arc at r = 125", "with phi in [-0.25,0.75]"});
+
+    svg::file of;
+    of.add_object(pg);
+    of.add_object(a);
+    of.add_object(descr);
+    fo << of;
     fo.close();
 }
