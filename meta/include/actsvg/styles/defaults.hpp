@@ -49,37 +49,32 @@ static bool create_defaults() {
     __t_font._size = 14;
 
     // Sensitive fill and stroke
-    __s_fill._fc._rgb = {14, 118, 255};
-    __s_fill._fc._opacity = 0.5;
+    __s_fill._fc._rgb = {66, 182, 245};
+    __s_fill._fc._opacity = 0.75;
     __s_fill._fc._highlight = {"mouseover", "mouseout"};
-    __s_fill._fc._hl_rgb = {255, 118, 14};
+    __s_fill._fc._hl_rgb = {245, 182, 66};
 
     // Stroke definition
-    __s_stroke._sc._opacity = 0.75;
-    __a_stroke._sc._rgb = {0, 0, 0};
-    __a_stroke._width = 0.75;
+    __s_stroke._sc._opacity = 1.;
+    __s_stroke._width = 0.75;
 
     // Measurement
     __m_stroke = style::stroke();
     __m_stroke_guide = style::stroke();
-    __m_stroke_guide._dasharray = {1,1};
+    __m_stroke_guide._dasharray = {1, 1};
     __m_marker = style::marker({"|<"});
-
 
     // Grid
     __g_fill._fc._rgb = {200, 200, 200};
     __g_fill._fc._opacity = 0.25;
-    __g_fill._fc._highlight = {"mouseover", "mouseout"};
-    __g_fill._fc._hl_rgb = {{255, 0, 0}};
     __g_stroke._sc._rgb = {255, 0, 0};
     __g_stroke._width = 0.5;
-    __g_stroke._dasharray = {1, 1};
+    __g_stroke._hl_width = 4;
 
     // Transform
     __t_identity = style::transform();
 
     return true;
-
 }
 
 static bool __defaults_set = create_defaults();

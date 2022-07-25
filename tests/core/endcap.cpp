@@ -189,7 +189,7 @@ TEST(endcap, x_y_view_grid) {
     }
 
     // Build the connectors
-    connectors::connect_objects(grid_sectors._sub_objects, modules,
+    connectors::connect_fill_action(grid_sectors._sub_objects, modules,
                                 associations);
 
     // Add the surfaces
