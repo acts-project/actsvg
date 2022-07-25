@@ -13,6 +13,7 @@
 #include <tuple>
 #include <vector>
 
+#include "../common/playground.hpp"
 #include "actsvg/core.hpp"
 #include "actsvg/data/odd_pixel_barrel.hpp"
 #include "actsvg/meta.hpp"
@@ -22,133 +23,186 @@ using namespace actsvg;
 using point3 = std::array<scalar, 3>;
 using point3_container = std::vector<point3>;
 
-// Helper method to generate the barrel volume description
-template <typename point3_container_type = point3_container>
-proto::volume<point3_container_type> generate_barrel_volume() {
+namespace {
 
+/** Helper to generate a barrel
+ *
+ * @param t_ use template surfaces
+ *
+ **/
+proto::volume<point3_container> generate_barrel(bool t_ = false) noexcept(
+    false) {
+
+    // Create the endcap volume
     proto::volume<point3_container> barrel;
+    barrel._name = "Barrel";
+    barrel._surface_grid._type = proto::grid::e_z_phi;
 
-    scalar z_min = std::numeric_limits<scalar>::max();
-    scalar z_max = std::numeric_limits<scalar>::min();
+    scalar hx = 8.4;
+    scalar hy = 36.;
+    scalar barrel_r = 32.;
+    scalar tilt_phi = 0.14;
+    int staves = 16;
+    int stave_modules = 14;
 
-    // ODD module templates
+    // The template
     proto::surface<point3_container> barrel_module_template;
     barrel_module_template._vertices = {
-        {-8.4, -36, 0.}, {8.4, -36, 0.}, {8.4, 36., 0.}, {-8.4, 36., 0.}};
-    barrel_module_template._measures = {8.4, 36.};
+        {-hx, -hy, 0.}, {hx, -hy, 0.}, {hx, hy, 0.}, {-hx, hy, 0.}};
+    barrel_module_template._measures = {hx, hy};
     barrel_module_template._type =
         proto::surface<point3_container>::e_rectangle;
 
-    size_t number_of_modules = data::odd_pixel_barrel.size() / 4u;
-    barrel._surfaces.reserve(number_of_modules);
-    for (size_t im = 0; im < number_of_modules; ++im) {
-        // Create the module surface
-        proto::surface<point3_container> barrel_module;
-        barrel_module._name = "module_" + std::to_string(im);
-        barrel_module._vertices = {data::odd_pixel_barrel[4 * im],
-                                   data::odd_pixel_barrel[4 * im + 1],
-                                   data::odd_pixel_barrel[4 * im + 2],
-                                   data::odd_pixel_barrel[4 * im + 3]};
+    scalar offz = (0.5 * stave_modules - 0.5) * (1.98 * hy);
+    scalar nexz = offz / (0.5 * stave_modules - 0.5);
 
-        // Loop again for the z_min/z_max estimation
-        for (size_t io = 0; io < 4; ++io) {
-            scalar z = data::odd_pixel_barrel[4 * im + io][2];
-            z_min = std::min(z_min, z);
-            z_max = std::max(z_max, z);
+    // A view for the template
+    views::z_phi z_phi_view;
+    views::x_y x_y_view;
+
+    scalar delta_phi = 2 * M_PI / staves;
+
+    size_t cmodule = 0;
+    for (int iz = 0; iz < stave_modules; ++iz) {
+        scalar tr_z = -offz + iz * nexz;
+        if (iz == 0) {
+            barrel._surface_grid._edges_0.push_back(tr_z - hy);
         }
+        barrel._surface_grid._edges_0.push_back(tr_z + hy);
 
-        // Add some descriptive text
-        barrel_module._info = {"module #" + std::to_string(im),
-                               display::center_string(barrel_module._vertices)};
-        barrel._surfaces.push_back(barrel_module);
-    }
-
-    // Grid construction: z values
-    std::vector<scalar> z_values;
-    unsigned int z_tiles = 14;
-    z_values.reserve(z_tiles);
-    scalar z_step = (z_max - z_min) / z_tiles;
-    for (unsigned int iz = 0; iz <= z_tiles; ++iz) {
-        scalar z_value = z_min + iz * z_step;
-        z_values.push_back(z_value);
-    }
-
-    // Grid construction: phi values
-    std::vector<scalar> phi_values;
-    unsigned int n_sectors = 48;
-    phi_values.reserve(n_sectors);
-    scalar phi_step = 2 * M_PI / n_sectors;
-    for (unsigned int is = 0; is <= n_sectors; ++is) {
-        scalar c_phi = -M_PI + is * phi_step;
-        phi_values.push_back(c_phi);
-    }
-
-    barrel._surface_grid._edges_0 = z_values;
-    barrel._surface_grid._edges_1 = phi_values;
-
-    // Create the associations by simple matching
-    if (barrel._surface_grid._associations.empty()) {
-        views::z_phi z_phi_view;
-
-        for (unsigned int iz = 0; iz < z_tiles; ++iz) {
-            scalar z_value = z_min + iz * z_step;
-            for (unsigned int iphi = 0; iphi < n_sectors; ++iphi) {
-                scalar phi_value = -M_PI + iphi * phi_step;
-
-                std::map<unsigned long, unsigned long> module_associations;
-                for (auto [is, s] : utils::enumerate(barrel._surfaces)) {
-                    auto vertices = z_phi_view(s._vertices);
-                    // Any touching vertex counts + central value
-                    point2 center = {0., 0.};
-                    for (auto v : vertices) {
-                        center[0] += v[0];
-                        center[1] += v[1];
-                    }
-                    center[0] /= vertices.size();
-                    center[1] /= vertices.size();
-                    vertices.push_back(center);
-
-                    for (auto v : vertices) {
-                        if (std::abs(z_value - v[0]) < 1.0 * z_step) {
-                            scalar phi = v[1];
-                            if (std::abs(phi - phi_value) < 1.0 * phi_step or
-                                std::abs(phi - phi_value) >
-                                    (2 * M_PI - phi_step)) {
-                                module_associations[is] = is;
-                            }
-                        }
-                    }
+        for (int is = 0; is < staves; ++is, cmodule++) {
+            scalar cphi = -M_PI + is * delta_phi;
+            if (iz == 0) {
+                if (is == 0) {
+                    barrel._surface_grid._edges_1.push_back(cphi +
+                                                            0.5 * delta_phi);
                 }
-                std::vector<unsigned long> module_associtations_sl;
-                for (auto [key, value] : module_associations) {
-                    module_associtations_sl.push_back(key);
-                }
-                barrel._surface_grid._associations.push_back(
-                    module_associtations_sl);
+                barrel._surface_grid._edges_1.push_back(cphi + 1.5 * delta_phi);
+            }
+
+            // The position of the module
+            scalar tr_x = barrel_r * std::cos(cphi);
+            scalar tr_y = barrel_r * std::sin(cphi);
+            std::array<scalar, 3> tr = {tr_x, tr_y, tr_z};
+
+            std::vector<size_t> barrel_assoc = {cmodule, cmodule + 1,
+                                                cmodule + 2};
+            barrel._surface_grid._associations.push_back(barrel_assoc);
+
+            // The columns of the rotation matrix
+            scalar mphi = 0.5 * M_PI + cphi + tilt_phi;
+            std::array<scalar, 3> col_x = {std::cos(mphi), std::sin(mphi), 0.};
+            std::array<scalar, 3> col_y = {0., 0., 1.};
+            if (not t_) {
+
+                point3 ll =
+                    utils::add(tr, utils::add(utils::scale(col_y, -hy),
+                                              utils::scale(col_x, -hx)));
+                point3 lr = utils::add(tr, utils::add(utils::scale(col_y, -hy),
+                                                      utils::scale(col_x, hx)));
+                point3 hr = utils::add(tr, utils::add(utils::scale(col_y, hy),
+                                                      utils::scale(col_x, hx)));
+                point3 hl =
+                    utils::add(tr, utils::add(utils::scale(col_y, hy),
+                                              utils::scale(col_x, -hx)));
+
+                proto::surface<point3_container> barrel_module;
+                barrel_module._name =
+                    "module_" + std::to_string(is) + "_" + std::to_string(iz);
+                barrel_module._vertices = {ll, lr, hr, hl};
+                barrel_module._measures = barrel_module_template._measures;
+                barrel_module._type = barrel_module_template._type;
+                barrel_module._info.push_back("Module " + std::to_string(is) +
+                                              " " + std::to_string(iz));
+                barrel_module._info.push_back(
+                    "center z/phi = " + utils::to_string(tr_z) + "/" +
+                    std::to_string(cphi));
+                barrel_module._template_object = display::surface(
+                    barrel_module._name + "_template", barrel_module_template,
+                    x_y_view, true, true, true, true);
+
+                barrel._surfaces.push_back(barrel_module);
             }
         }
     }
 
     return barrel;
 }
+}  // namespace
 
-auto barrel = generate_barrel_volume<>();
+TEST(display, barrel_x_y_view) {
 
-TEST(display, barrel_sheet_grid_info) {
+    auto barrel = generate_barrel();
 
-    barrel._name = "ODD Pixel Barrel (sample)";
-
-    // Create the sheet
-    svg::object barrel_sheet = display::barrel_sheet(
-        "sheet_odd_barrel", barrel, {600, 600}, display::e_grid_info);
+    // Set a playground
+    auto pg = test::playground({-100, -100}, {100, 100});
 
     svg::file barrel_file;
     barrel_file._width = 1000;
-    barrel_file.add_object(barrel_sheet);
+
+    // Draw the surfaces
+    style::fill module_color{style::color{{28, 156, 168}}};
+    module_color._fc._opacity = 0.5;
+    module_color._fc._hl_rgb = {{10, 200, 10}};
+
+    style::stroke stroke_color{style::color{{8, 76, 87}}};
+    stroke_color._width = 0.5;
+
+    views::x_y x_y_view;
+
+    std::vector<svg::object> modules;
+    for (auto [m, bm] : utils::enumerate(barrel._surfaces)) {
+        std::string m_id = std::string("m") + std::to_string(m);
+        auto module_contour = x_y_view(bm._vertices);
+        modules.push_back(
+            draw::polygon(m_id, module_contour, module_color, stroke_color));
+    }
+
+    // Add the surfaces
+    barrel_file._objects.insert(barrel_file._objects.end(), modules.begin(),
+                                modules.end());
 
     // Write out the file
     std::ofstream eout;
-    eout.open("sheet_odd_barrel_grid_info.svg");
+    eout.open("barrel_xy_view.svg");
     eout << barrel_file;
+    eout.close();
+}
+
+TEST(display, barrel_sheet_module_info) {
+
+    auto barrel = generate_barrel();
+
+    // Create the sheet
+    svg::object barrel_sheet = display::barrel_sheet(
+        "barrel_sheet", barrel, {600, 600}, display::e_module_info);
+
+    svg::file barrel_file_fs;
+    barrel_file_fs._width = 1000;
+    barrel_file_fs.add_object(barrel_sheet);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_barrel_module_info.svg");
+    eout << barrel_file_fs;
+    eout.close();
+}
+
+TEST(display, barrel_sheet_grid_info) {
+
+    auto barrel = generate_barrel();
+
+    // Create the sheet
+    svg::object barrel_sheet = display::barrel_sheet(
+        "barrel_sheet", barrel, {600, 600}, display::e_grid_info);
+
+    svg::file barrel_file_fs;
+    barrel_file_fs._width = 1000;
+    barrel_file_fs.add_object(barrel_sheet);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_barrel_grid_info.svg");
+    eout << barrel_file_fs;
     eout.close();
 }

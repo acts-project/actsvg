@@ -29,34 +29,35 @@ namespace display {
  * @param v_ the view type
  * @param b_ draw the boolean
  * @param fs_ draw as focus
- * @param sc_ draw at scale 
+ * @param sc_ draw at scale
  * @param dt_ draw as template
  */
 template <typename surface_type, typename view_type>
 svg::object surface(const std::string& id_, const surface_type& s_,
-                    const view_type& v_, bool _b = true, bool fs_ = false, bool sc_ = false, bool dt_ = false) {
+                    const view_type& v_, bool _b = true, bool fs_ = false,
+                    bool sc_ = false, bool dt_ = false) {
 
     svg::object s;
 
-    // If the surface has a template ... go for it directly if not focussed
+    // If the surface has a template and is it defined
     if (s_._template_object.is_defined()) {
 
-        style::transform draw_transform = s_._transform; 
-        // No rotation nor shift as template 
+        style::transform draw_transform = s_._transform;
+        // No rotation nor shift as template
         if (dt_) {
-            draw_transform._tr = {0.,0.};
+            draw_transform._tr = {0., 0.};
             draw_transform._rot = {0., 0., 0.};
         }
-        // Apply scale or not 
+        // Apply scale or not
         if (not sc_) {
             draw_transform._scale = {1., 1.};
-        } 
+        }
 
         // Create a surface object from the template
         s = draw::from_template(id_, s_._template_object, s_._fill, s_._stroke,
                                 draw_transform);
         return s;
-    } 
+    }
 
     style::transform draw_transform = fs_ ? style::transform{} : s_._transform;
     draw_transform._scale = s_._transform._scale;

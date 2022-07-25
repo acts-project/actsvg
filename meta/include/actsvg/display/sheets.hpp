@@ -520,8 +520,8 @@ svg::object sheet(const std::string& id_,
     view_type view;
 
     // The modules are drawn and axes set
-    auto [modules, scale_transform, axes] =
-        process_modules(v_, view, sh_, lT == e_endcap);
+    auto [modules, scale_transform, axes] = process_modules(
+        v_, view, sh_, lT == e_endcap, t_ == e_module_info, lT == e_endcap);
     auto x_axis = axes[0];
     auto y_axis = axes[1];
 
@@ -539,7 +539,7 @@ svg::object sheet(const std::string& id_,
             s._fill = s_fill;
             // The template sheet
             auto s_sheet = display::surface_sheet_xy(s._name + "_surface_sheet",
-                                                     s, s_sh_, true);
+                                                     s, s_sh_, lT == e_endcap);
             style::transform(
                 {{static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
                   0.}})
@@ -550,7 +550,6 @@ svg::object sheet(const std::string& id_,
         connect_surface_sheets(v_, s_sheets, o_sheet);
     } else if (t_ == e_grid_info and not v_._surface_grid._edges_0.empty() and
                not v_._surface_grid._edges_1.empty()) {
-
         // Draw the grid with the appropriate scale transform
         if (lT == e_endcap) {
             extra_objects =
@@ -566,8 +565,8 @@ svg::object sheet(const std::string& id_,
                     ._sub_objects;
         }
         // Connect grid and surfaces
-        connectors::connect_objects(extra_objects, modules,
-                                    v_._surface_grid._associations);
+        connectors::connect_fill_action(extra_objects, modules,
+                                        v_._surface_grid._associations);
     }
 
     // Add the modules & eventual extra objects

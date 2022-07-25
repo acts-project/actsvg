@@ -102,8 +102,8 @@ views::contour range_contour(const surface_type& s_,
         bbr[0] += s_._transform._tr[0];
         bbr[1] += s_._transform._tr[1];
         scalar alpha = s_._transform._rot[0];
-        if (alpha != 0.){
-            scalar alpha_rad = static_cast<scalar>(alpha/M_PI * 180.);
+        if (alpha != 0.) {
+            scalar alpha_rad = static_cast<scalar>(alpha / M_PI * 180.);
             bbl = utils::rotate(bbl, alpha_rad);
             bbr = utils::rotate(bbr, alpha_rad);
         }
@@ -169,6 +169,8 @@ static std::array<std::array<scalar, 2>, 2> view_range(
  * @param view_ the view used for this
  * @param sh_ the sheet size
  * @param es_ is the equal scale
+ * @param hl_ switch highlighting on/off
+ * @param dt_ draw template is available
  *
  * @returns the modules, a scale transform & the axes
  **/
@@ -177,7 +179,7 @@ std::tuple<std::vector<svg::object>, style::transform,
            std::array<std::array<scalar, 2>, 2> >
 process_modules(const volume_type& v_, const view_type& view_,
                 const std::array<scalar, 2>& sh_ = {600., 600.},
-                bool es_ = false) {
+                bool es_ = false, bool hl_ = true, bool dt_ = true) {
 
     using surface_type = typename volume_type::surface_type;
 
@@ -185,7 +187,12 @@ process_modules(const volume_type& v_, const view_type& view_,
     std::vector<views::contour> contours;
     contours.reserve(v_._surfaces.size());
     for (const auto& s : v_._surfaces) {
-        contours.push_back(range_contour(s));
+        surface_type range_surface = s;
+        if (not dt_) {
+            range_surface._template_object = svg::object{};
+        }
+        contours.push_back(
+            range_contour<surface_type, view_type>(range_surface));
     }
 
     // Get the scaling right
@@ -210,6 +217,13 @@ process_modules(const volume_type& v_, const view_type& view_,
     for (auto [ic, c] : utils::enumerate(contours)) {
         surface_type draw_surface = v_._surfaces[ic];
         draw_surface._transform._scale = {s_x, s_y};
+        if (not hl_) {
+            draw_surface._fill._fc._highlight = {};
+        }
+        if (not dt_) {
+            draw_surface._template_object = svg::object{};
+        }
+
         auto surface_module = display::surface(draw_surface._name, draw_surface,
                                                view_, true, false, true, false);
         modules.push_back(surface_module);

@@ -96,6 +96,8 @@ struct stroke {
     color _sc{{0, 0, 0}};
     /// Width definition
     scalar _width = 0.5;
+    /// hl with
+    scalar _hl_width = 0.5;
     /// Dashing definition
     std::vector<int> _dasharray = {};
     /// Nothing is written out
@@ -120,6 +122,7 @@ struct stroke {
             o_._attribute_map["stroke-opacity"] =
                 utils::to_string(_sc._opacity);
             o_._attribute_map["stroke-width"] = utils::to_string(_width);
+            // dashed array
             if (not _dasharray.empty()) {
                 std::string da_str;
                 for (auto [i, d] : utils::enumerate(_dasharray)) {
@@ -130,6 +133,27 @@ struct stroke {
                 }
                 o_._attribute_map["stroke-dasharray"] = da_str;
             }
+            // Stroke color
+            if (_sc._highlight.size() == 2u) {
+                object_type on_off;
+                on_off._tag = "set";
+                on_off._attribute_map["attributeName"] = "stroke";
+                on_off._attribute_map["begin"] = _sc._highlight[0];
+                on_off._attribute_map["end"] = _sc._highlight[1];
+                on_off._attribute_map["to"] = rgb_attr(_sc._hl_rgb);
+                o_.add_object(on_off);
+            }
+            // Stroke width 
+            if (_width != _hl_width) {
+                object_type on_off;
+                on_off._tag = "set";
+                on_off._attribute_map["attributeName"] = "stroke-width";
+                on_off._attribute_map["begin"] = "mouseover";
+                on_off._attribute_map["end"] = "mouseout";
+                on_off._attribute_map["to"] = utils::to_string(_hl_width);
+                o_.add_object(on_off);
+            }
+
         }
     }
 };
@@ -188,8 +212,8 @@ struct transform {
         bool skew = (_skew[0] != 0. or _skew[1] != 0.);
         std::stringstream tr_str;
         if (translate) {
-            tr_str << "translate(" << utils::to_string(_scale[0]*_tr[0]) << __c
-                   << utils::to_string(-_scale[0]*_tr[1]) << ")";
+            tr_str << "translate(" << utils::to_string(_scale[0] * _tr[0])
+                   << __c << utils::to_string(-_scale[0] * _tr[1]) << ")";
             if (rotate or scale or skew) {
                 tr_str << __blk;
             }

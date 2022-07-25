@@ -37,7 +37,7 @@ namespace proto {
         /// The edges in the two given directions, loc1
         std::vector<scalar> _edges_1 = {};
 
-        /** These are the grid associations, when runnign through 
+        /** These are the grid associations, when iterating through 
          * 
          *  size_t i = 0;
          *  for (auto: _edges_1) 

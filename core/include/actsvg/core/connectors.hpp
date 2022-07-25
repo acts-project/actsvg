@@ -27,7 +27,7 @@ namespace connectors {
  * @param s_t_connections_ are the connections from source to target
  * @param on_off_ are the connection effects
  **/
-static inline void connect_objects(
+static inline void connect_fill_action(
     std::vector<svg::object> &sources_, std::vector<svg::object> &targets_,
     const std::vector<std::vector<size_t> > &s_t_connections_,
     const std::array<std::string, 2u> &on_off_ = {"mouseover", "mouseout"}) {
@@ -43,15 +43,33 @@ static inline void connect_objects(
             for (auto t : ts) {
                 if (t < targets_.size()) {
                     auto &tog = targets_[t];
-
                     // Highlight it
                     svg::object on_off;
                     on_off._tag = "set";
                     on_off._attribute_map["attributeName"] = "fill";
                     on_off._attribute_map["begin"] = sog._id + __d + on_off_[0];
                     on_off._attribute_map["end"] = sog._id + __d + on_off_[1];
+                    // Stroke and fill sterile
+                    on_off._stroke._sterile = true;
+                    on_off._fill._sterile = true;
+                    // If the object has a use object, the connection goes to
+                    // the use object and not the the top object
+                    bool connection_done = false;
+                    for (auto &sob_tog : tog._sub_objects) {
+                        if (sob_tog._tag == "use") {
+                            on_off._attribute_map["to"] =
+                                style::rgb_attr(sob_tog._fill._fc._hl_rgb);
+                            sob_tog._sub_objects.push_back(on_off);
+                            connection_done = true;
+                            break;
+                        }
+                    }
                     // On off tests
-                    tog._sub_objects.push_back(on_off);
+                    if (not connection_done) {
+                        on_off._attribute_map["to"] =
+                            style::rgb_attr(tog._fill._fc._hl_rgb);
+                        tog._sub_objects.push_back(on_off);
+                    }
                 }
             }
         }
