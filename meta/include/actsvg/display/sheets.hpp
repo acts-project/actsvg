@@ -525,6 +525,19 @@ svg::object sheet(const std::string& id_,
     auto x_axis = axes[0];
     auto y_axis = axes[1];
 
+    // Set the info according to the sheet type
+    for (auto [is, s] : utils::enumerate(v_._surfaces)) {
+        auto& m = modules[is];
+        if (t_ == e_module_info and
+            s._aux_info.find("module_info") != s._aux_info.end()) {
+            m._aux_info = s._aux_info.find("module_info")->second;
+        } else if (t_ == e_grid_info and
+                   s._aux_info.find("grid_info") != s._aux_info.end()) {
+            m._aux_info = s._aux_info.find("grid_info")->second;
+        }
+    }
+
+    // Eventual extra objects to be added
     std::vector<svg::object> extra_objects;
 
     // Draw the template module surfaces

@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <map>
 #include <optional>
 #include <string>
 #include <utility>
@@ -44,8 +45,8 @@ struct surface {
     /// Name of the surface
     std::string _name = "unnamed";
 
-    /// Auxiliary information
-    std::vector<std::string> _info = {};
+    /// Auxiliary information as container map
+    std::map<std::string, std::vector<std::string>> _aux_info = {};
 
     /// The contained vertices - for polygon surfaces
     point3_container _vertices = {};
@@ -85,7 +86,7 @@ struct surface {
         surface<point3_container> s;
         s._name = name_;
         s._type = t_._type;
-        s._info = t_._info;
+        s._aux_info = t_._aux_info;
         s._vertices = t_._vertices;
         s._measures = t_._measures;
         s._radii = t_._radii;

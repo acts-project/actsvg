@@ -266,8 +266,11 @@ void connect_surface_sheets(const volume_type& v_,
         point2 labelp = {static_cast<scalar>(x_min - 0.2 * std::abs(x_min)),
                          static_cast<scalar>(y_max + 0.2 * std::abs(y_max))};
 
-        auto surface_info = draw::text("info_" + s._name, labelp, s._info);
-        s_sheet_s.add_object(surface_info);
+        if (s._aux_info.find("module_info") != s._aux_info.end()) {
+            auto surface_info = draw::text("info_" + s._name, labelp,
+                                           s._aux_info.find("module_info")->second);
+            s_sheet_s.add_object(surface_info);
+        }
 
         // Object information to appear
         svg::object on;
