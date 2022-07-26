@@ -173,24 +173,27 @@ proto::volume<point3_container> generate_endcap(
 
             for (auto ioff : assoc_rows[is]) {
                 for (auto n : neighbors) {
-                    int assoc = ioff*int(sectors) + n;
+                    int assoc = ioff * int(sectors) + n;
                     bin_assoc.push_back(assoc);
                 }
             }
             endcap._surface_grid._associations.push_back(bin_assoc);
 
             /// Add some descriptive text
-            s._info = {
-                "module_" + std::to_string(is) + "_" + std::to_string(isc),
+            s._aux_info["module_info"] = {
+                "module " + std::to_string(is) + " " + std::to_string(isc),
                 "phi =" + utils::to_string(phi)};
+
+            s._aux_info["grid_info"] = {"* module " + std::to_string(is) + " " +
+                                        std::to_string(isc)};
 
             // The transform
             style::transform t;
             if (m_t_ == proto::surface<point3_container>::e_trapez) {
                 t._tr[0] = static_cast<scalar>(rad_pos[is] * std::cos(phi));
                 t._tr[1] = static_cast<scalar>(rad_pos[is] * std::sin(phi));
-                s._info.push_back(std::string("center = ") +
-                                  utils::to_string(t._tr));
+                s._aux_info["module_info"] = {std::string("center = ") +
+                                              utils::to_string(t._tr)};
                 t._rot[0] = static_cast<scalar>(phi * 180 / M_PI - 90.);
             } else {
                 t._rot[0] = static_cast<scalar>(phi * 180 / M_PI);
@@ -225,7 +228,6 @@ proto::volume<point3_container> generate_endcap(
 }
 
 }  // namespace
-
 
 TEST(display, endcap_sheet_sec_module_info_ref) {
 
@@ -295,9 +297,8 @@ TEST(display, endcap_sheet_trap_grid_info_ref) {
         generate_endcap(proto::surface<point3_container>::e_trapez);
 
     // Create the sheet
-    svg::object endcap_sheet_fs =
-        display::endcap_sheet("trapez_endcap_sheet", trapez_endcap, {600, 600},
-                              display::e_grid_info);
+    svg::object endcap_sheet_fs = display::endcap_sheet(
+        "trapez_endcap_sheet", trapez_endcap, {600, 600}, display::e_grid_info);
 
     svg::file endcap_file_fs;
     endcap_file_fs._width = 1000;

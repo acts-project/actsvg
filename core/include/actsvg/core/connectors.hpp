@@ -42,7 +42,8 @@ static inline std::vector<svg::object> connect_action(
     std::vector<svg::object> &sources_, std::vector<svg::object> &targets_,
     const std::vector<std::vector<size_t> > &s_t_connections_,
     const std::array<std::string, 2u> &on_off_ = {"mouseover", "mouseout"},
-    const std::vector<connectors::type> &ct_ = {e_highlight, e_associate_id}) {
+    const std::vector<connectors::type> &ct_ = {e_highlight,
+                                                e_associate_info}) {
 
     std::vector<svg::object> additional_connections;
 
@@ -62,7 +63,9 @@ static inline std::vector<svg::object> connect_action(
             id_assoc_text.push_back("* " + sog._id);
             // Associate the auxiliary information
             info_assoc_text.push_back("Source: ");
-            info_assoc_text.push_back("* " + sog._aux_info);
+            for (const auto &sai : sog._aux_info) {
+                info_assoc_text.push_back(sai);
+            }
             // Enumerate over the connections
             for (auto [it, t] : utils::enumerate(ts)) {
                 if (t < targets_.size()) {
@@ -74,7 +77,9 @@ static inline std::vector<svg::object> connect_action(
                         info_assoc_text.push_back("Target:");
                     }
                     id_assoc_text.push_back("* " + tog._id);
-                    info_assoc_text.push_back("* " + tog._aux_info);
+                    for (const auto &tai : tog._aux_info) {
+                        info_assoc_text.push_back(tai);
+                    }
                     // Highlight connection
                     if (std::find(ct_.begin(), ct_.end(), e_highlight) !=
                         ct_.end()) {
@@ -119,15 +124,14 @@ static inline std::vector<svg::object> connect_action(
                     style::font(), style::transform(), sog);
                 additional_connections.push_back(c_text);
             } else if (std::find(ct_.begin(), ct_.end(), e_associate_info) !=
-                ct_.end()){
-                 // Associate info connection
+                       ct_.end()) {
+                // Associate info connection
                 auto c_text = draw::connected_text(
                     sog._id + "_info_associations",
                     {sog._barycenter[0], sog._barycenter[1]}, info_assoc_text,
                     style::font(), style::transform(), sog);
-                additional_connections.push_back(c_text);               
-            } 
-
+                additional_connections.push_back(c_text);
+            }
         }
     }
     return additional_connections;

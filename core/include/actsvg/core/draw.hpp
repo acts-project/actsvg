@@ -514,9 +514,12 @@ static inline svg::object tiled_cartesian_grid(
             std::array<scalar, 2u> rlc = {l0_edges_[il0 - 1], l1_edges_[il1]};
 
             std::vector<std::array<scalar, 2u>> tile = {llc, lrc, rrc, rlc};
-
+            // Create the grid tile, add auxiliary info and add it to the grid
             auto grid_tile = polygon(gs + std::to_string(il1 - 1), tile, fill_,
                                      stroke_, transform_);
+            grid_tile._aux_info = {std::string("* bin (" +
+                                               std::to_string(il0 - 1) + "," +
+                                               std::to_string(il1 - 1) + ")")};
             grid.add_object(grid_tile);
         }
     }
@@ -645,11 +648,15 @@ static inline svg::object tiled_fan_grid(
             scalar xhl_c = xll + x_l_slope * (yh - y_min);
             scalar xhr_c = xlr + x_r_slope * (yh - y_min);
 
+            // Create the grid tile, add auxiliary info and add it
             std::string g_n =
                 id_ + "_" + std::to_string(ix) + "_" + std::to_string(iy);
-            grid.add_object(draw::polygon(
+            auto grid_tile = draw::polygon(
                 g_n, {{xll_c, yl}, {xlr_c, yl}, {xhr_c, yh}, {xhl_c, yh}},
-                fill_, stroke_, transform_));
+                fill_, stroke_, transform_);
+            grid_tile._aux_info = {std::string("* bin (" + std::to_string(ix) +
+                                               "," + std::to_string(iy) + ")")};
+            grid.add_object(grid_tile);
         }
     }
 
@@ -741,11 +748,14 @@ static inline svg::object tiled_polar_grid(
             auto sector_contour = generators::sector_contour(
                 r_edges_[ir - 1], r_edges_[ir], phi_edges_[iphi - 1],
                 phi_edges_[iphi]);
-
-            auto grid_sector =
+            // Create the grid tile, add auxiliary info and add it
+            auto grid_tile =
                 polygon(gs + std::to_string(iphi - 1), sector_contour, fill_,
                         stroke_, transform_);
-            grid.add_object(grid_sector);
+            grid_tile._aux_info = {std::string("* bin (" +
+                                               std::to_string(ir - 1) + "," +
+                                               std::to_string(iphi - 1) + ")")};
+            grid.add_object(grid_tile);
         }
     }
     return grid;

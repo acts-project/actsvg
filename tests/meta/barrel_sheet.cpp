@@ -112,11 +112,15 @@ proto::volume<point3_container> generate_barrel(bool t_ = false) noexcept(
                 barrel_module._vertices = {ll, lr, hr, hl};
                 barrel_module._measures = barrel_module_template._measures;
                 barrel_module._type = barrel_module_template._type;
-                barrel_module._info.push_back("Module " + std::to_string(is) +
-                                              " " + std::to_string(iz));
-                barrel_module._info.push_back(
-                    "center z/phi = " + utils::to_string(tr_z) + "/" +
-                    std::to_string(cphi));
+                barrel_module._aux_info["module_info"] = {
+                    std::string("Module " + std::to_string(is) + " " +
+                                std::to_string(iz)),
+                    std::string("center z/phi = " + utils::to_string(tr_z) +
+                                "/" + std::to_string(cphi))};
+                barrel_module._aux_info["grid_info"] = {
+                    std::string("* module " + std::to_string(iz) + " " +
+                                std::to_string(is))};
+
                 barrel_module._template_object = display::surface(
                     barrel_module._name + "_template", barrel_module_template,
                     x_y_view, true, true, true, true);

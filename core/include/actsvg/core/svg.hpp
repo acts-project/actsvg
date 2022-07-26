@@ -37,8 +37,8 @@ struct object {
     /// Identification string
     std::string _id = "";
 
-    /// Auxiliary info
-    std::string _aux_info = "";
+    /// Auxiliary info for this object
+    std::vector<std::string> _aux_info = {};
 
     /// Sterile - does not write _fill, stroke, transform
     bool _sterile = false;
@@ -66,7 +66,7 @@ struct object {
     std::vector<object> _definitions = {};
 
     /// Barycenter from vertices
-    std::array<scalar, 2> _barycenter = {0.,0.};
+    std::array<scalar, 2> _barycenter = {0., 0.};
 
     /// Range in x - view frame
     std::array<scalar, 2> _x_range = {std::numeric_limits<scalar>::max(),
