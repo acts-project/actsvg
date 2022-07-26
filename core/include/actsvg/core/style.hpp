@@ -163,7 +163,7 @@ struct font {
     /// The font color
     color _fc{{0, 0, 0}};
 
-    std::string _family = "Arial";
+    std::string _family = "Andale Mono";
 
     unsigned int _size = 12;
 

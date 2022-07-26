@@ -565,8 +565,16 @@ svg::object sheet(const std::string& id_,
                     ._sub_objects;
         }
         // Connect grid and surfaces
-        connectors::connect_fill_action(extra_objects, modules,
-                                        v_._surface_grid._associations);
+        auto c_objects = connectors::connect_action(
+            extra_objects, modules, v_._surface_grid._associations);
+        // Let's set them to the right side outside the view
+        std::for_each(c_objects.begin(), c_objects.end(), [&](svg::object& o_) {
+            o_._attribute_map["x"] =
+                utils::to_string(static_cast<scalar>(sh_[0] - 200.));
+            o_._x_range = {static_cast<scalar>(sh_[0] - 200.),
+                           static_cast<scalar>(sh_[0] - 10.)};
+        });
+        o_sheet.add_objects(c_objects);
     }
 
     // Add the modules & eventual extra objects

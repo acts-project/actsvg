@@ -189,8 +189,10 @@ TEST(endcap, x_y_view_grid) {
     }
 
     // Build the connectors
-    connectors::connect_fill_action(grid_sectors._sub_objects, modules,
+    auto c_objects = connectors::connect_action(grid_sectors._sub_objects, modules,
                                 associations);
+    ec_file._objects.insert(ec_file._objects.end(), c_objects.begin(),
+                            c_objects.end());
 
     // Add the surfaces
     ec_file._objects.insert(ec_file._objects.end(), modules.begin(),

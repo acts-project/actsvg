@@ -37,6 +37,9 @@ struct object {
     /// Identification string
     std::string _id = "";
 
+    /// Auxiliary info
+    std::string _aux_info = "";
+
     /// Sterile - does not write _fill, stroke, transform
     bool _sterile = false;
 
