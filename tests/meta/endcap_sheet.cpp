@@ -25,15 +25,24 @@ using point3_container = std::vector<point3>;
 
 namespace {
 
+/** Generate an endcap with either disc or trapezoid volumes
+ *
+ * @param m_t_ is the surface type
+ * @param ft_ is a boolean indicating if a template module is used (or not)
+ *
+ * @return a proto volume for the endcap
+ *
+ **/
 proto::volume<point3_container> generate_endcap(
-    const proto::surface<point3_container>::type& m_t_) noexcept(false) {
+    const proto::surface<point3_container>::type& m_t_,
+    bool ft_ = true) noexcept(false) {
 
     unsigned int sectors = 16;
     scalar half_opening = static_cast<scalar>(M_PI / sectors);
 
     // Create the endcap volume
     proto::volume<point3_container> endcap;
-    endcap._name = "Endcap with templates";
+    endcap._name = ft_ ? "Endcap with templates" : "Endcap with individuals";
 
     // The proto surfaces for the templates
     proto::surface<point3_container> inner_template_surface;
@@ -145,13 +154,27 @@ proto::volume<point3_container> generate_endcap(
 
         for (unsigned int isc = 0; isc < sectors; ++isc) {
 
-            // Create the surface from a template
-            proto::surface<point3_container> s =
-                proto::surface<point3_container>::from_template(
-                    ts, template_object, ts._name + std::to_string(isc));
-
-            // Phi
+            // Current phi-value
             scalar phi = -M_PI + isc * 2 * half_opening;
+
+            // Create the surface
+            proto::surface<point3_container> s;
+            // (a) from template
+            if (ft_) {
+                s = proto::surface<point3_container>::from_template(
+                    ts, template_object, ts._name + "_" + std::to_string(isc));
+            } else {
+                // (b) as individual objects
+                s._name = ts._name + std::to_string(isc);
+                s._type = ts._type;
+                s._aux_info = ts._aux_info;
+                s._vertices = ts._vertices;
+                s._measures = ts._measures;
+                s._radii = ts._radii;
+                s._opening = ts._opening;
+                s._fill = ts._fill;
+                s._stroke = ts._stroke;
+            }
 
             // Fill the grid phi-values
             if (is == 0) {
@@ -219,7 +242,7 @@ proto::volume<point3_container> generate_endcap(
             }
 
             // Set the template
-            s._template_object = template_object;
+            // s._template_object = template_object;
             endcap._surfaces.push_back(s);
         }
     }
@@ -229,7 +252,7 @@ proto::volume<point3_container> generate_endcap(
 
 }  // namespace
 
-TEST(display, endcap_sheet_sec_module_info_ref) {
+TEST(display, endcap_sheet_sec_module_info_tmp) {
 
     auto sector_endcap =
         generate_endcap(proto::surface<point3_container>::e_disc);
@@ -245,12 +268,33 @@ TEST(display, endcap_sheet_sec_module_info_ref) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("sheet_endcap_sector_module_info.svg");
+    eout.open("sheet_endcap_t_sector_module_info.svg");
     eout << endcap_file_fs;
     eout.close();
 }
 
-TEST(display, endcap_sheet_sec_module_grid_ref) {
+TEST(display, endcap_sheet_sec_module_info_ind) {
+
+    auto sector_endcap =
+        generate_endcap(proto::surface<point3_container>::e_disc, false);
+
+    // Create the sheet
+    svg::object endcap_sheet_fs =
+        display::endcap_sheet("sector_endcap_sheet", sector_endcap, {600, 600},
+                              display::e_module_info);
+
+    svg::file endcap_file_fs;
+    endcap_file_fs._width = 1000;
+    endcap_file_fs.add_object(endcap_sheet_fs);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_i_sector_module_info.svg");
+    eout << endcap_file_fs;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_sec_module_grid_tmp) {
 
     auto sector_endcap =
         generate_endcap(proto::surface<point3_container>::e_disc);
@@ -265,12 +309,32 @@ TEST(display, endcap_sheet_sec_module_grid_ref) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("sheet_endcap_sector_grid_info.svg");
+    eout.open("sheet_endcap_t_sector_grid_info.svg");
     eout << endcap_file_fs;
     eout.close();
 }
 
-TEST(display, endcap_sheet_trap_module_info_ref) {
+TEST(display, endcap_sheet_sec_module_grid_ind) {
+
+    auto sector_endcap =
+        generate_endcap(proto::surface<point3_container>::e_disc, false);
+
+    // Create the sheet
+    svg::object endcap_sheet_fs = display::endcap_sheet(
+        "sector_endcap_sheet", sector_endcap, {600, 600}, display::e_grid_info);
+
+    svg::file endcap_file_fs;
+    endcap_file_fs._width = 1000;
+    endcap_file_fs.add_object(endcap_sheet_fs);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_i_sector_grid_info.svg");
+    eout << endcap_file_fs;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_trap_module_info_tmp) {
 
     auto trapez_endcap =
         generate_endcap(proto::surface<point3_container>::e_trapez);
@@ -286,12 +350,33 @@ TEST(display, endcap_sheet_trap_module_info_ref) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("sheet_endcap_trapez_module_info.svg");
+    eout.open("sheet_endcap_t_trapez_module_info.svg");
     eout << endcap_file_fs;
     eout.close();
 }
 
-TEST(display, endcap_sheet_trap_grid_info_ref) {
+TEST(display, endcap_sheet_trap_module_info_ind) {
+
+    auto trapez_endcap =
+        generate_endcap(proto::surface<point3_container>::e_trapez, false);
+
+    // Create the sheet
+    svg::object endcap_sheet_fs =
+        display::endcap_sheet("trapez_endcap_sheet", trapez_endcap, {600, 600},
+                              display::e_module_info);
+
+    svg::file endcap_file_fs;
+    endcap_file_fs._width = 1000;
+    endcap_file_fs.add_object(endcap_sheet_fs);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_i_trapez_module_info.svg");
+    eout << endcap_file_fs;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_trap_grid_info_tmp) {
 
     auto trapez_endcap =
         generate_endcap(proto::surface<point3_container>::e_trapez);
@@ -306,7 +391,27 @@ TEST(display, endcap_sheet_trap_grid_info_ref) {
 
     // Write out the file
     std::ofstream eout;
-    eout.open("sheet_endcap_trapez_grid_info.svg");
+    eout.open("sheet_endcap_t_trapez_grid_info.svg");
+    eout << endcap_file_fs;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_trap_grid_info_ind) {
+
+    auto trapez_endcap =
+        generate_endcap(proto::surface<point3_container>::e_trapez, false);
+
+    // Create the sheet
+    svg::object endcap_sheet_fs = display::endcap_sheet(
+        "trapez_endcap_sheet", trapez_endcap, {600, 600}, display::e_grid_info);
+
+    svg::file endcap_file_fs;
+    endcap_file_fs._width = 1000;
+    endcap_file_fs.add_object(endcap_sheet_fs);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_i_trapez_grid_info.svg");
     eout << endcap_file_fs;
     eout.close();
 }

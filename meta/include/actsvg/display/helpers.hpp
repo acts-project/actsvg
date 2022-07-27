@@ -90,27 +90,38 @@ views::contour range_contour(const surface_type& s_,
 
     // Add the surface
     views::contour contour;
-    if (s_._template_object.is_defined() and not fs_) {
+    if (s_._template_object.is_defined()) {
         // Use a bounding box trick
         // Get the contour from the template as bounding box
         point2 bbl = {s_._template_object._x_range[0],
                       s_._template_object._y_range[0]};
         point2 bbr = {s_._template_object._x_range[1],
                       s_._template_object._y_range[1]};
-        bbl[0] += s_._transform._tr[0];
-        bbl[1] += s_._transform._tr[1];
-        bbr[0] += s_._transform._tr[0];
-        bbr[1] += s_._transform._tr[1];
-        scalar alpha = s_._transform._rot[0];
-        if (alpha != 0.) {
-            scalar alpha_rad = static_cast<scalar>(alpha / M_PI * 180.);
-            bbl = utils::rotate(bbl, alpha_rad);
-            bbr = utils::rotate(bbr, alpha_rad);
+        if (not fs_) {
+            bbl[0] += s_._transform._tr[0];
+            bbl[1] += s_._transform._tr[1];
+            bbr[0] += s_._transform._tr[0];
+            bbr[1] += s_._transform._tr[1];
+            scalar alpha = s_._transform._rot[0];
+            if (alpha != 0.) {
+                scalar alpha_rad = static_cast<scalar>(alpha / M_PI * 180.);
+                bbl = utils::rotate(bbl, alpha_rad);
+                bbr = utils::rotate(bbr, alpha_rad);
+            }
         }
         contour = {bbl, bbr};
     } else if (not s_._vertices.empty()) {
         // Plain contours are present
         contour = view(s_._vertices);
+        if (not fs_) {
+            std::for_each(contour.begin(), contour.end(), [&](auto& v) {
+                scalar alpha = s_._transform._rot[0];
+                scalar alpha_rad = static_cast<scalar>(alpha / M_PI * 180.);
+                v = utils::rotate(v, alpha_rad);
+                v[0] += s_._transform._tr[0];
+                v[1] += s_._transform._tr[1];
+            });
+        }
     } else if (s_._radii[1] != 0.) {
         // Create a contour
         scalar ri = s_._radii[0];
@@ -267,8 +278,9 @@ void connect_surface_sheets(const volume_type& v_,
                          static_cast<scalar>(y_max + 0.2 * std::abs(y_max))};
 
         if (s._aux_info.find("module_info") != s._aux_info.end()) {
-            auto surface_info = draw::text("info_" + s._name, labelp,
-                                           s._aux_info.find("module_info")->second);
+            auto surface_info =
+                draw::text("info_" + s._name, labelp,
+                           s._aux_info.find("module_info")->second);
             s_sheet_s.add_object(surface_info);
         }
 
