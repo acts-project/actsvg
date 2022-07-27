@@ -395,6 +395,7 @@ svg::object surface_sheet_xy(const std::string& id_,
 
         so.add_object(draw::line(id_ + "_phi_line_l", {0, 0}, in_left_s_xy,
                                  __m_stroke_guide));
+
         so.add_object(draw::line(id_ + "_phi_line_r", {0, 0}, in_right_s_xy,
                                  __m_stroke_guide));
 

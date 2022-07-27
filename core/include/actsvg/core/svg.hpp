@@ -70,16 +70,16 @@ struct object {
 
     /// Range in x - view frame
     std::array<scalar, 2> _x_range = {std::numeric_limits<scalar>::max(),
-                                      std::numeric_limits<scalar>::min()};
+                                      std::numeric_limits<scalar>::lowest()};
     /// Range in y - view frame
     std::array<scalar, 2> _y_range = {std::numeric_limits<scalar>::max(),
-                                      std::numeric_limits<scalar>::min()};
+                                      std::numeric_limits<scalar>::lowest()};
     /// Range in r  - view frame
     std::array<scalar, 2> _r_range = {std::numeric_limits<scalar>::max(),
-                                      std::numeric_limits<scalar>::min()};
+                                      std::numeric_limits<scalar>::lowest()};
     /// Range in phi - view frame
     std::array<scalar, 2> _phi_range = {std::numeric_limits<scalar>::max(),
-                                        std::numeric_limits<scalar>::min()};
+                                        std::numeric_limits<scalar>::lowest()};
 
     /** An object is defined if a tag is set */
     bool is_defined() const { return (not _tag.empty()); }
