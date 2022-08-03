@@ -34,6 +34,7 @@ struct surface {
     enum type {
         e_annulus,
         e_cylinder,
+        e_diamond,
         e_disc,
         e_polygon,
         e_rectangle,

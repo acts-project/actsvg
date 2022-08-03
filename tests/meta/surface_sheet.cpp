@@ -61,6 +61,26 @@ TEST(display, sheet_trapezoid) {
     sout.close();
 }
 
+TEST(display, sheet_diamond) {
+
+    proto::surface<point3_container> diamond;
+    diamond._type = proto::surface<point3_container>::e_diamond;
+    diamond._vertices = {{-8.5, -34, 0.}, {8.5, -34, 0.},   {20., 0., 0.},
+                         {14.5, 20., 0.}, {-14.5, 20., 0.}, {-20., 0., 0.}};
+    diamond._measures = {8.5, 20., 14.5, 34., 20.};
+
+    svg::object surface_sheet =
+        display::surface_sheet_xy("sheet_diamond", diamond);
+    svg::file surface_file;
+    surface_file.add_object(surface_sheet);
+
+    // Write out the file
+    std::ofstream sout;
+    sout.open("sheet_diamond.svg");
+    sout << surface_file;
+    sout.close();
+}
+
 TEST(discplay, sheet_polygon) {
 
     proto::surface<point3_container> polygon;
@@ -134,7 +154,8 @@ TEST(display, sheet_wedge) {
     wedge._opening = {-0.1, 0.7};
     wedge._measures = {0., 30., 0.8};
 
-    svg::object surface_sheet = display::surface_sheet_xy("sheet_wedge", wedge, {600,600}, false);
+    svg::object surface_sheet =
+        display::surface_sheet_xy("sheet_wedge", wedge, {600, 600}, false);
     svg::file surface_file;
     surface_file.add_object(surface_sheet);
 
@@ -154,7 +175,7 @@ TEST(display, sheet_sector) {
     sector._measures = {10., 30., 0.7};
 
     svg::object surface_sheet =
-        display::surface_sheet_xy("sheet_sector", sector, {600,600}, false);
+        display::surface_sheet_xy("sheet_sector", sector, {600, 600}, false);
     svg::file surface_file;
     surface_file.add_object(surface_sheet);
 
@@ -178,7 +199,7 @@ TEST(discplay, sheet_annulus) {
 
     annulus._measures = {7.2, 12.0, 0.74195, 1.33970, 0., -3., 2.};
 
-    // Focus on the sheet 
+    // Focus on the sheet
     svg::object surface_sheet =
         display::surface_sheet_xy("sheet_annulus", annulus);
     svg::file surface_file;
@@ -189,6 +210,4 @@ TEST(discplay, sheet_annulus) {
     sout.open("sheet_annulus.svg");
     sout << surface_file;
     sout.close();
-
-
 }
