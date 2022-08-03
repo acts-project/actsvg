@@ -163,6 +163,66 @@ svg::object surface_sheet_xy(const std::string& id_,
                            static_cast<scalar>(0.5 * hly)});
         so.add_object(measure_hlx);
         so.add_object(measure_hly);
+    } else if (s_._type == proto::surface<point3_container>::e_diamond and
+               s_._measures.size() == 5u) {
+
+        scalar hlx_ymin = s_._measures[0] * s_x;
+        scalar hlx_y0 = s_._measures[1] * s_x;
+        scalar hlx_ymax = s_._measures[2] * s_x;
+        scalar hly_xmin = s_._measures[3] * s_y;
+        scalar hly_xmax = s_._measures[4] * s_y;
+        scalar ms = 2. * __m_marker._size;
+
+        // Measure names
+        std::string h_x_n = "h_x_ny";
+        std::string h_x_0 = "h_x_0y";
+        std::string h_x_p = "h_x_py";
+        std::string h_y_n = "h_y_nx";
+        std::string h_y_p = "h_y_px";
+
+        auto measure_hlx_ny = draw::measure(
+            id_ + "_hlx_ny", {0, -hly_xmin - ms}, {hlx_ymin, -hly_xmin - ms},
+            __m_stroke, __m_marker, __m_marker, __m_font,
+            h_x_n + " = " + utils::to_string(s_._measures[0]),
+            {static_cast<scalar>(0.5 * hlx_ymin),
+             static_cast<scalar>((-hly_xmin - ms - 1.2 * __m_font._size))});
+
+        auto measure_hlx_0y =
+            draw::measure(id_ + "_hlx_ny", {0., 0.}, {hlx_y0, 0.}, __m_stroke,
+                          __m_marker, __m_marker, __m_font,
+                          h_x_0 + " = " + utils::to_string(s_._measures[1]),
+                          {static_cast<scalar>(0.5 * hlx_y0),
+                           static_cast<scalar>((-ms - 1.2 * __m_font._size))});
+
+        auto measure_hlx_py = draw::measure(
+            id_ + "_hlx_py", {0, hly_xmax + ms}, {hlx_ymax, hly_xmax + ms},
+            __m_stroke, __m_marker, __m_marker, __m_font,
+            h_x_p + " = " + utils::to_string(s_._measures[2]),
+            {static_cast<scalar>(0.5 * hlx_ymax),
+             static_cast<scalar>((hly_xmax + ms + 1.2 * __m_font._size))});
+
+        auto measure_hly_nx = draw::measure(
+            id_ + "_hly_nx", {static_cast<scalar>(-0.5 * hlx_ymin), -hly_xmin},
+            {static_cast<scalar>(-0.5 * hlx_ymin), 0.}, __m_stroke, __m_marker,
+            __m_marker, __m_font,
+            h_y_n + " = " + utils::to_string(s_._measures[3]),
+            {static_cast<scalar>(-0.5 * hlx_ymin + ms),
+             static_cast<scalar>(-0.5 * hly_xmin)});
+
+        auto measure_hly_px = draw::measure(
+            id_ + "_hly_px", {static_cast<scalar>(-0.5 * hlx_ymax), 0.},
+            {static_cast<scalar>(-0.5 * hlx_ymax), hly_xmax}, __m_stroke,
+            __m_marker, __m_marker, __m_font,
+            h_y_p + " = " + utils::to_string(s_._measures[4]),
+            {static_cast<scalar>(-0.5 * hlx_ymax + ms),
+             static_cast<scalar>(0.5 * hly_xmax)});
+
+        so.add_object(measure_hlx_ny);
+        so.add_object(measure_hlx_0y);
+        so.add_object(measure_hlx_py);
+        so.add_object(measure_hly_nx);
+        so.add_object(measure_hly_px);
+
     } else if (s_._type == proto::surface<point3_container>::e_polygon and
                s_._measures.size() == 2 * s_._vertices.size()) {
 
