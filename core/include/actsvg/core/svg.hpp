@@ -31,6 +31,18 @@ namespace svg {
  **/
 struct object {
 
+    /** Nested summary struct
+     *
+     * This struct allows for defining some summary
+     * information with which this object has been 
+     * create.
+     * 
+     **/
+    struct summary {
+        std::array<scalar,2> _scale = {1.,1.};
+    };
+
+
     /// SVG tag of the objec
     std::string _tag = "";
 
@@ -80,6 +92,9 @@ struct object {
     /// Range in phi - view frame
     std::array<scalar, 2> _phi_range = {std::numeric_limits<scalar>::max(),
                                         std::numeric_limits<scalar>::lowest()};
+
+    /// Summary object 
+    summary _summary;
 
     /** An object is defined if a tag is set */
     bool is_defined() const { return (not _tag.empty()); }
