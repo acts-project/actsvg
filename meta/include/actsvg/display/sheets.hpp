@@ -79,6 +79,9 @@ svg::object surface_sheet_xy(const std::string& id_,
     style::transform scale_transform;
     scale_transform._scale = {s_x, s_y};
 
+    // Remember the scale this has been done with
+    so._summary._scale = scale_transform._scale;
+
     // Copy in order to modify the transform
     proto::surface<point3_container> draw_surface = s_;
     draw_surface._transform._scale = {s_x, s_y};
@@ -552,6 +555,7 @@ svg::object surface_sheet_xy(const std::string& id_,
                  static_cast<scalar>(__m_font._size + end_r[1])});
             so.add_object(measure_r);
         }
+
     }
     return so;
 }
@@ -585,6 +589,9 @@ svg::object sheet(const std::string& id_,
         v_, view, sh_, lT == e_endcap, t_ == e_module_info, lT == e_endcap);
     auto x_axis = axes[0];
     auto y_axis = axes[1];
+
+    // Remember the scale with which this has been done
+    o_sheet._summary._scale = scale_transform._scale;
 
     // Set the info according to the sheet type
     for (auto [is, s] : utils::enumerate(v_._surfaces)) {
