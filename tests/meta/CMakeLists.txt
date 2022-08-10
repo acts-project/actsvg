@@ -2,6 +2,7 @@
 actsvg_add_test( meta
   "clusters.cpp"
   "detector.cpp"
+  "eta_lines.cpp"
   "volume.cpp"
   "grid.cpp"
   "barrel_sheet.cpp"
