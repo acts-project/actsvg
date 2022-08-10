@@ -6,6 +6,7 @@ actsvg_add_test( core
   "copy.cpp"
   "endcap.cpp"
   "grids.cpp"
+  "infobox.cpp"
   "line.cpp"
   "markers.cpp"
   "measures.cpp"

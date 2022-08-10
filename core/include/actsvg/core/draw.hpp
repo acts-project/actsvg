@@ -389,7 +389,7 @@ static inline svg::object text(
     return t;
 }
 
-/** Draw a text object - unconnected
+/** Draw a text object - connected
  *
  * @param id_ is the text object id
  * @param p_ is the text position
@@ -432,6 +432,101 @@ static inline svg::object connected_text(
     t._sub_objects.push_back(on);
     t._sub_objects.push_back(off);
     return t;
+}
+
+/** Draw a text object - connected
+ *
+ * @param id_ is the text object id
+ * @param p_ is the position of the info box
+ * @param title_ is the title of the info box
+ * @param title_fill_ is the fill color of the title
+ * @param title_font_ is the font style of the title
+ * @param text_ is the actual text to be drawn
+ * @param text_fill_ is the fill color of the text box
+ * @param text_font_ is the font style of the text box
+ * @param stroke_ is the stroke
+ * @param object_ is the connected object
+ * @param highlight_ are the hightlighting options
+ *
+ * @return an svg object with highlight connection
+ *
+ **/
+static inline svg::object connected_info_box(
+    const std::string &id_, const point2 &p_, const std::string &title_,
+    const style::fill &title_fill_, const style::font &title_font_,
+    const std::vector<std::string> &text_, const style::fill &text_fill_,
+    const style::font &text_font_, const style::stroke &stroke_,
+    const svg::object &object_,
+    const std::vector<std::string> &highlight_ = {"mouseover", "mouseout"}) {
+
+    svg::object ib;
+    ib._tag = "g";
+    ib._id = id_;
+
+    size_t tew = 0;
+    for (const auto &t : text_) {
+        tew = t.size() > tew ? t.size() : tew;
+    }
+    scalar tews = (tew + 2) * text_font_._size;
+    scalar tiws = (title_.size() + 2) * title_font_._size;
+    scalar ws = std::max(tews, tiws);
+
+    scalar tih = 2 * title_font_._size;
+    scalar teh =
+        static_cast<scalar>(1.5 * text_.size() + 0.5) * text_font_._size;
+
+    std::vector<std::array<scalar, 2>> tic = {p_,
+                                              {p_[0], p_[1] - tih},
+                                              {p_[0] + ws, p_[1] - tih},
+                                              {p_[0] + ws, p_[1]}};
+
+    auto tibox = polygon(id_ + "_title_box", tic, title_fill_, stroke_);
+    ib.add_object(tibox);
+    auto ti = text(id_ + "_title",
+                   {p_[0] + title_font_._size,
+                    static_cast<scalar>(p_[1] - 1.5 * title_font_._size)},
+                   {title_}, title_font_);
+    ib.add_object(ti);
+
+    std::vector<std::array<scalar, 2>> tec = {{p_[0], p_[1] - tih},
+                                              {p_[0] + ws, p_[1] - tih},
+                                              {p_[0] + ws, p_[1] - tih - teh},
+                                              {p_[0], p_[1] - tih - teh}};
+
+    auto tebox = polygon(id_ + "_text_box", tec, text_fill_, stroke_);
+    ib.add_object(tebox);
+    auto te =
+        text(id_ + "_text",
+             {p_[0] + title_font_._size, static_cast<scalar>(p_[1] - tih)},
+             text_, text_font_);
+    ib.add_object(te);
+
+    // Connect it
+    if (object_.is_defined()) {
+        ib._attribute_map["display"] = "none";
+
+        svg::object on;
+        on._tag = "animate";
+        on._attribute_map["fill"] = "freeze";
+        on._attribute_map["attributeName"] = "display";
+        on._attribute_map["from"] = "none";
+        on._attribute_map["to"] = "block";
+        on._attribute_map["begin"] = object_._id + __d + highlight_[1];
+
+        svg::object off;
+
+        off._tag = "animate";
+        off._attribute_map["fill"] = "freeze";
+        off._attribute_map["attributeName"] = "display";
+        off._attribute_map["to"] = "none";
+        off._attribute_map["from"] = "block";
+        off._attribute_map["begin"] = object_._id + __d + highlight_[0];
+
+        // Store the animation
+        ib._sub_objects.push_back(on);
+        ib._sub_objects.push_back(off);
+    }
+    return ib;
 }
 
 /** Draw a tiled cartesian grid - ready for connecting
