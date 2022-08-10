@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -154,6 +155,70 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     }
 
     return s;
+}
+
+/** Draw eta lines in a zr view
+ *
+ * @param id_ the identiier
+ * @param zr_ the z range of the detector
+ * @param rr_ the r range of the detector
+ * @param els_ the stroked eta lines + boolean whether to label
+ * @param tr_ a potential transform
+ *
+ * @return a single object containing the frame
+ */
+static inline svg::object eta_lines(
+    const std::string& id_, scalar zr_, scalar rr_,
+    const std::vector<std::tuple<std::vector<scalar>, style::stroke, bool,
+                                 style::font>>& els_,
+    const style::transform& tr_ = style::transform()) {
+
+    svg::object e;
+    e._tag = "g";
+    e._id = id_;
+    e._transform = tr_;
+
+    auto theta_from_eta = [](scalar eta) -> scalar {
+        return static_cast<scalar>(2. * std::atan(std::exp(-eta)));
+    };
+
+    scalar theta_cut = std::atan2(rr_, zr_);
+
+    for (auto [iet, elt] : utils::enumerate(els_)) {
+        auto stroke = std::get<style::stroke>(elt);
+        for (auto [ie, eta] :
+             utils::enumerate(std::get<std::vector<scalar>>(elt))) {
+            scalar theta = theta_from_eta(eta);
+            std::array<scalar, 2> start = {0., 0.};
+            std::array<scalar, 2> end;
+            if (theta < theta_cut) {
+                end = {zr_, static_cast<scalar>(zr_ * std::tan(theta))};
+            } else {
+                end = {static_cast<scalar>(rr_ * 1 / std::tan(theta)), rr_};
+            }
+            // Draw the line
+            std::string uid = std::to_string(iet) + "_" + std::to_string(ie);
+            auto e_line =
+                draw::line(id_ + "eta_line_" + uid, start, end, stroke);
+            e.add_object(e_line);
+            // Label it if told to do so
+            if (std::get<bool>(elt)) {
+                auto font = std::get<style::font>(elt);
+                end[0] +=
+                    static_cast<scalar>(std::cos(theta) * 0.5 * font._size);
+                end[1] +=
+                    static_cast<scalar>(std::sin(theta) * 0.5 * font._size);
+                if (eta == 0.) {
+                    end[0] -= static_cast<scalar>(0.5 * font._size);
+                }
+                auto e_text = utils::to_string(eta);
+                auto e_label =
+                    draw::text(id_ + "eta_label_" + uid, end, {e_text}, font);
+                e.add_object(e_label);
+            }
+        }
+    }
+    return e;
 }
 
 }  // namespace display
