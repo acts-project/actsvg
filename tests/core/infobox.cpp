@@ -27,6 +27,7 @@ TEST(core, info_box) {
     title_blue._fc._rgb = {0, 0, 150};
     title_blue._fc._opacity = 0.8;
     style::font title_font;
+    title_font._size = 24;
     title_font._fc = style::color{{255, 255, 255}};
 
     std::vector<std::string> info = {"this is an info box", "a = 101",
@@ -36,6 +37,7 @@ TEST(core, info_box) {
     info_blue._fc._rgb = {0, 0, 150};
     info_blue._fc._opacity = 0.4;
     style::font info_font;
+    info_font._size = 18;
 
     style::stroke stroke;
 

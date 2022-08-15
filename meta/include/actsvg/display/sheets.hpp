@@ -555,7 +555,6 @@ svg::object surface_sheet_xy(const std::string& id_,
                  static_cast<scalar>(__m_font._size + end_r[1])});
             so.add_object(measure_r);
         }
-
     }
     return so;
 }
@@ -594,14 +593,17 @@ svg::object sheet(const std::string& id_,
     o_sheet._summary._scale = scale_transform._scale;
 
     // Set the info according to the sheet type
-    for (auto [is, s] : utils::enumerate(v_._surfaces)) {
-        auto& m = modules[is];
-        if (t_ == e_module_info and
-            s._aux_info.find("module_info") != s._aux_info.end()) {
-            m._aux_info = s._aux_info.find("module_info")->second;
-        } else if (t_ == e_grid_info and
-                   s._aux_info.find("grid_info") != s._aux_info.end()) {
-            m._aux_info = s._aux_info.find("grid_info")->second;
+
+    for (auto [ib, surface_batch] : utils::enumerate(v_._surfaces)) {
+        for (auto [is, s] : utils::enumerate(surface_batch)) {
+            auto& m = modules[ib][is];
+            if (t_ == e_module_info and
+                s._aux_info.find("module_info") != s._aux_info.end()) {
+                m._aux_info = s._aux_info.find("module_info")->second;
+            } else if (t_ == e_grid_info and
+                       s._aux_info.find("grid_info") != s._aux_info.end()) {
+                m._aux_info = s._aux_info.find("grid_info")->second;
+            }
         }
     }
 
@@ -611,26 +613,32 @@ svg::object sheet(const std::string& id_,
     // Draw the template module surfaces
     if (t_ == e_module_info) {
         // The sheets per module
-        std::vector<svg::object> s_sheets;
-        for (auto s : v_._surfaces) {
-            // Use a local copy of the surface to modify color
-            style::fill s_fill;
-            s_fill._fc._rgb = s._fill._fc._hl_rgb;
-            s_fill._fc._opacity = s._fill._fc._opacity;
-            s._fill = s_fill;
-            // The template sheet
-            auto s_sheet = display::surface_sheet_xy(s._name + "_surface_sheet",
-                                                     s, s_sh_, lT == e_endcap);
-            style::transform(
-                {{static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100), 0.,
-                  0.}})
-                .attach_attributes(s_sheet);
-            s_sheets.push_back(s_sheet);
+        std::vector<std::vector<svg::object>> all_s_sheets;
+        for (auto surface_batch : v_._surfaces) {
+            std::vector<svg::object> s_sheets;
+            for (auto s : surface_batch) {
+                // Use a local copy of the surface to modify color
+                style::fill s_fill;
+                s_fill._fc._rgb = s._fill._fc._hl_rgb;
+                s_fill._fc._opacity = s._fill._fc._opacity;
+                s._fill = s_fill;
+                // The template sheet
+                auto s_sheet = display::surface_sheet_xy(
+                    s._name + "_surface_sheet", s, s_sh_, lT == e_endcap);
+                style::transform(
+                    {{static_cast<scalar>(0.5 * sh_[0] + 0.5 * s_sh_[0] + 100),
+                      0., 0.}})
+                    .attach_attributes(s_sheet);
+                s_sheets.push_back(s_sheet);
+            }
+            all_s_sheets.push_back(s_sheets);
         }
         // Connect the surface sheets
-        connect_surface_sheets(v_, s_sheets, o_sheet);
+        connect_surface_sheets(v_, all_s_sheets, o_sheet);
     } else if (t_ == e_grid_info and not v_._surface_grid._edges_0.empty() and
                not v_._surface_grid._edges_1.empty()) {
+
+        svg::object sub_sheet;
         // Draw the grid with the appropriate scale transform
         if (lT == e_endcap) {
             extra_objects =
@@ -645,29 +653,51 @@ svg::object sheet(const std::string& id_,
                                            __g_stroke, scale_transform)
                     ._sub_objects;
         }
-        // Connect grid and surfaces
-        auto c_objects = connectors::connect_action(
-            extra_objects, modules, v_._surface_grid._associations);
-        // Let's set them to the right side outside the view
-        std::for_each(c_objects.begin(), c_objects.end(), [&](svg::object& o_) {
-            o_._attribute_map["x"] =
-                utils::to_string(static_cast<scalar>(sh_[0] - 200.));
-            o_._x_range = {static_cast<scalar>(sh_[0] - 200.),
-                           static_cast<scalar>(sh_[0] - 10.)};
-        });
-        o_sheet.add_objects(c_objects);
+        // The associations
+        for (auto [ib, module_batch] : utils::enumerate(modules)) {
+            // Connect grid and surfaces
+            auto c_objects = connectors::connect_action(
+                extra_objects, module_batch, v_._associations[ib], ib == 0u);
+            scalar offs = ib * s_sh_[0];                
+            // Let's set them to the right side outside the view
+            std::for_each(
+                c_objects.begin(), c_objects.end(), [&](svg::object& o_) {
+                    o_._attribute_map["x"] =
+                        utils::to_string(static_cast<scalar>(offs + sh_[0] - 100.));
+                    o_._attribute_map["y"] =
+                        utils::to_string(static_cast<scalar>(offs));
+                    o_._x_range = {static_cast<scalar>(offs + sh_[0] - 300.),
+                                   static_cast<scalar>(offs + sh_[0] - 10.)};
+                });
+            o_sheet.add_objects(c_objects);
+        }
     }
 
-    // Add the modules & eventual extra objects
-    o_sheet.add_objects(modules);
-    o_sheet.add_objects(extra_objects);
 
-    // Add the axes on top
-    auto axis_font = __a_font;
-    axis_font._size = 10;
-    o_sheet.add_object(draw::x_y_axes(id_ + "_xy", x_axis, y_axis, __a_stroke,
-                                      view._axis_names[0], view._axis_names[1],
-                                      axis_font));
+    // Add the modules & eventual extra objects
+    for (auto [ib, module_batch] : utils::enumerate(modules)) {
+
+        svg::object sub_sheet;
+        sub_sheet._tag = "g";
+        sub_sheet._id = id_ + "_sub_sheet_" + std::to_string(ib);
+        sub_sheet.add_objects(module_batch);
+        // Add the axes on top @todo add autmated font size adaption
+        auto axis_font = __a_font;
+        axis_font._size = 10;
+        sub_sheet.add_object(draw::x_y_axes(id_ + "_xy", x_axis, y_axis,
+                                            __a_stroke, view._axis_names[0],
+                                            view._axis_names[1], axis_font));
+        // Shift to the right 
+        style::transform(
+                    {{static_cast<scalar>(ib*(sh_[0] + s_sh_[0])),
+                      0., 0.}})
+                    .attach_attributes(sub_sheet);
+
+        o_sheet.add_object(sub_sheet);
+    }
+
+    // Extra objects are added to the basic sheet
+    o_sheet.add_objects(extra_objects);
 
     //  Add the title text
     auto title_font = __t_font;

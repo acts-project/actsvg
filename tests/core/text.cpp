@@ -12,8 +12,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "actsvg/core/draw.hpp"
-#include "actsvg/core/style.hpp"
+#include "actsvg/core.hpp"
 #include "../common/playground.hpp"
 
 using namespace actsvg;
@@ -43,6 +42,17 @@ TEST(text, unconnected_text) {
 
     // Add the text
     fo << draw::text("t0", {10, 10}, {"Arial test text at (10,10)"}, fs);
+
+
+    style::color blue{{0, 0, 255}};
+    style::font fsb;
+    fsb._family = "Times";
+    fsb._size = 20;
+    fsb._fc = blue;
+
+    fo << draw::text("t1", {20, 80}, {"Bigger Times text"}, fsb);
+
+
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;

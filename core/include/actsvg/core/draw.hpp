@@ -371,6 +371,7 @@ static inline svg::object text(
     t._attribute_map["x"] = utils::to_string(x);
     t._attribute_map["y"] = utils::to_string(-y);
     t._attribute_map["font-family"] = font_._family;
+    t._attribute_map["font-size"] = std::to_string(font_._size);
     t._field_span = font_._size * font_._line_spacing;
 
     size_t l = 0;

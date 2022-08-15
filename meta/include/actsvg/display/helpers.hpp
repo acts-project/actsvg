@@ -183,31 +183,41 @@ static std::array<std::array<scalar, 2>, 2> view_range(
  * @param hl_ switch highlighting on/off
  * @param dt_ draw template is available
  *
- * @returns the modules, a scale transform & the axes
+ * @returns the modules (per surface batch), a scale transform & the axes
  **/
 template <typename volume_type, typename view_type>
-std::tuple<std::vector<svg::object>, style::transform,
-           std::array<std::array<scalar, 2>, 2> >
+std::tuple<std::vector<std::vector<svg::object>>, style::transform,
+           std::array<std::array<scalar, 2>, 2>>
 process_modules(const volume_type& v_, const view_type& view_,
                 const std::array<scalar, 2>& sh_ = {600., 600.},
                 bool es_ = false, bool hl_ = true, bool dt_ = true) {
 
     using surface_type = typename volume_type::surface_type;
 
-    // Axis range & pre-loop
-    std::vector<views::contour> contours;
-    contours.reserve(v_._surfaces.size());
-    for (const auto& s : v_._surfaces) {
-        surface_type range_surface = s;
-        if (not dt_) {
-            range_surface._template_object = svg::object{};
+    // Axis range & pre-loop, create contours
+    std::vector<std::vector<views::contour>> all_contours;
+    for (const auto& surfaces : v_._surfaces) {
+        std::vector<views::contour> contours;
+        contours.reserve(surfaces.size());
+        for (const auto& s : surfaces) {
+            surface_type range_surface = s;
+            if (not dt_) {
+                range_surface._template_object = svg::object{};
+            }
+            contours.push_back(
+                range_contour<surface_type, view_type>(range_surface));
         }
-        contours.push_back(
-            range_contour<surface_type, view_type>(range_surface));
+        all_contours.push_back(contours);
     }
 
-    // Get the scaling right
-    auto axes = display::view_range(contours);
+    // Concatenate all contours into one for the range display
+    std::vector<views::contour> flattened_contours;
+    for (const auto& c : all_contours) {
+        flattened_contours.insert(flattened_contours.end(), c.begin(), c.end());
+    }
+
+    // Get the scaling right - same scaling for all potential views
+    auto axes = display::view_range(flattened_contours);
 
     scalar s_x = sh_[0] / (axes[0][1] - axes[0][0]);
     scalar s_y = sh_[1] / (axes[1][1] - axes[1][0]);
@@ -223,27 +233,32 @@ process_modules(const volume_type& v_, const view_type& view_,
     scale_transform._scale = {s_x, s_y};
 
     // Draw the modules and estimate axis ranges
-    std::vector<svg::object> modules;
-    modules.reserve(contours.size());
-    for (auto [ic, c] : utils::enumerate(contours)) {
-        surface_type draw_surface = v_._surfaces[ic];
-        draw_surface._transform._scale = {s_x, s_y};
-        if (not hl_) {
-            draw_surface._fill._fc._highlight = {};
-        }
-        if (not dt_) {
-            draw_surface._template_object = svg::object{};
-        }
+    std::vector<std::vector<svg::object>> all_modules;
+    for (auto [ics, contours] : utils::enumerate(all_contours)) {
+        std::vector<svg::object> modules;
+        modules.reserve(contours.size());
+        for (auto [ic, c] : utils::enumerate(contours)) {
+            surface_type draw_surface = v_._surfaces[ics][ic];
+            draw_surface._transform._scale = {s_x, s_y};
+            if (not hl_) {
+                draw_surface._fill._fc._highlight = {};
+            }
+            if (not dt_) {
+                draw_surface._template_object = svg::object{};
+            }
 
-        auto surface_module = display::surface(draw_surface._name, draw_surface,
-                                               view_, true, false, true, false);
-        modules.push_back(surface_module);
+            auto surface_module =
+                display::surface(draw_surface._name, draw_surface, view_, true,
+                                 false, true, false);
+            modules.push_back(surface_module);
+        }
+        all_modules.push_back(modules);
     }
 
     // Prepare the axis for the view range
     prepare_axes(axes[0], axes[1], s_x, s_y, 30., 30.);
 
-    return {modules, scale_transform, axes};
+    return {all_modules, scale_transform, axes};
 }
 
 /** Helper method to connect the surface sheets to the
@@ -258,55 +273,58 @@ process_modules(const volume_type& v_, const view_type& view_,
  **/
 template <typename volume_type>
 void connect_surface_sheets(const volume_type& v_,
-                            std::vector<svg::object>& templates_,
+                            std::vector<std::vector<svg::object>>& templates_,
                             svg::object& o_) {
     // Now create an item per surface
-    for (auto [is, s] : utils::enumerate(v_._surfaces)) {
-        std::string sid = s._name;
+    for (auto [ib, surface_batch] : utils::enumerate(v_._surfaces)) {
+        for (auto [is, s] : utils::enumerate(surface_batch)) {
+            std::string sid = s._name;
 
-        svg::object s_sheet_s = templates_[is];
-        s_sheet_s._attribute_map["display"] = "none";
+            svg::object& s_sheet_s = templates_[ib][is];
+            s_sheet_s._attribute_map["display"] = "none";
 
-        scalar x_min = std::numeric_limits<scalar>::max();
-        scalar y_max = std::numeric_limits<scalar>::min();
+            scalar x_min = std::numeric_limits<scalar>::max();
+            scalar y_max = std::numeric_limits<scalar>::min();
 
-        for (const auto& so : s_sheet_s._sub_objects) {
-            x_min = so._x_range[0] < x_min ? so._x_range[0] : x_min;
-            y_max = so._y_range[1] > y_max ? so._y_range[1] : y_max;
+            for (const auto& so : s_sheet_s._sub_objects) {
+                x_min = so._x_range[0] < x_min ? so._x_range[0] : x_min;
+                y_max = so._y_range[1] > y_max ? so._y_range[1] : y_max;
+            }
+            point2 labelp = {
+                static_cast<scalar>(x_min - 0.2 * std::abs(x_min)),
+                static_cast<scalar>(y_max + 0.2 * std::abs(y_max))};
+
+            if (s._aux_info.find("module_info") != s._aux_info.end()) {
+                auto surface_info =
+                    draw::text("info_" + s._name, labelp,
+                               s._aux_info.find("module_info")->second);
+                s_sheet_s.add_object(surface_info);
+            }
+
+            // Object information to appear
+            svg::object on;
+            on._tag = "animate";
+            on._attribute_map["fill"] = "freeze";
+            on._attribute_map["attributeName"] = "display";
+            on._attribute_map["from"] = "none";
+            on._attribute_map["to"] = "block";
+            on._attribute_map["begin"] = sid + __d + "mouseout";
+
+            svg::object off;
+
+            off._tag = "animate";
+            off._attribute_map["fill"] = "freeze";
+            off._attribute_map["attributeName"] = "display";
+            off._attribute_map["to"] = "none";
+            off._attribute_map["from"] = "block";
+            off._attribute_map["begin"] = sid + __d + "mouseover";
+
+            // Store the animation
+            s_sheet_s._sub_objects.push_back(off);
+            s_sheet_s._sub_objects.push_back(on);
+
+            o_.add_object(s_sheet_s);
         }
-        point2 labelp = {static_cast<scalar>(x_min - 0.2 * std::abs(x_min)),
-                         static_cast<scalar>(y_max + 0.2 * std::abs(y_max))};
-
-        if (s._aux_info.find("module_info") != s._aux_info.end()) {
-            auto surface_info =
-                draw::text("info_" + s._name, labelp,
-                           s._aux_info.find("module_info")->second);
-            s_sheet_s.add_object(surface_info);
-        }
-
-        // Object information to appear
-        svg::object on;
-        on._tag = "animate";
-        on._attribute_map["fill"] = "freeze";
-        on._attribute_map["attributeName"] = "display";
-        on._attribute_map["from"] = "none";
-        on._attribute_map["to"] = "block";
-        on._attribute_map["begin"] = sid + __d + "mouseout";
-
-        svg::object off;
-
-        off._tag = "animate";
-        off._attribute_map["fill"] = "freeze";
-        off._attribute_map["attributeName"] = "display";
-        off._attribute_map["to"] = "none";
-        off._attribute_map["from"] = "block";
-        off._attribute_map["begin"] = sid + __d + "mouseover";
-
-        // Store the animation
-        s_sheet_s._sub_objects.push_back(off);
-        s_sheet_s._sub_objects.push_back(on);
-
-        o_.add_object(s_sheet_s);
     }
 }
 

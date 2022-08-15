@@ -28,6 +28,7 @@ enum type { e_highlight, e_associate_id, e_associate_info };
  * @param sources_ are the source objects
  * @param targests_ are the target objects
  * @param s_t_connections_ are the connections from source to target
+ * @param ls_ label the source or not (in case of multiple connection sheets)
  * @param on_off_ are the connection effects
  *
  * In case of e.g. a grid surface connection:
@@ -40,7 +41,7 @@ enum type { e_highlight, e_associate_id, e_associate_info };
  **/
 static inline std::vector<svg::object> connect_action(
     std::vector<svg::object> &sources_, std::vector<svg::object> &targets_,
-    const std::vector<std::vector<size_t> > &s_t_connections_,
+    const std::vector<std::vector<size_t> > &s_t_connections_, bool ls_ = true,
     const std::array<std::string, 2u> &on_off_ = {"mouseover", "mouseout"},
     const std::vector<connectors::type> &ct_ = {e_highlight,
                                                 e_associate_info}) {
@@ -58,13 +59,15 @@ static inline std::vector<svg::object> connect_action(
             if (sog._id.empty()) {
                 continue;
             }
-            // Associate the id tags
-            id_assoc_text.push_back("Source: ");
-            id_assoc_text.push_back("* " + sog._id);
-            // Associate the auxiliary information
-            info_assoc_text.push_back("Source: ");
-            for (const auto &sai : sog._aux_info) {
-                info_assoc_text.push_back(sai);
+            // Associate the id tags, i.e. labl the source
+            if (ls_) {
+                id_assoc_text.push_back("Source: ");
+                id_assoc_text.push_back("* " + sog._id);
+                // Associate the auxiliary information
+                info_assoc_text.push_back("Source: ");
+                for (const auto &sai : sog._aux_info) {
+                    info_assoc_text.push_back(sai);
+                }
             }
             // Enumerate over the connections
             for (auto [it, t] : utils::enumerate(ts)) {
@@ -114,7 +117,7 @@ static inline std::vector<svg::object> connect_action(
                     }
                 }
             }
-            // Assocate the text
+            // Assocate as text
             if (std::find(ct_.begin(), ct_.end(), e_associate_id) !=
                 ct_.end()) {
                 // Associate id connection

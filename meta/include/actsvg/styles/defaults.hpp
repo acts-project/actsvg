@@ -20,9 +20,11 @@ static svg::object __e_object;
 // Title style
 static style::font __t_font;
 
-// Sensitive surface section
+// Sensitive surface section, including backside
 static style::fill __s_fill;
 static style::stroke __s_stroke;
+static style::fill __bs_fill;
+static style::stroke __bs_stroke;
 
 // Measure
 static style::marker __m_marker;
@@ -54,6 +56,11 @@ static bool create_defaults() {
     __s_fill._fc._highlight = {"mouseover", "mouseout"};
     __s_fill._fc._hl_rgb = {245, 182, 66};
 
+    __bs_fill._fc._rgb = {40, 83, 237};
+    __bs_fill._fc._opacity = 0.75;
+    __bs_fill._fc._highlight = {"mouseover", "mouseout"};
+    __bs_fill._fc._hl_rgb = {237, 83, 40};
+
     // Stroke definition
     __s_stroke._sc._opacity = 1.;
     __s_stroke._width = 0.75;
@@ -66,7 +73,7 @@ static bool create_defaults() {
 
     // Grid
     __g_fill._fc._rgb = {200, 200, 200};
-    __g_fill._fc._opacity = 0.25;
+    __g_fill._fc._opacity = 0.;
     __g_stroke._sc._rgb = {255, 0, 0};
     __g_stroke._width = 0.5;
     __g_stroke._hl_width = 4;
