@@ -11,6 +11,7 @@ actsvg_add_test( core
   "markers.cpp"
   "measures.cpp"
   "polygon.cpp"
+  "rectangle.cpp"
   "style.cpp"
   "svg.cpp"
   "text.cpp"

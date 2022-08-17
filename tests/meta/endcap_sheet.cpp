@@ -28,21 +28,23 @@ namespace {
 /** Generate an endcap with either disc or trapezoid volumes
  *
  * @param m_t_ is the surface type
- * @param ft_ is a boolean indicating if a template module is used (or not)
+ * @param d_s_ is a boolean steering if a double-sided endcap is created
+ * @param p_s_ is a boolean steering if a passive surface is built
+ * @param f_t_ is a boolean indicating if a template module is used (or not)
  *
  * @return a proto volume for the endcap
  *
  **/
 proto::volume<point3_container> generate_endcap(
-    const proto::surface<point3_container>::type& m_t_,
-    bool ft_ = true) noexcept(false) {
+    const proto::surface<point3_container>::type& m_t_, bool d_s_ = false,
+    bool p_s_ = false, bool f_t_ = true) noexcept(false) {
 
     unsigned int sectors = 16;
     scalar half_opening = static_cast<scalar>(M_PI / sectors);
 
     // Create the endcap volume
     proto::volume<point3_container> endcap;
-    endcap._name = ft_ ? "Endcap with templates" : "Endcap with individuals";
+    endcap._name = f_t_ ? "Endcap with templates" : "Endcap with individuals";
 
     // The proto surfaces for the templates
     proto::surface<point3_container> inner_template_surface;
@@ -59,6 +61,11 @@ proto::volume<point3_container> generate_endcap(
     endcap._surface_grid._type = proto::grid::e_r_phi;
     endcap._surface_grid._edges_0 = {};
     endcap._surface_grid._edges_1 = {};
+
+    // Surface batches
+    std::vector<proto::surface<point3_container>> regular;
+    std::vector<proto::surface<point3_container>> support;
+    std::vector<proto::surface<point3_container>> backside;
 
     // Disc case
     if (m_t_ == proto::surface<point3_container>::e_disc) {
@@ -141,6 +148,7 @@ proto::volume<point3_container> generate_endcap(
 
     std::vector<std::vector<int>> assoc_rows = {{0, 1}, {-1, 0, 1}, {-1, 0}};
 
+    std::vector<std::vector<size_t>> bin_associations;
     // Loop over the templates and place them
     for (const auto [is, ts] : utils::enumerate(template_surfaces)) {
 
@@ -160,7 +168,7 @@ proto::volume<point3_container> generate_endcap(
             // Create the surface
             proto::surface<point3_container> s;
             // (a) from template
-            if (ft_) {
+            if (f_t_) {
                 s = proto::surface<point3_container>::from_template(
                     ts, template_object, ts._name + "_" + std::to_string(isc));
             } else {
@@ -200,7 +208,7 @@ proto::volume<point3_container> generate_endcap(
                     bin_assoc.push_back(assoc);
                 }
             }
-            endcap._surface_grid._associations.push_back(bin_assoc);
+            bin_associations.push_back(bin_assoc);
 
             /// Add some descriptive text
             s._aux_info["module_info"] = {
@@ -241,10 +249,69 @@ proto::volume<point3_container> generate_endcap(
                 s._vertices = {A, B, C, D, E, F};
             }
 
+            if (d_s_) {
+                s._aux_info["side"] = {"+"};
+                // make a copy and call flag it as negative side
+                auto so = s;
+                so._name = s._name + "_backside";
+                // Aux info
+                so._aux_info["side"] = {"-"};
+                so._aux_info["grid_info"] = {"* bs module " +
+                                             std::to_string(is) + " " +
+                                             std::to_string(isc)};
+                // Measures
+                so._measures = s._measures;
+                so._radii = s._radii;
+                so._opening = s._opening;
+                // Change fill
+                so._fill = __bs_fill;
+                // Set the template
+                backside.push_back(so);
+            }
             // Set the template
-            // s._template_object = template_object;
-            endcap._surfaces.push_back(s);
+            regular.push_back(s);
         }
+    }
+
+    // Store the surface vectors
+    endcap._surfaces.push_back(regular);
+    endcap._grid_associations.push_back(bin_associations);
+    // The passive surface if existing
+    if (p_s_) {
+        // The proto surfaces for the templates
+        proto::surface<point3_container> support_disk;
+        support_disk._name = "support_disk";
+        support_disk._type = proto::surface<point3_container>::e_disc;
+        scalar r_min = 100.;
+        scalar r_max = 450.;
+        point3 A = {r_max, 0., 0.};
+        point3 B = {0., r_max, 0.};
+        point3 C = {-r_max, 0., 0.};
+        point3 D = {0., -r_max, 0.};
+        support_disk._vertices = {A, B, C, D};
+        support_disk._radii = {r_min, r_max};
+        support_disk._measures = {r_min, r_max, static_cast<scalar>(M_PI), 0.};
+        // Style
+        support_disk._fill = __ss_fill;
+        // Auxiliary info
+        support_disk._aux_info["module_info"] = {"support disk"};
+        support_disk._aux_info["grid_info"] = {"* suport disk"};
+        // Store them
+        support.push_back(support_disk);
+        endcap._surfaces.push_back(support);
+        // Create single bin association for the support disk
+        std::vector<std::vector<size_t>> single_association;
+        for (unsigned int its = 0; its < template_surfaces.size(); ++its) {
+            for (unsigned int isc = 0; isc < sectors; ++isc) {
+                single_association.push_back({0u});
+            }
+        }
+        endcap._grid_associations.push_back(single_association);
+    }
+    // The backside surfaces if existing
+    if (not backside.empty()) {
+        endcap._surfaces.push_back(backside);
+        endcap._grid_associations.push_back(bin_associations);
     }
 
     return endcap;
@@ -276,7 +343,7 @@ TEST(display, endcap_sheet_sec_module_info_tmp) {
 TEST(display, endcap_sheet_sec_module_info_ind) {
 
     auto sector_endcap =
-        generate_endcap(proto::surface<point3_container>::e_disc, false);
+        generate_endcap(proto::surface<point3_container>::e_disc, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs =
@@ -316,8 +383,8 @@ TEST(display, endcap_sheet_sec_module_grid_tmp) {
 
 TEST(display, endcap_sheet_sec_module_grid_ind) {
 
-    auto sector_endcap =
-        generate_endcap(proto::surface<point3_container>::e_disc, false);
+    auto sector_endcap = generate_endcap(
+        proto::surface<point3_container>::e_disc, false, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs = display::endcap_sheet(
@@ -357,8 +424,8 @@ TEST(display, endcap_sheet_trap_module_info_tmp) {
 
 TEST(display, endcap_sheet_trap_module_info_ind) {
 
-    auto trapez_endcap =
-        generate_endcap(proto::surface<point3_container>::e_trapez, false);
+    auto trapez_endcap = generate_endcap(
+        proto::surface<point3_container>::e_trapez, false, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs =
@@ -398,8 +465,8 @@ TEST(display, endcap_sheet_trap_grid_info_tmp) {
 
 TEST(display, endcap_sheet_trap_grid_info_ind) {
 
-    auto trapez_endcap =
-        generate_endcap(proto::surface<point3_container>::e_trapez, false);
+    auto trapez_endcap = generate_endcap(
+        proto::surface<point3_container>::e_trapez, false, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs = display::endcap_sheet(
@@ -412,6 +479,75 @@ TEST(display, endcap_sheet_trap_grid_info_ind) {
     // Write out the file
     std::ofstream eout;
     eout.open("sheet_endcap_i_trapez_grid_info.svg");
+    eout << endcap_file_fs;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_trap_grid_info_tmp_backside) {
+
+    auto trapez_endcap =
+        generate_endcap(proto::surface<point3_container>::e_trapez, true);
+
+    trapez_endcap._name = "Endcap with backside modules";
+
+    // Create the sheet
+    svg::object endcap_sheet_fs =
+        display::endcap_sheet("trapez_endcap_sheet_w_backside", trapez_endcap,
+                              {600, 600}, display::e_grid_info);
+
+    svg::file endcap_file_fs;
+    endcap_file_fs._width = 1000;
+    endcap_file_fs.add_object(endcap_sheet_fs);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_t_trapez_grid_info_backside.svg");
+    eout << endcap_file_fs;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_trap_grid_info_tmp_backside_passive) {
+
+    auto trapez_endcap =
+        generate_endcap(proto::surface<point3_container>::e_trapez, true, true);
+
+    trapez_endcap._name = "Endcap with backside modules and passive plate";
+
+    // Create the sheet
+    svg::object endcap_sheet_fs =
+        display::endcap_sheet("trapez_endcap_sheet_w_backside_passive",
+                              trapez_endcap, {600, 600}, display::e_grid_info);
+
+    svg::file endcap_file_fs;
+    endcap_file_fs._width = 1000;
+    endcap_file_fs.add_object(endcap_sheet_fs);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_t_trapez_grid_info_backside_passive.svg");
+    eout << endcap_file_fs;
+    eout.close();
+}
+
+TEST(display, endcap_sheet_trap_module_info_tmp_backside_passive) {
+
+    auto trapez_endcap =
+        generate_endcap(proto::surface<point3_container>::e_trapez, true, true);
+
+    trapez_endcap._name = "Endcap with backside modules and passive plate";
+
+    // Create the sheet
+    svg::object endcap_sheet_fs = display::endcap_sheet(
+        "trapez_endcap_sheet_w_backside_passive", trapez_endcap, {600, 600},
+        display::e_module_info);
+
+    svg::file endcap_file_fs;
+    endcap_file_fs._width = 1000;
+    endcap_file_fs.add_object(endcap_sheet_fs);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_endcap_t_trapez_module_info_backside_passive.svg");
     eout << endcap_file_fs;
     eout.close();
 }

@@ -142,7 +142,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             // Create the mask object
             svg::object mask;
             mask._fill = style::fill{true};
-            mask._stroke = style::stroke{true};
+            mask._stroke = s_._stroke;
             mask._id = mask_id;
             mask._tag = "mask";
             mask.add_object(outer_mask);

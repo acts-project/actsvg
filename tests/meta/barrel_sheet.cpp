@@ -28,10 +28,11 @@ namespace {
 /** Helper to generate a barrel
  *
  * @param t_ use template surfaces
+ * @param b_s_ create also backside surfaces
  *
  **/
-proto::volume<point3_container> generate_barrel(bool t_ = false) noexcept(
-    false) {
+proto::volume<point3_container> generate_barrel(
+    bool t_ = false, bool b_s_ = false) noexcept(false) {
 
     // Create the endcap volume
     proto::volume<point3_container> barrel;
@@ -62,6 +63,13 @@ proto::volume<point3_container> generate_barrel(bool t_ = false) noexcept(
 
     scalar delta_phi = 2 * M_PI / staves;
 
+    /// The surface containers
+    std::vector<proto::surface<point3_container>> regular;
+    std::vector<proto::surface<point3_container>> backside;
+
+    /// The bin association vector
+    std::vector<std::vector<size_t>> bin_associations;
+
     size_t cmodule = 0;
     for (int iz = 0; iz < stave_modules; ++iz) {
         scalar tr_z = -offz + iz * nexz;
@@ -87,7 +95,7 @@ proto::volume<point3_container> generate_barrel(bool t_ = false) noexcept(
 
             std::vector<size_t> barrel_assoc = {cmodule, cmodule + 1,
                                                 cmodule + 2};
-            barrel._surface_grid._associations.push_back(barrel_assoc);
+            bin_associations.push_back(barrel_assoc);
 
             // The columns of the rotation matrix
             scalar mphi = 0.5 * M_PI + cphi + tilt_phi;
@@ -125,11 +133,60 @@ proto::volume<point3_container> generate_barrel(bool t_ = false) noexcept(
                     barrel_module._name + "_template", barrel_module_template,
                     x_y_view, true, true, true, true);
 
-                barrel._surfaces.push_back(barrel_module);
+                regular.push_back(barrel_module);
+
+                // Create a backside module
+                if (b_s_) {
+                    // The position of the module
+                    tr_x = (barrel_r + 2.) * std::cos(cphi);
+                    tr_y = (barrel_r + 2.) * std::sin(cphi);
+                    tr = {tr_x, tr_y, tr_z};
+
+                    ll = utils::add(tr, utils::add(utils::scale(col_y, -hy),
+                                                   utils::scale(col_x, -hx)));
+                    lr = utils::add(tr, utils::add(utils::scale(col_y, -hy),
+                                                   utils::scale(col_x, hx)));
+                    hr = utils::add(tr, utils::add(utils::scale(col_y, hy),
+                                                   utils::scale(col_x, hx)));
+                    hl = utils::add(tr, utils::add(utils::scale(col_y, hy),
+                                                   utils::scale(col_x, -hx)));
+
+                    proto::surface<point3_container> barrel_module_backside;
+                    barrel_module_backside._name = "module_backside_" +
+                                                   std::to_string(is) + "_" +
+                                                   std::to_string(iz);
+
+                    barrel_module_backside._vertices = {ll, lr, hr, hl};
+                    barrel_module_backside._measures =
+                        barrel_module_template._measures;
+                    barrel_module_backside._type = barrel_module_template._type;
+                    barrel_module_backside._aux_info["module_info"] = {
+                        std::string("Module (backside) " + std::to_string(is) +
+                                    " " + std::to_string(iz)),
+                        std::string("center z/phi = " + utils::to_string(tr_z) +
+                                    "/" + std::to_string(cphi))};
+                    barrel_module_backside._aux_info["grid_info"] = {
+                        std::string("* module " + std::to_string(iz) + " " +
+                                    std::to_string(is))};
+
+                    barrel_module_backside._template_object =
+                        display::surface(barrel_module._name + "_template",
+                                         barrel_module_template, x_y_view, true,
+                                         true, true, true);
+
+                    backside.push_back(barrel_module_backside);
+                }
             }
         }
     }
 
+    // Store the surfaces
+    barrel._surfaces.push_back(regular);
+    barrel._grid_associations.push_back(bin_associations);
+    if (not backside.empty()) {
+        barrel._surfaces.push_back(backside);
+        barrel._grid_associations.push_back(bin_associations);
+    }
     return barrel;
 }
 }  // namespace
@@ -155,13 +212,15 @@ TEST(display, barrel_x_y_view) {
     views::x_y x_y_view;
 
     std::vector<svg::object> modules;
-    for (auto [m, bm] : utils::enumerate(barrel._surfaces)) {
-        std::string m_id = std::string("m") + std::to_string(m);
-        auto module_contour = x_y_view(bm._vertices);
-        modules.push_back(
-            draw::polygon(m_id, module_contour, module_color, stroke_color));
+    for (auto [s, surfaces] : utils::enumerate(barrel._surfaces)) {
+        for (auto [m, bm] : utils::enumerate(surfaces)) {
+            std::string m_id =
+                std::string("m_") + std::to_string(s) + "_" + std::to_string(m);
+            auto module_contour = x_y_view(bm._vertices);
+            modules.push_back(draw::polygon(m_id, module_contour, module_color,
+                                            stroke_color));
+        }
     }
-
     // Add the surfaces
     barrel_file._objects.insert(barrel_file._objects.end(), modules.begin(),
                                 modules.end());
@@ -207,6 +266,25 @@ TEST(display, barrel_sheet_grid_info) {
     // Write out the file
     std::ofstream eout;
     eout.open("sheet_barrel_grid_info.svg");
+    eout << barrel_file_fs;
+    eout.close();
+}
+
+TEST(display, barrel_sheet_module_info_backside) {
+
+    auto barrel = generate_barrel(true);
+
+    // Create the sheet
+    svg::object barrel_sheet = display::barrel_sheet(
+        "barrel_sheet_backside", barrel, {600, 600}, display::e_module_info);
+
+    svg::file barrel_file_fs;
+    barrel_file_fs._width = 1000;
+    barrel_file_fs.add_object(barrel_sheet);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_barrel_module_info_backside.svg");
     eout << barrel_file_fs;
     eout.close();
 }

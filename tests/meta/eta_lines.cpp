@@ -17,7 +17,7 @@
 
 using namespace actsvg;
 
-TEST(dismetaplay, eta_lines) {
+TEST(meta, eta_lines) {
 
     auto pg = test::playground({-300, -10}, {300, 120});
 
