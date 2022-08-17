@@ -100,8 +100,9 @@ TEST(endcap, x_y_view) {
         center_txt += __c + utils::to_string(module._barycenter[1]);
         center_txt += ")";
         auto ctext = draw::connected_text(
-            t_id, { module._barycenter[0], module._barycenter[1] },  {module_txt, center_txt},
-            style::font(), style::transform(), module);
+            t_id, {module._barycenter[0], module._barycenter[1]},
+            {module_txt, center_txt}, style::font(), style::transform(),
+            module);
         labels.push_back(ctext);
     }
 
@@ -175,10 +176,8 @@ TEST(endcap, x_y_view_grid) {
         std::vector<size_t> sector_associations;
         for (auto [is, s] : utils::enumerate(modules)) {
             // phi matching only
-            scalar g_phi =
-                std::atan2(g._barycenter[1], g._barycenter[0]);
-             scalar s_phi =
-                std::atan2(s._barycenter[1], s._barycenter[0]);
+            scalar g_phi = std::atan2(g._barycenter[1], g._barycenter[0]);
+            scalar s_phi = std::atan2(s._barycenter[1], s._barycenter[0]);
             if (std::abs(g_phi - s_phi) < close_by_phi or
                 std::abs(g_phi - s_phi) > (2 * M_PI - close_by_phi)) {
                 sector_associations.push_back(is);
@@ -189,8 +188,8 @@ TEST(endcap, x_y_view_grid) {
     }
 
     // Build the connectors
-    auto c_objects = connectors::connect_action(grid_sectors._sub_objects, modules,
-                                associations);
+    auto c_objects = connectors::connect_action(grid_sectors._sub_objects,
+                                                modules, associations);
     ec_file._objects.insert(ec_file._objects.end(), c_objects.begin(),
                             c_objects.end());
 

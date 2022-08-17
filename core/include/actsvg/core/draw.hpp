@@ -337,6 +337,39 @@ static inline svg::object polygon(
     return p;
 }
 
+/** Draw a rectangle object
+ *
+ * @param id_ is the rectangle object id
+ * @param c_ is the center position
+ * @param half_x is the halflength in x
+ * @param half_y is the halflength in y
+ * @param fill_ are the fill parameters
+ * @param stroke_ are the stroke parameters
+ * @param transform_ defines the rectangle transform
+ *
+ * @return an svg object for the rectangle
+ */
+static inline svg::object rectangle(
+    const std::string &id_, const point2 &c_, scalar half_x, scalar half_y,
+    const style::fill &fill_, const style::stroke &stroke_,
+    const style::transform &transform_ = style::transform()) {
+
+    svg::object r;
+    r._id = id_;
+    r._tag = "rect";
+    // Size attributes
+    r._attribute_map["x"] = utils::to_string(c_[0] - half_x);
+    r._attribute_map["y"] = utils::to_string(-c_[1] - half_y);
+    r._attribute_map["width"] = utils::to_string(half_x * 2);
+    r._attribute_map["height"] = utils::to_string(half_y * 2);
+    // Attach style attributes
+    r._fill = fill_;
+    r._stroke = stroke_;
+    r._transform = transform_;
+    // Return the rectangle objec t
+    return r;
+}
+
 /** Draw a text object - unconnected
  *
  * @param id_ is the text object id

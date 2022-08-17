@@ -182,10 +182,10 @@ proto::volume<point3_container> generate_barrel(
 
     // Store the surfaces
     barrel._surfaces.push_back(regular);
-    barrel._associations.push_back(bin_associations);
+    barrel._grid_associations.push_back(bin_associations);
     if (not backside.empty()) {
         barrel._surfaces.push_back(backside);
-        barrel._associations.push_back(bin_associations);
+        barrel._grid_associations.push_back(bin_associations);
     }
     return barrel;
 }
@@ -266,6 +266,25 @@ TEST(display, barrel_sheet_grid_info) {
     // Write out the file
     std::ofstream eout;
     eout.open("sheet_barrel_grid_info.svg");
+    eout << barrel_file_fs;
+    eout.close();
+}
+
+TEST(display, barrel_sheet_module_info_backside) {
+
+    auto barrel = generate_barrel(true);
+
+    // Create the sheet
+    svg::object barrel_sheet = display::barrel_sheet(
+        "barrel_sheet_backside", barrel, {600, 600}, display::e_module_info);
+
+    svg::file barrel_file_fs;
+    barrel_file_fs._width = 1000;
+    barrel_file_fs.add_object(barrel_sheet);
+
+    // Write out the file
+    std::ofstream eout;
+    eout.open("sheet_barrel_module_info_backside.svg");
     eout << barrel_file_fs;
     eout.close();
 }

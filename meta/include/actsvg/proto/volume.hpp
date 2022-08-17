@@ -61,7 +61,7 @@ struct volume {
      *    size_t i = 0;
      *    for (auto: _edges_1){
      *      for (auto: _edges_0){
-     *        auto assoc = _associations[i++];
+     *        auto assoc = _grid_associations[i++];
      *        }
      *     }
      *   }
@@ -69,7 +69,7 @@ struct volume {
      * The entries of the association point to the index in the surface
      * container of the volume
      **/
-    std::vector<std::vector<std::vector<size_t>>> _associations = {};
+    std::vector<std::vector<std::vector<size_t>>> _grid_associations = {};
 };
 
 }  // namespace proto

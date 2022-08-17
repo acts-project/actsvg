@@ -34,17 +34,16 @@ enum type { e_highlight, e_associate_id, e_associate_info };
  * In case of e.g. a grid surface connection:
  * - the @param sources_ are the grid tiles
  * - the @param targets_ are the surfaces
- * - the @param s_t_connections are the indices which tile associates to which
- *object
- *
+ * - the @param s_t_connections are the indices which type of association
+ * - the @param font_ is used for associate info action
  *
  **/
 static inline std::vector<svg::object> connect_action(
     std::vector<svg::object> &sources_, std::vector<svg::object> &targets_,
     const std::vector<std::vector<size_t> > &s_t_connections_, bool ls_ = true,
     const std::array<std::string, 2u> &on_off_ = {"mouseover", "mouseout"},
-    const std::vector<connectors::type> &ct_ = {e_highlight,
-                                                e_associate_info}) {
+    const std::vector<connectors::type> &ct_ = {e_highlight, e_associate_info},
+    const style::font &font_ = style::font()) {
 
     std::vector<svg::object> additional_connections;
 
@@ -124,7 +123,7 @@ static inline std::vector<svg::object> connect_action(
                 auto c_text = draw::connected_text(
                     sog._id + "_id_associations",
                     {sog._barycenter[0], sog._barycenter[1]}, id_assoc_text,
-                    style::font(), style::transform(), sog);
+                    font_, style::transform(), sog);
                 additional_connections.push_back(c_text);
             } else if (std::find(ct_.begin(), ct_.end(), e_associate_info) !=
                        ct_.end()) {
@@ -132,7 +131,7 @@ static inline std::vector<svg::object> connect_action(
                 auto c_text = draw::connected_text(
                     sog._id + "_info_associations",
                     {sog._barycenter[0], sog._barycenter[1]}, info_assoc_text,
-                    style::font(), style::transform(), sog);
+                    font_, style::transform(), sog);
                 additional_connections.push_back(c_text);
             }
         }

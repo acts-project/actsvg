@@ -283,24 +283,6 @@ void connect_surface_sheets(const volume_type& v_,
             svg::object& s_sheet_s = templates_[ib][is];
             s_sheet_s._attribute_map["display"] = "none";
 
-            scalar x_min = std::numeric_limits<scalar>::max();
-            scalar y_max = std::numeric_limits<scalar>::min();
-
-            for (const auto& so : s_sheet_s._sub_objects) {
-                x_min = so._x_range[0] < x_min ? so._x_range[0] : x_min;
-                y_max = so._y_range[1] > y_max ? so._y_range[1] : y_max;
-            }
-            point2 labelp = {
-                static_cast<scalar>(x_min - 0.2 * std::abs(x_min)),
-                static_cast<scalar>(y_max + 0.2 * std::abs(y_max))};
-
-            if (s._aux_info.find("module_info") != s._aux_info.end()) {
-                auto surface_info =
-                    draw::text("info_" + s._name, labelp,
-                               s._aux_info.find("module_info")->second);
-                s_sheet_s.add_object(surface_info);
-            }
-
             // Object information to appear
             svg::object on;
             on._tag = "animate";
