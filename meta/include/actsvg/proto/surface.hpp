@@ -52,9 +52,11 @@ struct surface {
     /// The contained vertices - for polygon surfaces
     point3_container _vertices = {};
 
-    /// Dedicated disc descriptions, simplifies the set
+    /// Dedicated regular disc/cylinder descriptions
+    /// - if this is not applicable the _vertices view needs to be chosen
     std::array<scalar, 2> _radii = {0., 0.};
     std::array<scalar, 2> _opening = {-M_PI, M_PI};
+    std::array<scalar, 2> _zparameters = {0., 0.};
 
     /// Boolean surfaces
     std::vector<surface<point3_container>> _boolean_surface = {};

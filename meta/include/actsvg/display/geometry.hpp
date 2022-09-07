@@ -66,53 +66,90 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     // Surface directly
     if (s_._type == surface_type::e_disc) {
 
-        if (std::abs(s_._opening[0u] + M_PI) >
-                std::numeric_limits<scalar>::epsilon() or
-            std::abs(s_._opening[1u] - M_PI) >
-                std::numeric_limits<scalar>::epsilon()) {
-            auto view_vertices = generators::sector_contour(
-                s_._radii[0], s_._radii[1], s_._opening[0], s_._opening[1]);
-            s = draw::polygon(id_, view_vertices, s_._fill, s_._stroke,
-                              draw_transform);
+        // x-y view for discs
+        if constexpr (std::is_same_v<view_type, views::x_y>) {
+            if (std::abs((s_._opening[1u] - s_._opening[0u]) - 2 * M_PI) >
+                5 * std::numeric_limits<scalar>::epsilon()) {
+                auto view_vertices = generators::sector_contour(
+                    s_._radii[0], s_._radii[1], s_._opening[0], s_._opening[1]);
+                s = draw::polygon(id_, view_vertices, s_._fill, s_._stroke,
+                                  draw_transform);
 
-        } else {
-            s = draw::circle(id_, {0., 0.}, s_._radii[1u], s_._fill, s_._stroke,
-                             draw_transform);
+            } else {
 
-            // A ring is present
-            if (s_._radii[0u]) {
+                s = draw::circle(id_, {0., 0.}, s_._radii[1u], s_._fill,
+                                 s_._stroke, draw_transform);
 
-                std::string mask_id = id_ + "_mask";
+                // A ring is present
+                if (s_._radii[0u]) {
 
-                auto s_c_ = s_;
-                s_c_._radii = {0., s_._radii[1u]};
+                    std::string mask_id = id_ + "_mask";
 
-                svg::object outer_mask =
-                    surface(id_ + "_mask_surface_outer", s_c_, v_, false);
-                outer_mask._fill = style::fill{true};
-                outer_mask._stroke = style::stroke{true};
-                outer_mask._attribute_map["fill"] = "white";
+                    auto s_c_ = s_;
+                    s_c_._radii = {0., s_._radii[1u]};
 
-                s_c_._radii = {0., s_._radii[0u]};
-                svg::object inner_mask =
-                    surface(id_ + "_mask_surface_inner", s_c_, v_, false);
-                inner_mask._fill = style::fill{true};
-                inner_mask._stroke = style::stroke{true};
-                inner_mask._attribute_map["fill"] = "black";
+                    svg::object outer_mask =
+                        surface(id_ + "_mask_surface_outer", s_c_, v_, false);
+                    outer_mask._fill = style::fill{true};
+                    outer_mask._stroke = style::stroke{true};
+                    outer_mask._attribute_map["fill"] = "white";
 
-                // Create the mask object
-                svg::object mask;
-                mask._fill = style::fill{true};
-                mask._stroke = style::stroke{true};
-                mask._id = mask_id;
-                mask._tag = "mask";
-                mask.add_object(outer_mask);
-                mask.add_object(inner_mask);
+                    s_c_._radii = {0., s_._radii[0u]};
+                    svg::object inner_mask =
+                        surface(id_ + "_mask_surface_inner", s_c_, v_, false);
+                    inner_mask._fill = style::fill{true};
+                    inner_mask._stroke = style::stroke{true};
+                    inner_mask._attribute_map["fill"] = "black";
 
-                // Modify the surface
-                s._definitions.push_back(mask);
-                s._attribute_map["mask"] = utils::id_to_url(mask_id);
+                    // Create the mask object
+                    svg::object mask;
+                    mask._fill = style::fill{true};
+                    mask._stroke = style::stroke{true};
+                    mask._id = mask_id;
+                    mask._tag = "mask";
+                    mask.add_object(outer_mask);
+                    mask.add_object(inner_mask);
+
+                    // Modify the surface
+                    s._definitions.push_back(mask);
+                    s._attribute_map["mask"] = utils::id_to_url(mask_id);
+                }
             }
+        }
+        // r_z view for discs
+        if constexpr (std::is_same_v<view_type, views::z_r>) {
+            scalar zpos = s_._zparameters[0u];
+            point2 start = {zpos, s_._radii[0u]};
+            point2 end = {zpos, s_._radii[1u]};
+            s = draw::line(id_, start, end, s_._stroke, draw_transform);
+        }
+
+    } else if (s_._type == surface_type::e_cylinder) {
+
+        // xy - view
+        if constexpr (std::is_same_v<view_type, views::x_y>) {
+            if (std::abs((s_._opening[1u] - s_._opening[0u]) - 2 * M_PI) >
+                5 * std::numeric_limits<scalar>::epsilon()) {
+                scalar r = s_._radii[1u];
+                point2 start = {r * std::cos(s_._opening[0u]),
+                                r * s_._opening[0u]};
+                point2 end = {r * std::cos(s_._opening[1u]),
+                              r * s_._opening[1u]};
+                s = draw::arc(id_, r, start, end, style::fill({}), s_._stroke,
+                              draw_transform);
+            } else {
+                s = draw::circle(id_, {0., 0.}, s_._radii[1u], style::fill({}),
+                                 s_._stroke, draw_transform);
+            }
+        }
+
+        // z-r view
+        if constexpr (std::is_same_v<view_type, views::z_r>) {
+            scalar zpos = s_._zparameters[0u];
+            scalar zhalf = s_._zparameters[1u];
+            point2 start = {zpos - zhalf, s_._radii[1u]};
+            point2 end = {zpos + zhalf, s_._radii[1u]};
+            s = draw::line(id_, start, end, s_._stroke, draw_transform);
         }
 
     } else {
@@ -122,35 +159,37 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     }
 
     if (_b) {
-        /// Boolean surfaces
-        if (s_._boolean_surface.size() == 1u and
-            s_._boolean_operation == surface_type::e_subtraction) {
-            std::string mask_id = id_ + "_mask";
-            // make a new boolean surface
-            svg::object outer_mask =
-                surface(id_ + "_mask_surface_outer", s_, v_, false);
-            outer_mask._fill = style::fill{true};
-            outer_mask._stroke = style::stroke{true};
-            outer_mask._attribute_map["fill"] = "white";
+        /// Boolean surfaces only supported for x-y view so far
+        if constexpr (std::is_same_v<view_type, views::x_y>) {
+            if (s_._boolean_surface.size() == 1u and
+                s_._boolean_operation == surface_type::e_subtraction) {
+                std::string mask_id = id_ + "_mask";
+                // make a new boolean surface
+                svg::object outer_mask =
+                    surface(id_ + "_mask_surface_outer", s_, v_, false);
+                outer_mask._fill = style::fill{true};
+                outer_mask._stroke = style::stroke{true};
+                outer_mask._attribute_map["fill"] = "white";
 
-            svg::object inner_mask = surface(id_ + "_mask_surface_inner",
-                                             s_._boolean_surface[0], v_);
-            inner_mask._fill = style::fill{true};
-            inner_mask._stroke = style::stroke{true};
-            inner_mask._attribute_map["fill"] = "black";
+                svg::object inner_mask = surface(id_ + "_mask_surface_inner",
+                                                 s_._boolean_surface[0], v_);
+                inner_mask._fill = style::fill{true};
+                inner_mask._stroke = style::stroke{true};
+                inner_mask._attribute_map["fill"] = "black";
 
-            // Create the mask object
-            svg::object mask;
-            mask._fill = style::fill{true};
-            mask._stroke = s_._stroke;
-            mask._id = mask_id;
-            mask._tag = "mask";
-            mask.add_object(outer_mask);
-            mask.add_object(inner_mask);
+                // Create the mask object
+                svg::object mask;
+                mask._fill = style::fill{true};
+                mask._stroke = s_._stroke;
+                mask._id = mask_id;
+                mask._tag = "mask";
+                mask.add_object(outer_mask);
+                mask.add_object(inner_mask);
 
-            // Modify the surface
-            s._definitions.push_back(mask);
-            s._attribute_map["mask"] = utils::id_to_url(mask_id);
+                // Modify the surface
+                s._definitions.push_back(mask);
+                s._attribute_map["mask"] = utils::id_to_url(mask_id);
+            }
         }
     }
 
