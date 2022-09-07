@@ -32,14 +32,26 @@ namespace proto {
 
 template <typename point3_container>
 struct portal {
+
+    // Expose the container type
+    using container_type = point3_container;
+
     /// A nested link type
     struct link {
-        /// The position of the volume link
-        typename point3_container::value_type _position;
-        /// The direciton of the volume link
-        typename point3_container::value_type _direction;
+        
+        // Expose the point3 type
+        using point3_type = typename container_type::value_type;
+        
+        /// The start of the volume link
+        point3_type _start;
+        /// The end of the volume link
+        point3_type _end;
+
         /// The stroke style (ideally synchronized with volume)
+        style::marker _start_marker = style::marker({});
+        style::marker _end_marker = style::marker({"<<"});
         style::stroke _stroke;
+
         /// The span
         std::optional<std::array<scalar, 2>> _span = std::nullopt;
         /// Binning type

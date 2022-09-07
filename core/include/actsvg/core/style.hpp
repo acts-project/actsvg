@@ -143,7 +143,7 @@ struct stroke {
                 on_off._attribute_map["to"] = rgb_attr(_sc._hl_rgb);
                 o_.add_object(on_off);
             }
-            // Stroke width 
+            // Stroke width
             if (_width != _hl_width) {
                 object_type on_off;
                 on_off._tag = "set";
@@ -153,7 +153,6 @@ struct stroke {
                 on_off._attribute_map["to"] = utils::to_string(_hl_width);
                 o_.add_object(on_off);
             }
-
         }
     }
 };
