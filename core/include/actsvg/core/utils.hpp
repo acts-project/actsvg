@@ -11,7 +11,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <strstream>
+#include <sstream>
 
 namespace actsvg {
 
