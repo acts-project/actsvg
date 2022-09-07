@@ -71,7 +71,7 @@ TEST(proto, rectanglular_subtracted_surface) {
     proto::surface<point3_collection> subtracted_rectangle;
     subtracted_rectangle._vertices = subtracted_vertices;
 
-    rectangle._boolean_surface = { subtracted_rectangle };
+    rectangle._boolean_surface = {subtracted_rectangle};
     rectangle._boolean_operation =
         proto::surface<point3_collection>::e_subtraction;
 
@@ -90,27 +90,41 @@ TEST(proto, rectanglular_subtracted_surface) {
     rstream.close();
 }
 
-
 TEST(proto, full_disc) {
 
     proto::surface<point3_collection> disc;
     disc._radii = {0., 150.};
+    disc._zparameters = {50., 0.};
     disc._name = "disc surface";
     disc._type = proto::surface<point3_collection>::e_disc;
     disc._fill = style::fill({{0, 100, 0}, 0.5});
-
-    svg::object fd = display::surface("disc", disc, views::x_y{});
+    disc._stroke = style::stroke({{0, 0, 0}}, 2.);
+    disc._stroke._hl_width = 2.;
 
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
 
-    svg::file rfile;
-    rfile.add_object(pg);
-    rfile.add_object(fd);
+    // Test the disc in x-y view
+    svg::object fd_xy = display::surface("disc", disc, views::x_y{});
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(fd_xy);
 
     std::ofstream rstream;
-    rstream.open("test_meta_full_disc.svg");
-    rstream << rfile;
+    rstream.open("test_meta_full_disc_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+
+    // Test the disc in z-r view
+    svg::object fd_zr = display::surface("disc", disc, views::z_r{});
+
+    svg::file rfile_zr;
+    rfile_zr.add_object(pg);
+    rfile_zr.add_object(fd_zr);
+
+    rstream.open("test_meta_full_disc_zr.svg");
+    rstream << rfile_zr;
     rstream.close();
 }
 
@@ -118,22 +132,35 @@ TEST(proto, full_ring) {
 
     proto::surface<point3_collection> ring;
     ring._radii = {50., 150.};
+    ring._zparameters = {50., 0.};
     ring._name = "ring surface";
     ring._type = proto::surface<point3_collection>::e_disc;
     ring._fill = style::fill({{0, 100, 0}, 0.5});
-
-    svg::object fr = display::surface("ring", ring, views::x_y{});
+    ring._stroke = style::stroke({{0, 0, 0}}, 2.);
+    ring._stroke._hl_width = 2.;
 
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
 
-    svg::file rfile;
-    rfile.add_object(pg);
-    rfile.add_object(fr);
+    svg::object fr_xy = display::surface("ring", ring, views::x_y{});
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(fr_xy);
 
     std::ofstream rstream;
-    rstream.open("test_meta_full_ring.svg");
-    rstream << rfile;
+    rstream.open("test_meta_full_ring_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+
+    svg::object fr_zr = display::surface("ring", ring, views::z_r{});
+
+    svg::file rfile_zr;
+    rfile_zr.add_object(pg);
+    rfile_zr.add_object(fr_zr);
+
+    rstream.open("test_meta_full_ring_zr.svg");
+    rstream << rfile_zr;
     rstream.close();
 }
 
@@ -142,6 +169,7 @@ TEST(proto, wedge) {
     proto::surface<point3_collection> wedge;
     wedge._radii = {0., 150.};
     wedge._opening = {-0.25, 0.25};
+    wedge._zparameters = {50., 0.};
     wedge._name = "wedge surface";
     wedge._type = proto::surface<point3_collection>::e_disc;
     wedge._fill = style::fill({{0, 100, 0}, 0.5});
@@ -161,12 +189,12 @@ TEST(proto, wedge) {
     rstream.close();
 }
 
-
 TEST(proto, sector) {
 
     proto::surface<point3_collection> sector;
     sector._radii = {50., 150.};
     sector._opening = {-0.25, 0.25};
+    sector._zparameters = {50., 0.};
     sector._name = "sector surface";
     sector._type = proto::surface<point3_collection>::e_disc;
     sector._fill = style::fill({{0, 100, 0}, 0.5});
@@ -186,3 +214,80 @@ TEST(proto, sector) {
     rstream.close();
 }
 
+TEST(proto, full_cylinder) {
+
+    proto::surface<point3_collection> cylinder;
+    cylinder._radii = {0., 150.};
+    cylinder._name = "cylinder surface";
+    cylinder._type = proto::surface<point3_collection>::e_cylinder;
+    cylinder._fill = style::fill({{0, 100, 0}, 0.5});
+    cylinder._stroke = style::stroke({{0, 0, 0}}, 2.);
+    cylinder._stroke._hl_width = 2.;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    // Full cylinder in x-y
+    svg::object fc_xy = display::surface("cylinder", cylinder, views::x_y{});
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(fc_xy);
+
+    std::ofstream rstream;
+    rstream.open("test_meta_full_cylinder_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+
+    // Full cylinder in z-r
+    svg::object fc_zr = display::surface("cylinder", cylinder, views::z_r{});
+
+    svg::file rfile_zr;
+    rfile_zr.add_object(pg);
+    rfile_zr.add_object(fc_zr);
+
+    rstream.open("test_meta_full_cylinder_zr.svg");
+    rstream << rfile_zr;
+    rstream.close();
+}
+
+TEST(proto, sector_cylinder) {
+
+    proto::surface<point3_collection> sector_cylinder;
+    sector_cylinder._radii = {0., 150.};
+    sector_cylinder._opening = {-0.2, 0.5};
+    sector_cylinder._zparameters = {10., 200};
+    sector_cylinder._name = "sectoral cylinder surface";
+    sector_cylinder._type = proto::surface<point3_collection>::e_cylinder;
+    sector_cylinder._fill = style::fill({{0, 100, 0}, 0.5});
+    sector_cylinder._stroke = style::stroke({{0, 0, 0}}, 2.);
+    sector_cylinder._stroke._hl_width = 2.;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    // Full cylinder in x-y
+    svg::object sc_xy =
+        display::surface("sectoral_cylinder", sector_cylinder, views::x_y{});
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(sc_xy);
+
+    std::ofstream rstream;
+    rstream.open("test_meta_sectoral_cylinder_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+
+    // Full cylinder in z-r
+    svg::object sc_zr =
+        display::surface("sectoral_cylinder", sector_cylinder, views::z_r{});
+
+    svg::file rfile_zr;
+    rfile_zr.add_object(pg);
+    rfile_zr.add_object(sc_zr);
+
+    rstream.open("test_meta_sectoral_cylinder_zr.svg");
+    rstream << rfile_zr;
+    rstream.close();
+}
