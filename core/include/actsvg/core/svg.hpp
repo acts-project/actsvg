@@ -94,7 +94,7 @@ struct object {
                                         std::numeric_limits<scalar>::lowest()};
 
     /// Summary object 
-    summary _summary;
+    summary _summary = summary{};
 
     /** An object is defined if a tag is set */
     bool is_defined() const { return (not _tag.empty()); }
