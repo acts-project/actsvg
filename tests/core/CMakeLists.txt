@@ -1,6 +1,7 @@
 # Set up the core tests.
 actsvg_add_test( core
   "arc.cpp"
+  "arrows.cpp"
   "barrel.cpp" 
   "circle.cpp"
   "copy.cpp"

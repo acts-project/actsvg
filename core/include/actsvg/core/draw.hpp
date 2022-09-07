@@ -968,7 +968,7 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
     return marker_group;
 }
 
-/** Draw a measure in z-y
+/** Draw a measure
  *
  * @param id_ is the identification tag of this object
  * @param start_ is the start point of the line
@@ -980,7 +980,7 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
  * @param label_ is the label associated
  * @param label_pos_ is the label position
  *
- * @return an svg object for the measurexs
+ * @return an svg object for the measure
  */
 static inline svg::object measure(
     const std::string &id_, const point2 &start_, const point2 &end_,
@@ -1001,7 +1001,7 @@ static inline svg::object measure(
     scalar theta = std::atan2(end_[1] - start_[1], end_[0] - start_[0]);
     if (std::abs(end_[1] - start_[1]) <
         std::numeric_limits<scalar>::epsilon()) {
-        theta = 0.;
+        theta = (end_[0] > start_[0]) ? 0. : M_PI;
     }
 
     measure_group.add_object(marker(id_ + "_start_tag", {start_[0], start_[1]},
@@ -1030,7 +1030,7 @@ static inline svg::object measure(
  * @param label_ is the label associated
  * @param label_pos_ is the label position
  *
- * @return an svg object for the measures
+ * @return an svg object for the measure
  */
 static inline svg::object arc_measure(
     const std::string &id_, scalar r_, const point2 &start_, const point2 &end_,
@@ -1067,6 +1067,26 @@ static inline svg::object arc_measure(
     }
 
     return measure_group;
+}
+
+/** Draw an arrow
+ *
+ * @param id_ is the identification tag of this object
+ * @param start_ is the start point of the line
+ * @param end_ is the end point of the line
+ * @param stroke_ are the stroke parameters
+ * @param start_marker_ are the marker parmeters at start
+ * @param end_marker_ are the marker parmeters at start
+ *
+ * @return an svg object for the arrow
+ */
+static inline svg::object arrow(
+    const std::string &id_, const point2 &start_, const point2 &end_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::marker &start_marker_ = style::marker({"|<"}),
+    const style::marker &end_marker_ = style::marker({"|<"})) {
+
+    return measure(id_, start_, end_, stroke_, start_marker_, end_marker_);
 }
 
 /** Draw an x-y axes system
