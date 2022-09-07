@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <map>
