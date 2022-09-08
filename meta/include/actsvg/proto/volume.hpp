@@ -12,9 +12,10 @@
 #include <vector>
 
 #include "actsvg/core/style.hpp"
+#include "actsvg/proto/grid.hpp"
+#include "actsvg/proto/portal.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/styles/defaults.hpp"
-#include "grid.hpp"
 
 namespace actsvg {
 
@@ -48,7 +49,7 @@ struct volume {
     std::vector<std::vector<surface<point3_container>>> _surfaces = {};
 
     /// The portals
-    std::vector<surface<point3_container>> _portals = {};
+    std::vector<portal<point3_container>> _portals = {};
 
     /// The associated surface grid
     grid _surface_grid;

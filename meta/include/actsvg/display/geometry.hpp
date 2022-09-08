@@ -196,6 +196,59 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     return s;
 }
 
+/** Draw a portal link
+ *
+ * @param id_ the indentification of this portal link
+ * @param p_ the portal for understanding the span
+ * @param link_ the link itself
+ * @param v_ the view type
+ *
+ * @return a single object containing the portal view
+ **/
+template <typename portal_type, typename view_type>
+svg::object portal_link(const std::string& id_,
+                        [[maybe_unused]] const portal_type& p_,
+                        const typename portal_type::link& link_,
+                        const view_type& v_) {
+    svg::object l;
+    l._tag = "g";
+    l._id = id_;
+
+    typename portal_type::container_type start_end_3d = {link_._start,
+                                                         link_._end};
+    auto start_end = v_(start_end_3d);
+
+    l.add_object(draw::arrow(id_ + "_arrow", start_end[0u], start_end[1u],
+                             link_._stroke, link_._start_marker,
+                             link_._end_marker));
+
+    return l;
+}
+
+/** Draw a portal with a dedicated view
+ *
+ * @param id_ the identification of this surface
+ * @param s_ the surface type
+ * @param v_ the view type
+ *
+ * @return a single object containing the portal view;
+ **/
+template <typename portal_type, typename view_type>
+svg::object portal(const std::string& id_, const portal_type& p_,
+                   const view_type& v_) {
+    svg::object p;
+    p._tag = "g";
+    p._id = id_;
+
+    p.add_object(surface(id_ + "_surface", p_._surface, v_));
+    for (auto [il, vl] : utils::enumerate(p_._volume_links)) {
+        p.add_object(portal_link(id_ + "_volume_link_" + std::to_string(il), p_,
+                                 vl, v_));
+    }
+
+    return p;
+}
+
 /** Draw eta lines in a zr view
  *
  * @param id_ the identiier

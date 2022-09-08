@@ -11,7 +11,7 @@
 #include <cmath>
 #include <iomanip>
 #include <iostream>
-#include <strstream>
+#include <sstream>
 
 namespace actsvg {
 
@@ -126,7 +126,7 @@ point2_type rotate(const point2_type &p_, scalar a_) {
     p_rot[0] = std::cos(a_) * p_[0] - std::sin(a_) * p_[1];
     p_rot[1] = std::sin(a_) * p_[0] + std::cos(a_) * p_[1];
     return p_rot;
-};
+}
 
 /** Helper method toscala a point3 object
  *
@@ -171,8 +171,6 @@ point3_type rotate(const std::array<point3_type, 3> &rt_,
     rotated[0] = rt_[0][0] * p_[0] + rt_[0][1] * p_[1] + rt_[0][2] * p_[2];
     rotated[1] = rt_[1][0] * p_[0] + rt_[1][1] * p_[1] + rt_[1][2] * p_[2];
     rotated[2] = rt_[2][0] * p_[0] + rt_[2][1] * p_[1] + rt_[2][2] * p_[2];
-    std::cout << "newly rotated is " << rotated[0] << ", " << rotated[1] << ","
-              << rotated[2] << std::endl;
     return rotated;
 }
 
