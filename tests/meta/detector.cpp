@@ -6,6 +6,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include "actsvg/proto/detector.hpp"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -13,19 +15,17 @@
 
 #include "actsvg/core/defs.hpp"
 #include "actsvg/proto/volume.hpp"
-#include "actsvg/proto/detector.hpp"
 
 using namespace actsvg;
 
-using point3 = std::array<scalar,3>;
+using point3 = std::array<scalar, 3>;
 using point3_container = std::vector<point3>;
 
-TEST(proto, detector) {
+TEST(proto, cylindrical_detector) {
 
     // Create and define a volume
     proto::detector<point3_container> d;
-    
+
     ASSERT_TRUE(d._name == "unnamed");
     ASSERT_TRUE(d._volumes.empty());
-    
 }

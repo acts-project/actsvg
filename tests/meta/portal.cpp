@@ -24,7 +24,6 @@ using point3_container = std::vector<point3>;
 
 TEST(proto, cylinder_portal) {
 
-    // Create and define a volume
     proto::portal<point3_container> p;
 
     ASSERT_TRUE(p._name == "unnamed");
@@ -77,7 +76,6 @@ TEST(proto, cylinder_portal) {
 
 TEST(proto, full_disc_portal) {
 
-    // Create and define a volume
     proto::portal<point3_container> p;
 
     ASSERT_TRUE(p._name == "unnamed");
@@ -87,6 +85,7 @@ TEST(proto, full_disc_portal) {
     s._type = proto::surface<point3_container>::type::e_disc;
     s._radii = {10., 100.};
     s._zparameters = {50., 0.};
+    s._fill = defaults::__nn_fill;
 
     proto::portal<point3_container>::link link_to_self;
 

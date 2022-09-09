@@ -33,14 +33,26 @@ struct volume {
     using surface_type = surface<point3_container>;
 
     /// Type enumeration
-    enum type { e_barrel = 0, e_endcap = 1, e_other = 2 };
+    enum type { e_cylinder = 0, e_cuboid = 1, e_other = 2 };
 
+    // The index of the volume
     unsigned int _index = 0u;
+
+    // The depth level of the volume
+    unsigned int _depth_level = 0u;
 
     /// Name of the volume
     std::string _name = "unnamed";
 
-    type _type = e_barrel;
+    // The type of the volume & its parameters
+    type _type = e_cylinder;
+    std::vector<scalar> _bound_values;
+    point3_container _vertices = {};
+
+    // Style parameters
+    style::fill _fill;
+    style::stroke _stroke = defaults::__nn_stroke;
+    style::transform _transform;
 
     /// Auxiliary information
     std::vector<std::string> _info = {};
@@ -71,6 +83,28 @@ struct volume {
      * container of the volume
      **/
     std::vector<std::vector<std::vector<size_t>>> _grid_associations = {};
+
+    /// Colorize method
+    ///
+    /// @param colors_ are the indexed colors
+    ///
+    void colorize(std::vector<style::color>& colors_) {
+        if (_index < colors_.size()) {
+            _fill._fc = colors_[_index];
+        }
+        for (auto& p : _portals) {
+            /// @todo set portal color if unique
+            for (auto& vl : p._volume_links) {
+                if (vl._link_index < colors_.size()) {
+                    vl._stroke._sc = colors_[vl._link_index];
+                    vl._stroke._sc._opacity = 1.;
+                    vl._end_marker._fill._fc = colors_[vl._link_index];
+                    vl._end_marker._fill._fc._opacity = 1.;
+                    vl._end_marker._stroke = vl._stroke;
+                }
+            }
+        }
+    }
 };
 
 }  // namespace proto

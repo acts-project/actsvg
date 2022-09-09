@@ -53,6 +53,10 @@ static style::stroke __bg_stroke;
 // Transform section
 static style::transform __t_identity;
 
+// No fill, no stroke
+static style::fill __nn_fill;
+static style::stroke __nn_stroke;
+
 /** Static method to create the defaults in situ */
 static bool create_defaults() {
 
@@ -100,6 +104,13 @@ static bool create_defaults() {
 
     // Transform
     __t_identity = style::transform();
+
+    // Nulls
+    __nn_fill = style::fill();
+
+    __nn_stroke = style::stroke();
+    __nn_stroke._sterile = true;
+    __nn_stroke._width = 0.;
 
     return true;
 }
