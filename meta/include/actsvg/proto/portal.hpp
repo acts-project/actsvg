@@ -38,10 +38,10 @@ struct portal {
 
     /// A nested link type
     struct link {
-        
+
         // Expose the point3 type
         using point3_type = typename container_type::value_type;
-        
+
         /// The start of the volume link
         point3_type _start;
         /// The end of the volume link
@@ -51,6 +51,9 @@ struct portal {
         style::marker _start_marker = style::marker({});
         style::marker _end_marker = style::marker({"<<"});
         style::stroke _stroke;
+
+        /// @brief  The link index of the volume
+        unsigned int _link_index = 0u;
 
         /// The span
         std::optional<std::array<scalar, 2>> _span = std::nullopt;

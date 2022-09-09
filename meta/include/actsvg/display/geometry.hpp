@@ -239,6 +239,8 @@ svg::object portal(const std::string& id_, const portal_type& p_,
     svg::object p;
     p._tag = "g";
     p._id = id_;
+    p._fill._sterile = true;
+    p._stroke._sterile = true;
 
     p.add_object(surface(id_ + "_surface", p_._surface, v_));
     for (auto [il, vl] : utils::enumerate(p_._volume_links)) {
@@ -247,6 +249,65 @@ svg::object portal(const std::string& id_, const portal_type& p_,
     }
 
     return p;
+}
+
+/** Draw a volume
+ *
+ * @param id_ the indentification of this portal link
+ * @param dv_ the detector volume
+ * @param v_ the view type
+ *
+ * @return a single object containing the volume view
+ **/
+template <typename volume_type, typename view_type>
+svg::object volume(const std::string& id_, const volume_type& dv_,
+                   const view_type& v_) {
+    svg::object v;
+    v._tag = "g";
+    v._id = id_;
+    v._fill._sterile = true;
+    v._stroke._sterile = true;
+
+    // The volume shape
+    if (not dv_._vertices.empty()) {
+        auto view_vertices = v_(dv_._vertices);
+        auto pv = draw::polygon(id_ + "_volume", view_vertices, dv_._fill,
+                                dv_._stroke, dv_._transform);
+        v.add_object(pv);
+    } else {
+        if (dv_._type == volume_type::type::e_cylinder and
+            dv_._bound_values.size() == 6u) {
+            scalar ri = dv_._bound_values[0u];
+            scalar ro = dv_._bound_values[1u];
+            scalar zp = dv_._bound_values[2u];
+            scalar zh = dv_._bound_values[3u];
+            scalar ps = dv_._bound_values[4u];
+            scalar ap = dv_._bound_values[5u];
+            if constexpr (std::is_same_v<view_type, views::x_y>) {
+                // Make a dummy surface and draw it
+                typename volume_type::surface_type s;
+                s._name = id_ + "_volume";
+                s._radii = {ri, ro};
+                s._opening = {ap - ps, ap + ps};
+                s._zparameters = {zp, zh};
+                s._fill = dv_._fill;
+                s._stroke = dv_._stroke;
+                v.add_object(surface(s._name, s, v_));
+            }
+            if constexpr (std::is_same_v<view_type, views::z_r>) {
+                std::vector<point2> view_vertices = {
+                    {zp - zh, ri}, {zp + zh, ri}, {zp + zh, ro}, {zp - zh, ro}};
+                auto pv = draw::polygon(id_ + "_volume", view_vertices,
+                                        dv_._fill, dv_._stroke, dv_._transform);
+                v.add_object(pv);
+            }
+        }
+    }
+
+    for (auto [ip, p] : utils::enumerate(dv_._portals)) {
+        v.add_object(portal(id_ + "_portal_" + std::to_string(ip), p, v_));
+    }
+    return v;
 }
 
 /** Draw eta lines in a zr view
