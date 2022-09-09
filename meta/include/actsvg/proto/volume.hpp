@@ -32,6 +32,8 @@ struct volume {
 
     using surface_type = surface<point3_container>;
 
+    using portal_type = portal<point3_container>;
+
     /// Type enumeration
     enum type { e_cylinder = 0, e_cuboid = 1, e_other = 2 };
 

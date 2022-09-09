@@ -26,6 +26,8 @@ namespace proto {
 template <typename point3_container>
 struct detector {
 
+    using volume_type = volume<point3_container>;
+    
     /// Name of the volume
     std::string _name = "unnamed";
 

@@ -256,12 +256,13 @@ svg::object portal(const std::string& id_, const portal_type& p_,
  * @param id_ the indentification of this portal link
  * @param dv_ the detector volume
  * @param v_ the view type
+ * @param p_ draw the portals
  *
  * @return a single object containing the volume view
  **/
 template <typename volume_type, typename view_type>
 svg::object volume(const std::string& id_, const volume_type& dv_,
-                   const view_type& v_) {
+                   const view_type& v_, bool p_ = true) {
     svg::object v;
     v._tag = "g";
     v._id = id_;
@@ -304,10 +305,60 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
         }
     }
 
-    for (auto [ip, p] : utils::enumerate(dv_._portals)) {
-        v.add_object(portal(id_ + "_portal_" + std::to_string(ip), p, v_));
+    // Draw the portals
+    if (p_) {
+        for (auto [ip, p] : utils::enumerate(dv_._portals)) {
+            v.add_object(portal(id_ + "_portal_" + std::to_string(ip), p, v_));
+        }
     }
     return v;
+}
+
+/** Draw a detector
+ *
+ * @param id_ the indentification of this portal link
+ * @param d_ the detector
+ * @param v_ the view type
+ *
+ * @return a single object containing the volume view
+ **/
+template <typename detector_type, typename view_type>
+svg::object detector(const std::string& id_, const detector_type& d_,
+                     const view_type& v_) {
+    svg::object d;
+    d._tag = "g";
+    d._id = id_;
+    d._fill._sterile = true;
+    d._stroke._sterile = true;
+
+    // Sort the volumes after their depth level, local copy first
+    auto volumes = d_._volumes;
+    std::sort(volumes.begin(), volumes.end(),
+              [](const auto& a_, const auto& b_) {
+                  return (a_._depth_level < b_._depth_level);
+              });
+
+    // Draw the volume areas first
+    for (const auto& v : volumes) {
+        d.add_object(volume(v._name, v, v_, false));
+    }
+
+    // Collect all the portals (in a named map) - to avoid double drawing of
+    // shared ones
+    std::map<std::string, typename detector_type::volume_type::portal_type>
+        portals;
+
+    for (const auto& v : volumes) {
+        for (const auto& p : v._portals) {
+            portals[p._name] = p;
+        }
+    }
+    // Now draw the portals
+    for (const auto [n, p] : portals) {
+        d.add_object(portal(n, p, v_));
+    }
+
+    return d;
 }
 
 /** Draw eta lines in a zr view
