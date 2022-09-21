@@ -33,6 +33,17 @@ struct detector {
 
     /// Auxiliary information
     std::vector<volume<point3_container>> _volumes = {};
+
+    /// Colorize method
+    ///
+    /// @param colors_ are the indexed colors
+    ///
+    void colorize(std::vector<style::color>& colors_) {
+        for (auto& v : _volumes){
+            v.colorize(colors_);
+        }
+    }
+
 };
 
 }  // namespace proto

@@ -277,7 +277,7 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
         v.add_object(pv);
     } else {
         if (dv_._type == volume_type::type::e_cylinder and
-            dv_._bound_values.size() == 6u) {
+            dv_._bound_values.size() >= 6u) {
             scalar ri = dv_._bound_values[0u];
             scalar ro = dv_._bound_values[1u];
             scalar zp = dv_._bound_values[2u];
