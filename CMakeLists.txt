@@ -13,6 +13,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ACTSVG_CXX_FLAGS}")
 include( CMakeDependentOption )
 include( GNUInstallDirs )
 
+# Flags controlling the meta-build system.
+option( ACTSVG_USE_SYSTEM_LIBS "Use system libraries be default" FALSE )
+
 # Explicitly set the output directory for the binaries. Such that if this
 # project is included by another project, the main project's configuration would
 # win out.
@@ -74,7 +77,7 @@ if (ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
       "Set up the GoogleTest target(s) explicitly" TRUE )
    option( ACTSVG_USE_SYSTEM_GOOGLETEST
       "Pick up an existing installation of GoogleTest from the build environment"
-      FALSE )
+      ${ACTSVG_USE_SYSTEM_LIBS} )
    if( ACTSVG_SETUP_GOOGLETEST )
       if( ACTSVG_USE_SYSTEM_GOOGLETEST )
          find_package( GTest REQUIRED )
@@ -86,4 +89,3 @@ endif()
 
 # Set up the packaging of the project.
 include( actsvg-packaging )
-
