@@ -81,10 +81,10 @@ int main(int argc, char* argv[]) {
     auto measure_marker = style::marker({"|<"});
     auto measure_hlx =
         draw::measure("hlx", {0, 210}, {100., 210}, stroke_black,
-                      measure_marker, style::font(), "hx", {50., 220.});
+                      measure_marker, measure_marker, style::font(), "hx", {50., 220.});
     auto measure_hly =
         draw::measure("hly", {110, 0}, {110., 200}, stroke_black,
-                      measure_marker, style::font(), "hy", {120., 50.});
+                      measure_marker, measure_marker, style::font(), "hy", {120., 50.});
     rectangle_file.add_object(measure_hly);
     rectangle_file.add_object(measure_hlx);
 
@@ -110,11 +110,11 @@ int main(int argc, char* argv[]) {
 
     auto measure_hlx_min =
         draw::measure("hlx_min", {0, -210}, {50., -210}, stroke_black,
-                      measure_marker, measure_marker, "hx_min", style::font(), {25., -220.} );
+                      measure_marker, measure_marker, style::font(), "hx_min", {25., -220.} );
 
     auto measure_hlx_max =
         draw::measure("hlx_max", {0, 210}, {100., 210}, stroke_black,
-                      measure_marker, measure_marker, "hx_max", style::font(), {50.,220.});
+                      measure_marker, measure_marker, style::font(), "hx_max", {50.,220.});
 
     trapezoid_file.add_object(measure_hlx_min);
     trapezoid_file.add_object(measure_hlx_max);
