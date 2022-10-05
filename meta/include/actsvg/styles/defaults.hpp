@@ -53,6 +53,10 @@ static style::stroke __bg_stroke;
 // Transform section
 static style::transform __t_identity;
 
+// White fill, white stroke
+static style::fill __w_fill;
+static style::stroke __w_stroke;
+
 // No fill, no stroke
 static style::fill __nn_fill;
 static style::stroke __nn_stroke;
@@ -104,6 +108,10 @@ static bool create_defaults() {
 
     // Transform
     __t_identity = style::transform();
+
+    // Whites
+    __w_fill._fc._rgb = {255, 255, 255};
+    __w_stroke._sc._rgb = {255, 255, 255};;
 
     // Nulls
     __nn_fill = style::fill();

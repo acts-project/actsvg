@@ -214,14 +214,49 @@ svg::object portal_link(const std::string& id_,
     l._tag = "g";
     l._id = id_;
 
-    typename portal_type::container_type start_end_3d = {link_._start,
-                                                         link_._end};
-    auto start_end = v_(start_end_3d);
+    scalar d_x = link_._end[0u] - link_._start[0u];
+    scalar d_y = link_._end[1u] - link_._start[1u];
+    scalar d_z = link_._end[2u] - link_._start[2u];
+    scalar d_r = std::sqrt(d_x * d_x + d_y * d_y);
+    if (std::is_same_v<view_type, views::x_y> and
+        d_r <= std::numeric_limits<scalar>::epsilon()) {
+        svg::object arr_xy;
+        arr_xy._tag = "g";
+        arr_xy._id = id_ + "_arrow";
+        arr_xy.add_object(draw::circle(
+            id_ + "_arrow_top", {link_._start[0u], link_._start[1u]},
+            link_._end_marker._size, link_._end_marker._fill));
+        /// @todo:  fold with camera
+        if (d_z > 0) {
+            arr_xy.add_object(draw::circle(
+                id_ + "_arrow_top_tip", {link_._start[0u], link_._start[1u]},
+                link_._end_marker._size * 0.1, __w_fill));
+        } else {
+            scalar d_l_x =
+                link_._end_marker._size * 0.9 * std::cos(0.25 * M_PI);
+            scalar d_l_y =
+                link_._end_marker._size * 0.9 * std::sin(0.25 * M_PI);
+            arr_xy.add_object(
+                draw::line(id_ + "_arrow_top_cl0",
+                           {link_._start[0u] - d_l_x, link_._start[1u] - d_l_y},
+                           {link_._start[0u] + d_l_x, link_._start[1u] + d_l_y},
+                           __w_stroke));
+            arr_xy.add_object(
+                draw::line(id_ + "_arrow_top_cl1",
+                           {link_._start[0u] + d_l_x, link_._start[1u] - d_l_y},
+                           {link_._start[0u] - d_l_x, link_._start[1u] + d_l_y},
+                           __w_stroke));        }
+        l.add_object(arr_xy);
+        // draw plot
+    } else {
+        typename portal_type::container_type start_end_3d = {link_._start,
+                                                             link_._end};
+        auto start_end = v_(start_end_3d);
 
-    l.add_object(draw::arrow(id_ + "_arrow", start_end[0u], start_end[1u],
-                             link_._stroke, link_._start_marker,
-                             link_._end_marker));
-
+        l.add_object(draw::arrow(id_ + "_arrow", start_end[0u], start_end[1u],
+                                 link_._stroke, link_._start_marker,
+                                 link_._end_marker));
+    }
     return l;
 }
 
