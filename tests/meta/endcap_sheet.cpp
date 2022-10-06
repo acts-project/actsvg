@@ -68,7 +68,7 @@ proto::volume<point3_container> generate_endcap(
     std::vector<proto::surface<point3_container>> backside;
 
     // Disc case
-    if (m_t_ == proto::surface<point3_container>::e_disc) {
+    if (m_t_ == proto::surface<point3_container>::type::e_disc) {
 
         inner_template_surface._type = m_t_;
         inner_template_surface._radii = {100, 200};
@@ -79,7 +79,7 @@ proto::volume<point3_container> generate_endcap(
             100, 200, static_cast<scalar>(half_opening + 0.05), 0.};
 
         middle_template_surface._type =
-            proto::surface<point3_container>::e_disc;
+            proto::surface<point3_container>::type::e_disc;
         middle_template_surface._radii = {190, 320};
         middle_template_surface._opening = {
             static_cast<scalar>(-half_opening - 0.05),
@@ -87,7 +87,8 @@ proto::volume<point3_container> generate_endcap(
         middle_template_surface._measures = {
             190, 320, static_cast<scalar>(half_opening + 0.05), 0.};
 
-        outer_template_surface._type = proto::surface<point3_container>::e_disc;
+        outer_template_surface._type =
+            proto::surface<point3_container>::type::e_disc;
         outer_template_surface._radii = {310, 450};
         outer_template_surface._opening = {
             static_cast<scalar>(-half_opening - 0.05),
@@ -97,7 +98,7 @@ proto::volume<point3_container> generate_endcap(
 
         endcap._surface_grid._edges_0 = {100., 195., 305., 450.};
 
-    } else if (m_t_ == proto::surface<point3_container>::e_trapez) {
+    } else if (m_t_ == proto::surface<point3_container>::type::e_trapez) {
         inner_template_surface._type = m_t_;
         inner_template_surface._measures = {26., 40., 55.};
         inner_template_surface._vertices = {
@@ -220,7 +221,7 @@ proto::volume<point3_container> generate_endcap(
 
             // The transform
             style::transform t;
-            if (m_t_ == proto::surface<point3_container>::e_trapez) {
+            if (m_t_ == proto::surface<point3_container>::type::e_trapez) {
                 t._tr[0] = static_cast<scalar>(rad_pos[is] * std::cos(phi));
                 t._tr[1] = static_cast<scalar>(rad_pos[is] * std::sin(phi));
                 s._aux_info["module_info"] = {std::string("center = ") +
@@ -232,7 +233,7 @@ proto::volume<point3_container> generate_endcap(
 
             s._transform = t;
 
-            if (m_t_ == proto::surface<point3_container>::e_disc) {
+            if (m_t_ == proto::surface<point3_container>::type::e_disc) {
                 // Let's fill some vertices
                 scalar phi_low = phi - half_opening;
                 scalar phi_high = phi + half_opening;
@@ -281,7 +282,7 @@ proto::volume<point3_container> generate_endcap(
         // The proto surfaces for the templates
         proto::surface<point3_container> support_disk;
         support_disk._name = "support_disk";
-        support_disk._type = proto::surface<point3_container>::e_disc;
+        support_disk._type = proto::surface<point3_container>::type::e_disc;
         scalar r_min = 100.;
         scalar r_max = 450.;
         point3 A = {r_max, 0., 0.};
@@ -322,7 +323,7 @@ proto::volume<point3_container> generate_endcap(
 TEST(display, endcap_sheet_sec_module_info_tmp) {
 
     auto sector_endcap =
-        generate_endcap(proto::surface<point3_container>::e_disc);
+        generate_endcap(proto::surface<point3_container>::type::e_disc);
 
     // Create the sheet
     svg::object endcap_sheet_fs =
@@ -342,8 +343,8 @@ TEST(display, endcap_sheet_sec_module_info_tmp) {
 
 TEST(display, endcap_sheet_sec_module_info_ind) {
 
-    auto sector_endcap =
-        generate_endcap(proto::surface<point3_container>::e_disc, false, false);
+    auto sector_endcap = generate_endcap(
+        proto::surface<point3_container>::type::e_disc, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs =
@@ -364,7 +365,7 @@ TEST(display, endcap_sheet_sec_module_info_ind) {
 TEST(display, endcap_sheet_sec_module_grid_tmp) {
 
     auto sector_endcap =
-        generate_endcap(proto::surface<point3_container>::e_disc);
+        generate_endcap(proto::surface<point3_container>::type::e_disc);
 
     // Create the sheet
     svg::object endcap_sheet_fs = display::endcap_sheet(
@@ -384,7 +385,7 @@ TEST(display, endcap_sheet_sec_module_grid_tmp) {
 TEST(display, endcap_sheet_sec_module_grid_ind) {
 
     auto sector_endcap = generate_endcap(
-        proto::surface<point3_container>::e_disc, false, false, false);
+        proto::surface<point3_container>::type::e_disc, false, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs = display::endcap_sheet(
@@ -404,7 +405,7 @@ TEST(display, endcap_sheet_sec_module_grid_ind) {
 TEST(display, endcap_sheet_trap_module_info_tmp) {
 
     auto trapez_endcap =
-        generate_endcap(proto::surface<point3_container>::e_trapez);
+        generate_endcap(proto::surface<point3_container>::type::e_trapez);
 
     // Create the sheet
     svg::object endcap_sheet_fs =
@@ -425,7 +426,7 @@ TEST(display, endcap_sheet_trap_module_info_tmp) {
 TEST(display, endcap_sheet_trap_module_info_ind) {
 
     auto trapez_endcap = generate_endcap(
-        proto::surface<point3_container>::e_trapez, false, false, false);
+        proto::surface<point3_container>::type::e_trapez, false, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs =
@@ -446,7 +447,7 @@ TEST(display, endcap_sheet_trap_module_info_ind) {
 TEST(display, endcap_sheet_trap_grid_info_tmp) {
 
     auto trapez_endcap =
-        generate_endcap(proto::surface<point3_container>::e_trapez);
+        generate_endcap(proto::surface<point3_container>::type::e_trapez);
 
     // Create the sheet
     svg::object endcap_sheet_fs = display::endcap_sheet(
@@ -466,7 +467,7 @@ TEST(display, endcap_sheet_trap_grid_info_tmp) {
 TEST(display, endcap_sheet_trap_grid_info_ind) {
 
     auto trapez_endcap = generate_endcap(
-        proto::surface<point3_container>::e_trapez, false, false, false);
+        proto::surface<point3_container>::type::e_trapez, false, false, false);
 
     // Create the sheet
     svg::object endcap_sheet_fs = display::endcap_sheet(
@@ -486,7 +487,7 @@ TEST(display, endcap_sheet_trap_grid_info_ind) {
 TEST(display, endcap_sheet_trap_grid_info_tmp_backside) {
 
     auto trapez_endcap =
-        generate_endcap(proto::surface<point3_container>::e_trapez, true);
+        generate_endcap(proto::surface<point3_container>::type::e_trapez, true);
 
     trapez_endcap._name = "Endcap with backside modules";
 
@@ -508,8 +509,8 @@ TEST(display, endcap_sheet_trap_grid_info_tmp_backside) {
 
 TEST(display, endcap_sheet_trap_grid_info_tmp_backside_passive) {
 
-    auto trapez_endcap =
-        generate_endcap(proto::surface<point3_container>::e_trapez, true, true);
+    auto trapez_endcap = generate_endcap(
+        proto::surface<point3_container>::type::e_trapez, true, true);
 
     trapez_endcap._name = "Endcap with backside modules and passive plate";
 
@@ -531,8 +532,8 @@ TEST(display, endcap_sheet_trap_grid_info_tmp_backside_passive) {
 
 TEST(display, endcap_sheet_trap_module_info_tmp_backside_passive) {
 
-    auto trapez_endcap =
-        generate_endcap(proto::surface<point3_container>::e_trapez, true, true);
+    auto trapez_endcap = generate_endcap(
+        proto::surface<point3_container>::type::e_trapez, true, true);
 
     trapez_endcap._name = "Endcap with backside modules and passive plate";
 

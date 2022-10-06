@@ -52,7 +52,7 @@ proto::volume<point3_container> generate_barrel(
         {-hx, -hy, 0.}, {hx, -hy, 0.}, {hx, hy, 0.}, {-hx, hy, 0.}};
     barrel_module_template._measures = {hx, hy};
     barrel_module_template._type =
-        proto::surface<point3_container>::e_rectangle;
+        proto::surface<point3_container>::type::e_rectangle;
 
     scalar offz = (0.5 * stave_modules - 0.5) * (1.98 * hy);
     scalar nexz = offz / (0.5 * stave_modules - 0.5);

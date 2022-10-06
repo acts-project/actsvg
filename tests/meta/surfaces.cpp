@@ -19,19 +19,19 @@
 using namespace actsvg;
 
 using point3 = std::array<scalar, 3>;
-using point3_collection = std::vector<point3>;
+using point3_container = std::vector<point3>;
 
 TEST(proto, rectanglular_surface) {
 
-    point3_collection rectangle_vertices = {{-30., -70., 123.},
-                                            {30., -70., 123.},
-                                            {30., 70., 123.},
-                                            {-30., 70., 123.}};
+    point3_container rectangle_vertices = {{-30., -70., 123.},
+                                           {30., -70., 123.},
+                                           {30., 70., 123.},
+                                           {-30., 70., 123.}};
 
-    proto::surface<point3_collection> rectangle;
+    proto::surface<point3_container> rectangle;
     rectangle._vertices = rectangle_vertices;
     rectangle._name = "rectangle surface";
-    rectangle._type = proto::surface<point3_collection>::e_rectangle;
+    rectangle._type = proto::surface<point3_container>::type::e_rectangle;
     rectangle._fill = style::fill({{0, 0, 100}, 0.5});
 
     svg::object rec = display::surface("rectangle", rectangle, views::x_y{});
@@ -52,28 +52,28 @@ TEST(proto, rectanglular_surface) {
 
 TEST(proto, rectanglular_subtracted_surface) {
 
-    point3_collection subtracted_vertices = {{-30., -70., 123.},
-                                             {30., -70., 123.},
-                                             {30., 70., 123.},
-                                             {-30., 70., 123.}};
+    point3_container subtracted_vertices = {{-30., -70., 123.},
+                                            {30., -70., 123.},
+                                            {30., 70., 123.},
+                                            {-30., 70., 123.}};
 
-    point3_collection rectangle_vertices = {{-130., -170., 123.},
-                                            {130., -170., 123.},
-                                            {130., 170., 123.},
-                                            {-130., 170., 123.}};
+    point3_container rectangle_vertices = {{-130., -170., 123.},
+                                           {130., -170., 123.},
+                                           {130., 170., 123.},
+                                           {-130., 170., 123.}};
 
-    proto::surface<point3_collection> rectangle;
+    proto::surface<point3_container> rectangle;
     rectangle._vertices = rectangle_vertices;
     rectangle._name = "rectangle surface";
-    rectangle._type = proto::surface<point3_collection>::e_rectangle;
+    rectangle._type = proto::surface<point3_container>::type::e_rectangle;
     rectangle._fill = style::fill({{0, 0, 100}, 0.5});
 
-    proto::surface<point3_collection> subtracted_rectangle;
+    proto::surface<point3_container> subtracted_rectangle;
     subtracted_rectangle._vertices = subtracted_vertices;
 
     rectangle._boolean_surface = {subtracted_rectangle};
     rectangle._boolean_operation =
-        proto::surface<point3_collection>::e_subtraction;
+        proto::surface<point3_container>::boolean::e_subtraction;
 
     svg::object rec = display::surface("rectangle", rectangle, views::x_y{});
 
@@ -92,11 +92,11 @@ TEST(proto, rectanglular_subtracted_surface) {
 
 TEST(proto, full_disc) {
 
-    proto::surface<point3_collection> disc;
+    proto::surface<point3_container> disc;
     disc._radii = {0., 150.};
     disc._zparameters = {50., 0.};
     disc._name = "disc surface";
-    disc._type = proto::surface<point3_collection>::e_disc;
+    disc._type = proto::surface<point3_container>::type::e_disc;
     disc._fill = style::fill({{0, 100, 0}, 0.5});
     disc._stroke = style::stroke({{0, 0, 0}}, 2.);
     disc._stroke._hl_width = 2.;
@@ -130,11 +130,11 @@ TEST(proto, full_disc) {
 
 TEST(proto, full_discs_view_range) {
 
-    proto::surface<point3_collection> disc;
+    proto::surface<point3_container> disc;
     disc._radii = {0., 150.};
     disc._zparameters = {50., 0.};
     disc._name = "disc surface";
-    disc._type = proto::surface<point3_collection>::e_disc;
+    disc._type = proto::surface<point3_container>::type::e_disc;
     disc._fill = style::fill({{0, 100, 0}, 0.5});
     disc._stroke = style::stroke({{0, 0, 0}}, 2.);
     disc._stroke._hl_width = 2.;
@@ -160,11 +160,11 @@ TEST(proto, full_discs_view_range) {
 
 TEST(proto, full_ring) {
 
-    proto::surface<point3_collection> ring;
+    proto::surface<point3_container> ring;
     ring._radii = {50., 150.};
     ring._zparameters = {50., 0.};
     ring._name = "ring surface";
-    ring._type = proto::surface<point3_collection>::e_disc;
+    ring._type = proto::surface<point3_container>::type::e_disc;
     ring._fill = style::fill({{0, 100, 0}, 0.5});
     ring._stroke = style::stroke({{0, 0, 0}}, 2.);
     ring._stroke._hl_width = 2.;
@@ -196,12 +196,12 @@ TEST(proto, full_ring) {
 
 TEST(proto, wedge) {
 
-    proto::surface<point3_collection> wedge;
+    proto::surface<point3_container> wedge;
     wedge._radii = {0., 150.};
     wedge._opening = {-0.25, 0.25};
     wedge._zparameters = {50., 0.};
     wedge._name = "wedge surface";
-    wedge._type = proto::surface<point3_collection>::e_disc;
+    wedge._type = proto::surface<point3_container>::type::e_disc;
     wedge._fill = style::fill({{0, 100, 0}, 0.5});
 
     svg::object w = display::surface("wedge", wedge, views::x_y{});
@@ -221,12 +221,12 @@ TEST(proto, wedge) {
 
 TEST(proto, sector) {
 
-    proto::surface<point3_collection> sector;
+    proto::surface<point3_container> sector;
     sector._radii = {50., 150.};
     sector._opening = {-0.25, 0.25};
     sector._zparameters = {50., 0.};
     sector._name = "sector surface";
-    sector._type = proto::surface<point3_collection>::e_disc;
+    sector._type = proto::surface<point3_container>::type::e_disc;
     sector._fill = style::fill({{0, 100, 0}, 0.5});
 
     svg::object s = display::surface("sector", sector, views::x_y{});
@@ -246,10 +246,10 @@ TEST(proto, sector) {
 
 TEST(proto, full_cylinder) {
 
-    proto::surface<point3_collection> cylinder;
+    proto::surface<point3_container> cylinder;
     cylinder._radii = {0., 150.};
     cylinder._name = "cylinder surface";
-    cylinder._type = proto::surface<point3_collection>::e_cylinder;
+    cylinder._type = proto::surface<point3_container>::type::e_cylinder;
     cylinder._fill = style::fill({{0, 100, 0}, 0.5});
     cylinder._stroke = style::stroke({{0, 0, 0}}, 2.);
     cylinder._stroke._hl_width = 2.;
@@ -283,12 +283,12 @@ TEST(proto, full_cylinder) {
 
 TEST(proto, sector_cylinder) {
 
-    proto::surface<point3_collection> sector_cylinder;
+    proto::surface<point3_container> sector_cylinder;
     sector_cylinder._radii = {0., 150.};
     sector_cylinder._opening = {-0.2, 0.5};
     sector_cylinder._zparameters = {10., 200};
     sector_cylinder._name = "sectoral cylinder surface";
-    sector_cylinder._type = proto::surface<point3_collection>::e_cylinder;
+    sector_cylinder._type = proto::surface<point3_container>::type::e_cylinder;
     sector_cylinder._fill = style::fill({{0, 100, 0}, 0.5});
     sector_cylinder._stroke = style::stroke({{0, 0, 0}}, 2.);
     sector_cylinder._stroke._hl_width = 2.;

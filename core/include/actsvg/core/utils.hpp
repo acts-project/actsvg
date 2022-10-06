@@ -206,11 +206,11 @@ point3_type place(const point3_type &p_, const point3_type &tr_,
  *
  * @return new transformed point3 collection
  **/
-template <typename point3_collection, typename point3_type>
-point3_collection place_vertices(const point3_collection &pc_,
+template <typename point3_container, typename point3_type>
+point3_container place_vertices(const point3_container &pc_,
                                  const point3_type &tr_,
                                  const std::array<point3_type, 3> &rt_) {
-    point3_collection placed;
+    point3_container placed;
     for (const auto &p : pc_) {
         placed.push_back(place(p, tr_, rt_));
     }
