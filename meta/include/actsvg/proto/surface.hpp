@@ -31,7 +31,7 @@ namespace proto {
 template <typename point3_container>
 struct surface {
 
-    enum type {
+    enum class type {
         e_annulus,
         e_cylinder,
         e_diamond,
@@ -41,10 +41,10 @@ struct surface {
         e_trapez
     };
 
-    enum boolean { e_clipping, e_union, e_subtraction, e_none };
+    enum class boolean { e_clipping, e_union, e_subtraction, e_none };
 
     /// Name of the surface
-    std::string _name = "unnamed";
+    std::string _name = "unnamed_surface";
 
     /// Auxiliary information as container map
     std::map<std::string, std::vector<std::string>> _aux_info = {};
@@ -60,7 +60,7 @@ struct surface {
 
     /// Boolean surfaces
     std::vector<surface<point3_container>> _boolean_surface = {};
-    boolean _boolean_operation = e_none;
+    boolean _boolean_operation = boolean::e_none;
 
     /// Fill and stroke
     style::fill _fill = defaults::__s_fill;
@@ -68,7 +68,7 @@ struct surface {
     style::transform _transform = defaults::__t_identity;
 
     /// Type of the surfaces
-    type _type = e_trapez;
+    type _type = type::e_trapez;
 
     /// And their measures
     std::vector<scalar> _measures = {};

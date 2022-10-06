@@ -26,7 +26,7 @@ TEST(proto, cylinder_portal) {
 
     proto::portal<point3_container> p;
 
-    ASSERT_TRUE(p._name == "unnamed");
+    ASSERT_TRUE(p._name == "unnamed_portal");
     ASSERT_TRUE(p._volume_links.empty());
 
     proto::surface<point3_container> s;
@@ -78,7 +78,7 @@ TEST(proto, full_disc_portal) {
 
     proto::portal<point3_container> p;
 
-    ASSERT_TRUE(p._name == "unnamed");
+    ASSERT_TRUE(p._name == "unnamed_portal");
     ASSERT_TRUE(p._volume_links.empty());
 
     proto::surface<point3_container> s;

@@ -26,7 +26,7 @@ TEST(proto, cylindrical_detector) {
     // Create and define a volume
     proto::detector<point3_container> d;
 
-    ASSERT_TRUE(d._name == "unnamed");
+    ASSERT_TRUE(d._name == "unnamed_detector");
     ASSERT_TRUE(d._volumes.empty());
 
     d._name = "bp_pix";

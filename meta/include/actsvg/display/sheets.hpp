@@ -59,12 +59,12 @@ svg::object surface_sheet_xy(const std::string& id_,
     auto [x_axis, y_axis] = display::view_range(contours);
 
     // Stitch when disc - and make x and y axis similarly long
-    bool full = (s_._type == proto::surface<point3_container>::e_disc and
+    bool full = (s_._type == proto::surface<point3_container>::type::e_disc and
                  s_._opening == std::array<scalar, 2>({-M_PI, M_PI}));
 
     bool draw_axes = true;
-    if (s_._type == proto::surface<point3_container>::e_disc or
-        s_._type == proto::surface<point3_container>::e_annulus) {
+    if (s_._type == proto::surface<point3_container>::type::e_disc or
+        s_._type == proto::surface<point3_container>::type::e_annulus) {
         draw_axes = not fs_;
     }
 
@@ -86,7 +86,7 @@ svg::object surface_sheet_xy(const std::string& id_,
     proto::surface<point3_container> draw_surface = s_;
     draw_surface._transform._scale = {s_x, s_y};
     // If this is a disc surface, clear the vertices (will be re-generated)
-    if (draw_surface._type == decltype(draw_surface)::e_disc) {
+    if (draw_surface._type == decltype(draw_surface)::type::e_disc) {
         draw_surface._vertices.clear();
     }
     // The boolean parameters are : we draw the surface with booleans, focusses,
@@ -112,7 +112,7 @@ svg::object surface_sheet_xy(const std::string& id_,
     m_marker._size = static_cast<scalar>(0.015 * sh_[0]);
 
     // - Trapezoid
-    if (s_._type == proto::surface<point3_container>::e_trapez and
+    if (s_._type == proto::surface<point3_container>::type::e_trapez and
         s_._measures.size() == 3u) {
 
         scalar hlx_min = s_._measures[0] * s_x;
@@ -146,7 +146,8 @@ svg::object surface_sheet_xy(const std::string& id_,
         so.add_object(measure_hlx_min);
         so.add_object(measure_hlx_max);
         so.add_object(measure_hly);
-    } else if (s_._type == proto::surface<point3_container>::e_rectangle and
+    } else if (s_._type ==
+                   proto::surface<point3_container>::type::e_rectangle and
                s_._measures.size() == 2u) {
 
         scalar hlx = s_._measures[0] * s_x;
@@ -168,7 +169,7 @@ svg::object surface_sheet_xy(const std::string& id_,
              static_cast<scalar>(0.5 * hly)});
         so.add_object(measure_hlx);
         so.add_object(measure_hly);
-    } else if (s_._type == proto::surface<point3_container>::e_diamond and
+    } else if (s_._type == proto::surface<point3_container>::type::e_diamond and
                s_._measures.size() == 5u) {
 
         scalar hlx_ymin = s_._measures[0] * s_x;
@@ -226,7 +227,7 @@ svg::object surface_sheet_xy(const std::string& id_,
         so.add_object(measure_hly_nx);
         so.add_object(measure_hly_px);
 
-    } else if (s_._type == proto::surface<point3_container>::e_polygon and
+    } else if (s_._type == proto::surface<point3_container>::type::e_polygon and
                s_._measures.size() == 2 * s_._vertices.size()) {
 
         point2 gcenter = {0., 0.};
@@ -270,7 +271,7 @@ svg::object surface_sheet_xy(const std::string& id_,
                                      {x + offx, y + offy}, {label_v}));
         }
 
-    } else if (s_._type == proto::surface<point3_container>::e_disc and
+    } else if (s_._type == proto::surface<point3_container>::type::e_disc and
                not s_._measures.empty()) {
 
         std::string dphi = "h_phi";
@@ -389,7 +390,7 @@ svg::object surface_sheet_xy(const std::string& id_,
                 }
             }
         }
-    } else if (s_._type == proto::surface<point3_container>::e_annulus and
+    } else if (s_._type == proto::surface<point3_container>::type::e_annulus and
                not s_._measures.empty()) {
 
         if (s_._measures.size() != 7u) {
@@ -673,8 +674,8 @@ svg::object sheet(const std::string& id_,
             style::font info_font;
             info_font._size = static_cast<unsigned int>(0.03 * s_sh_[0]);
             auto c_objects = connectors::connect_action(
-                extra_objects, module_batch, v_._grid_associations[ib], ib == 0u,
-                {"mouseover", "mouseout"},
+                extra_objects, module_batch, v_._grid_associations[ib],
+                ib == 0u, {"mouseover", "mouseout"},
                 {connectors::e_highlight, connectors::e_associate_info},
                 info_font);
             scalar offsx =

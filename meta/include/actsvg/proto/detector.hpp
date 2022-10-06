@@ -27,9 +27,9 @@ template <typename point3_container>
 struct detector {
 
     using volume_type = volume<point3_container>;
-    
+
     /// Name of the volume
-    std::string _name = "unnamed";
+    std::string _name = "unnamed_detector";
 
     /// Auxiliary information
     std::vector<volume<point3_container>> _volumes = {};
@@ -39,11 +39,10 @@ struct detector {
     /// @param colors_ are the indexed colors
     ///
     void colorize(std::vector<style::color>& colors_) {
-        for (auto& v : _volumes){
+        for (auto& v : _volumes) {
             v.colorize(colors_);
         }
     }
-
 };
 
 }  // namespace proto

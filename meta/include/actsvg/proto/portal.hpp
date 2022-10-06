@@ -64,7 +64,7 @@ struct portal {
     };
 
     /// Name of the surface
-    std::string _name = "unnamed";
+    std::string _name = "unnamed_portal";
 
     /// Auxiliary information as container map
     std::map<std::string, std::vector<std::string>> _aux_info = {};
