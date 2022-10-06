@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <vector>
@@ -28,8 +29,28 @@ namespace views {
 /// A contour is a 2-dimensional object
 using contour = std::vector<point2>;
 
+/// A scene description
+struct scene {
+    /// A camera position
+    point2 _camera = {0., 0.};
+    /// A view angle
+    point2 _view = {0., -1.};
+    /// A strict view, i.e. only see along the view direction
+    bool _strict = false;
+    /// What's actually shown
+    std::array<std::array<scalar, 2>, 2> _range = {
+        std::array<scalar, 2>{std::numeric_limits<scalar>::lowest(),
+                              std::numeric_limits<scalar>::max()},
+        std::array<scalar, 2>{std::numeric_limits<scalar>::lowest(),
+                              std::numeric_limits<scalar>::max()}};
+};
+
 /// Single view per module/surface
 struct x_y {
+
+    /// Scene setting
+    scene _scene = scene();
+
     /// Make it screen obvious
     std::array<std::string, 2> _axis_names = {"x", "y"};
 
@@ -59,6 +80,9 @@ struct x_y {
 /// z_r projection view
 struct z_r {
 
+    /// Scene setting
+    scene _scene = scene();
+
     /// Make it screen obvious
     std::array<std::string, 2> _axis_names = {"z", "r"};
 
@@ -86,6 +110,10 @@ struct z_r {
 
 // z-phi projection view
 struct z_phi {
+
+    /// Scene setting
+    scene _scene = scene();
+
     /// Switch the phi protection on (wrapping in phi detection)
     bool _protect_phi = true;
 
@@ -138,7 +166,12 @@ struct z_phi {
 
 // z_rphi projection view
 struct z_rphi {
-    scalar fixed_r = std::numeric_limits<scalar>::quiet_NaN();
+
+    /// Scene setting
+    scene _scene = scene();
+
+    /// A fixed radius is needed for this view
+    scalar _fixed_r = std::numeric_limits<scalar>::quiet_NaN();
 
     /// Make it screen obvious
     std::array<std::string, 2> _axis_names = {"z", "r · phi"};
@@ -158,7 +191,7 @@ struct z_rphi {
         contour c;
         c.reserve(vertices_.size());
         for (const auto &v : vertices_) {
-            scalar r = fixed_r;
+            scalar r = _fixed_r;
             if (std::isnan(r)) {
                 r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
             }
