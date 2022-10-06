@@ -250,7 +250,7 @@ svg::object portal_link(const std::string& id_,
     l._tag = "g";
     l._id = id_;
 
-    scalar d_z = link_._end[2u] - link_._start[2u];
+    scalar d_z = static_cast<scalar>(link_._end[2u] - link_._start[2u]);
     // View activation / deactivation
     if constexpr (std::is_same_v<view_type, views::x_y>) {
         if (v_._scene._strict and d_z * v_._scene._view[1] < 0) {
@@ -259,22 +259,26 @@ svg::object portal_link(const std::string& id_,
         }
     }
 
-    scalar d_x = link_._end[0u] - link_._start[0u];
-    scalar d_y = link_._end[1u] - link_._start[1u];
+    scalar d_x = static_cast<scalar>(link_._end[0u] - link_._start[0u]);
+    scalar d_y = static_cast<scalar>(link_._end[1u] - link_._start[1u]);
     scalar d_r = std::sqrt(d_x * d_x + d_y * d_y);
     if (std::is_same_v<view_type, views::x_y> and
         d_r <= std::numeric_limits<scalar>::epsilon()) {
         svg::object arr_xy;
         arr_xy._tag = "g";
         arr_xy._id = id_ + "_arrow";
-        arr_xy.add_object(draw::circle(
-            id_ + "_arrow_top", {link_._start[0u], link_._start[1u]},
-            link_._end_marker._size, link_._end_marker._fill));
+        arr_xy.add_object(draw::circle(id_ + "_arrow_top",
+                                       {static_cast<scalar>(link_._start[0u]),
+                                        static_cast<scalar>(link_._start[1u])},
+                                       link_._end_marker._size,
+                                       link_._end_marker._fill));
         // Camera view onto the surface
         if (d_z * v_._scene._view[1] < 0) {
-            arr_xy.add_object(draw::circle(
-                id_ + "_arrow_top_tip", {link_._start[0u], link_._start[1u]},
-                link_._end_marker._size * 0.1, __w_fill));
+            arr_xy.add_object(
+                draw::circle(id_ + "_arrow_top_tip",
+                             {static_cast<scalar>(link_._start[0u]),
+                              static_cast<scalar>(link_._start[1u])},
+                             link_._end_marker._size * 0.1, __w_fill));
         } else {
             scalar d_l_x =
                 link_._end_marker._size * 0.9 * std::cos(0.25 * M_PI);
@@ -282,13 +286,17 @@ svg::object portal_link(const std::string& id_,
                 link_._end_marker._size * 0.9 * std::sin(0.25 * M_PI);
             arr_xy.add_object(
                 draw::line(id_ + "_arrow_top_cl0",
-                           {link_._start[0u] - d_l_x, link_._start[1u] - d_l_y},
-                           {link_._start[0u] + d_l_x, link_._start[1u] + d_l_y},
+                           {static_cast<scalar>(link_._start[0u] - d_l_x),
+                            static_cast<scalar>(link_._start[1u] - d_l_y)},
+                           {static_cast<scalar>(link_._start[0u] + d_l_x),
+                            static_cast<scalar>(link_._start[1u] + d_l_y)},
                            __w_stroke));
             arr_xy.add_object(
                 draw::line(id_ + "_arrow_top_cl1",
-                           {link_._start[0u] + d_l_x, link_._start[1u] - d_l_y},
-                           {link_._start[0u] - d_l_x, link_._start[1u] + d_l_y},
+                           {static_cast<scalar>(link_._start[0u] + d_l_x),
+                            static_cast<scalar>(link_._start[1u] - d_l_y)},
+                           {static_cast<scalar>(link_._start[0u] - d_l_x),
+                            static_cast<scalar>(link_._start[1u] + d_l_y)},
                            __w_stroke));
         }
         l.add_object(arr_xy);
