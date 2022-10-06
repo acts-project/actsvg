@@ -128,6 +128,36 @@ TEST(proto, full_disc) {
     rstream.close();
 }
 
+TEST(proto, full_discs_view_range) {
+
+    proto::surface<point3_collection> disc;
+    disc._radii = {0., 150.};
+    disc._zparameters = {50., 0.};
+    disc._name = "disc surface";
+    disc._type = proto::surface<point3_collection>::e_disc;
+    disc._fill = style::fill({{0, 100, 0}, 0.5});
+    disc._stroke = style::stroke({{0, 0, 0}}, 2.);
+    disc._stroke._hl_width = 2.;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    views::x_y xy_range;
+    xy_range._scene._range[1] = {0., 10.};
+
+    // Test the disc in x-y view
+    svg::object fd_xy = display::surface("disc_view_hidden", disc, xy_range);
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(fd_xy);
+
+    std::ofstream rstream;
+    rstream.open("test_meta_full_view_hidden_disc_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+}
+
 TEST(proto, full_ring) {
 
     proto::surface<point3_collection> ring;

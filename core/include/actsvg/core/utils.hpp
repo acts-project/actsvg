@@ -96,6 +96,18 @@ std::string to_string(const point2_type &p_, size_t pr_ = 4) {
     return sstream.str();
 }
 
+/** Check if a parameter is within range
+ *
+ * @param p_ parameter to be checked
+ * @param range_ the range
+ *
+ * @note borders are included in this check
+ **/
+template <typename range_type>
+bool inside_range(scalar p_, const range_type &range_) {
+    return (range_[0] <= p_ and p_ <= range_[1]);
+}
+
 /** Helper method to calculate the barycenter
  *
  * @param vs_ vertices

@@ -32,6 +32,8 @@ namespace display {
  * @param fs_ draw as focus
  * @param sc_ draw at scale
  * @param dt_ draw as template
+ *
+ * @note template surfaces ignore the view_type::scene range restriction
  */
 template <typename surface_type, typename view_type>
 svg::object surface(const std::string& id_, const surface_type& s_,
@@ -68,13 +70,21 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
         // x-y view for discs
         if constexpr (std::is_same_v<view_type, views::x_y>) {
+
+            // view activation / deactivation
+            if (not utils::inside_range(s_._zparameters[0u],
+                                        v_._scene._range[1u])) {
+                s._active = false;
+                return s;
+            }
+            // Sector or circle
             if (std::abs((s_._opening[1u] - s_._opening[0u]) - 2 * M_PI) >
                 5 * std::numeric_limits<scalar>::epsilon()) {
                 auto view_vertices = generators::sector_contour(
-                    s_._radii[0], s_._radii[1], s_._opening[0], s_._opening[1]);
+                    s_._radii[0u], s_._radii[1u], s_._opening[0u],
+                    s_._opening[1u]);
                 s = draw::polygon(id_, view_vertices, s_._fill, s_._stroke,
                                   draw_transform);
-
             } else {
 
                 s = draw::circle(id_, {0., 0.}, s_._radii[1u], s_._fill,
@@ -128,6 +138,14 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
         // xy - view
         if constexpr (std::is_same_v<view_type, views::x_y>) {
+
+            // view activation / deactivation
+            if (not utils::inside_range(s_._zparameters[0u],
+                                        v_._scene._range[1u])) {
+                s._active = false;
+                return s;
+            }
+
             if (std::abs((s_._opening[1u] - s_._opening[0u]) - 2 * M_PI) >
                 5 * std::numeric_limits<scalar>::epsilon()) {
                 scalar r = s_._radii[1u];
@@ -153,6 +171,24 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         }
 
     } else {
+
+        // View activiation, deactivation
+        // if only one vertex is within the view range, the surface is shown
+        bool view_active = true;
+        if constexpr (std::is_same_v<view_type, views::x_y>) {
+            view_active = false;
+            for (auto v : s_._vertices) {
+                if (utils::inside_range(v[2], v_._scene._range[1u])) {
+                    view_active = true;
+                    break;
+                }
+            }
+        }
+        if (not view_active) {
+            s._active = view_active;
+            return s;
+        }
+
         auto view_vertices = v_(s_._vertices);
         s = draw::polygon(id_, view_vertices, s_._fill, s_._stroke,
                           draw_transform);
@@ -214,9 +250,17 @@ svg::object portal_link(const std::string& id_,
     l._tag = "g";
     l._id = id_;
 
+    scalar d_z = link_._end[2u] - link_._start[2u];
+    // View activation / deactivation
+    if constexpr (std::is_same_v<view_type, views::x_y>) {
+        if (v_._scene._strict and d_z * v_._scene._view[1] < 0) {
+            l._active = false;
+            return l;
+        }
+    }
+
     scalar d_x = link_._end[0u] - link_._start[0u];
     scalar d_y = link_._end[1u] - link_._start[1u];
-    scalar d_z = link_._end[2u] - link_._start[2u];
     scalar d_r = std::sqrt(d_x * d_x + d_y * d_y);
     if (std::is_same_v<view_type, views::x_y> and
         d_r <= std::numeric_limits<scalar>::epsilon()) {
@@ -226,8 +270,8 @@ svg::object portal_link(const std::string& id_,
         arr_xy.add_object(draw::circle(
             id_ + "_arrow_top", {link_._start[0u], link_._start[1u]},
             link_._end_marker._size, link_._end_marker._fill));
-        /// @todo:  fold with camera
-        if (d_z > 0) {
+        // Camera view onto the surface
+        if (d_z * v_._scene._view[1] < 0) {
             arr_xy.add_object(draw::circle(
                 id_ + "_arrow_top_tip", {link_._start[0u], link_._start[1u]},
                 link_._end_marker._size * 0.1, __w_fill));
@@ -245,7 +289,8 @@ svg::object portal_link(const std::string& id_,
                 draw::line(id_ + "_arrow_top_cl1",
                            {link_._start[0u] + d_l_x, link_._start[1u] - d_l_y},
                            {link_._start[0u] - d_l_x, link_._start[1u] + d_l_y},
-                           __w_stroke));        }
+                           __w_stroke));
+        }
         l.add_object(arr_xy);
         // draw plot
     } else {
