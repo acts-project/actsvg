@@ -25,7 +25,7 @@ TEST(proto, cylindrical_volume) {
     proto::volume<point3_container> v;
     v._index = 0u;
 
-    ASSERT_TRUE(v._name == "unnamed");
+    ASSERT_TRUE(v._name == "unnamed_volume");
     ASSERT_TRUE(v._surfaces.empty());
     ASSERT_TRUE(v._portals.empty());
 

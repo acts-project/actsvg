@@ -44,7 +44,7 @@ struct volume {
     unsigned int _depth_level = 0u;
 
     /// Name of the volume
-    std::string _name = "unnamed";
+    std::string _name = "unnamed_volume";
 
     // The type of the volume & its parameters
     type _type = e_cylinder;

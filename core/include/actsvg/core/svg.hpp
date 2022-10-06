@@ -99,29 +99,36 @@ struct object {
     /// Summary object
     summary _summary = summary{};
 
-    /** An object is defined if a tag is set */
+    /// An object is defined if a tag is set
     bool is_defined() const { return (not _tag.empty()); }
+
+    /// The object is an empty group
+    bool is_empty_group() const {
+        return (_tag == "g" and _sub_objects.empty());
+    }
 
     /** Add a sub object and respect the min/max range
      *
      * @param o_ is the object in question
      **/
     void add_object(const svg::object &o_) {
-        // Add the object
-        _sub_objects.push_back(o_);
-        // Collect eventual definitions
-        _definitions.insert(_definitions.end(), o_._definitions.begin(),
-                            o_._definitions.end());
-        if (not _sterile) {
-            // Re-measure, x/y/r/phi ranges include transforms already
-            _x_range = {std::min(_x_range[0], o_._x_range[0]),
-                        std::max(_x_range[1], o_._x_range[1])};
-            _y_range = {std::min(_y_range[0], o_._y_range[0]),
-                        std::max(_y_range[1], o_._y_range[1])};
-            _r_range = {std::min(_r_range[0], o_._r_range[0]),
-                        std::max(_r_range[1], o_._r_range[1])};
-            _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
-                          std::max(_phi_range[1], o_._phi_range[1])};
+        if (o_._active and not o_.is_empty_group()) {
+            // Add the object
+            _sub_objects.push_back(o_);
+            // Collect eventual definitions
+            _definitions.insert(_definitions.end(), o_._definitions.begin(),
+                                o_._definitions.end());
+            if (not _sterile) {
+                // Re-measure, x/y/r/phi ranges include transforms already
+                _x_range = {std::min(_x_range[0], o_._x_range[0]),
+                            std::max(_x_range[1], o_._x_range[1])};
+                _y_range = {std::min(_y_range[0], o_._y_range[0]),
+                            std::max(_y_range[1], o_._y_range[1])};
+                _r_range = {std::min(_r_range[0], o_._r_range[0]),
+                            std::max(_r_range[1], o_._r_range[1])};
+                _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
+                              std::max(_phi_range[1], o_._phi_range[1])};
+            }
         }
     }
 
@@ -155,7 +162,9 @@ struct object {
     void add_objects(const object_container &oc_) {
         // Add the object
         for (const auto &o : oc_) {
-            add_object(o);
+            if (o._active) {
+                add_object(o);
+            }
         }
     }
 
@@ -165,6 +174,10 @@ struct object {
 /** Stream operator with @param os_ the output stream and @param o_ the streamed
  * object */
 inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
+
+    if (o_.is_empty_group()) {
+        return os_;
+    }
 
     // We make a temporary copy for writing, this way we can
     // write the same one with different attributes sets

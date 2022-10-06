@@ -66,7 +66,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     draw_transform._scale = s_._transform._scale;
 
     // Surface directly
-    if (s_._type == surface_type::e_disc) {
+    if (s_._type == surface_type::type::e_disc) {
 
         // x-y view for discs
         if constexpr (std::is_same_v<view_type, views::x_y>) {
@@ -134,11 +134,10 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             s = draw::line(id_, start, end, s_._stroke, draw_transform);
         }
 
-    } else if (s_._type == surface_type::e_cylinder) {
+    } else if (s_._type == surface_type::type::e_cylinder) {
 
         // xy - view
         if constexpr (std::is_same_v<view_type, views::x_y>) {
-
             // view activation / deactivation
             if (not utils::inside_range(s_._zparameters[0u],
                                         v_._scene._range[1u])) {
@@ -156,7 +155,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                 s = draw::arc(id_, r, start, end, style::fill({}), s_._stroke,
                               draw_transform);
             } else {
-                s = draw::circle(id_, {0., 0.}, s_._radii[1u], style::fill({}),
+                s = draw::circle(id_, {0., 0.}, s_._radii[1u], __w_fill,
                                  s_._stroke, draw_transform);
             }
         }
@@ -170,7 +169,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             s = draw::line(id_, start, end, s_._stroke, draw_transform);
         }
 
-    } else {
+    } else if (not s_._vertices.empty()) {
 
         // View activiation, deactivation
         // if only one vertex is within the view range, the surface is shown
@@ -198,7 +197,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         /// Boolean surfaces only supported for x-y view so far
         if constexpr (std::is_same_v<view_type, views::x_y>) {
             if (s_._boolean_surface.size() == 1u and
-                s_._boolean_operation == surface_type::e_subtraction) {
+                s_._boolean_operation == surface_type::boolean::e_subtraction) {
                 std::string mask_id = id_ + "_mask";
                 // make a new boolean surface
                 svg::object outer_mask =
@@ -357,8 +356,8 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
     v._fill._sterile = true;
     v._stroke._sterile = true;
 
-    // The volume shape
-    if (not dv_._vertices.empty()) {
+    // The volume shape - only rz view currently supported
+    if (not dv_._vertices.empty() and std::is_same_v<view_type, views::z_r>) {
         auto view_vertices = v_(dv_._vertices);
         auto pv = draw::polygon(id_ + "_volume", view_vertices, dv_._fill,
                                 dv_._stroke, dv_._transform);
@@ -381,6 +380,7 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
                 s._zparameters = {zp, zh};
                 s._fill = dv_._fill;
                 s._stroke = dv_._stroke;
+                s._type = decltype(s)::type::e_disc;
                 v.add_object(surface(s._name, s, v_));
             }
             if constexpr (std::is_same_v<view_type, views::z_r>) {
