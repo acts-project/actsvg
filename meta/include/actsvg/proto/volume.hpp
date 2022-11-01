@@ -59,8 +59,11 @@ struct volume {
     /// Auxiliary information
     std::vector<std::string> _info = {};
 
-    /// The contained surfaces as batches
+    /// The contained surfaces as batches - optimised for layer view
     std::vector<std::vector<surface<point3_container>>> _surfaces = {};
+
+    /// The container surfaces as flat - opimised for volume view
+    std::vector<surface<point3_container>> _v_surfaces = {};
 
     /// The portals
     std::vector<portal<point3_container>> _portals = {};
@@ -94,8 +97,12 @@ struct volume {
         if (_index < colors_.size()) {
             _fill._fc = colors_[_index];
         }
+        // Colorize the portals 
         for (auto& p : _portals) {
-            /// @todo set portal color if unique
+            // The portal itself has no fill color
+            p._surface._fill._fc._rgb = {255,255,255};
+            p._surface._fill._fc._opacity = 1.;
+            // The links are filled 
             for (auto& vl : p._volume_links) {
                 if (vl._link_index < colors_.size()) {
                     vl._stroke._sc = colors_[vl._link_index];
@@ -106,6 +113,13 @@ struct volume {
                 }
             }
         }
+        // Colorize the surfaces
+        for (auto& sbatch : _surfaces){
+            for (auto& s: sbatch){
+                s._fill._fc = colors_[_index];
+                s._fill._fc._opacity = 0.25; 
+            }
+        } 
     }
 };
 
