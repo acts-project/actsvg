@@ -261,6 +261,7 @@ svg::object portal_link(const std::string& id_,
     scalar d_x = static_cast<scalar>(link_._end[0u] - link_._start[0u]);
     scalar d_y = static_cast<scalar>(link_._end[1u] - link_._start[1u]);
     scalar d_r = std::sqrt(d_x * d_x + d_y * d_y);
+
     if (std::is_same_v<view_type, views::x_y> and
         d_r <= std::numeric_limits<scalar>::epsilon()) {
         svg::object arr_xy;
@@ -344,12 +345,13 @@ svg::object portal(const std::string& id_, const portal_type& p_,
  * @param dv_ the detector volume
  * @param v_ the view type
  * @param p_ draw the portals
+ * @param s_ draw the surfaces
  *
  * @return a single object containing the volume view
  **/
 template <typename volume_type, typename view_type>
 svg::object volume(const std::string& id_, const volume_type& dv_,
-                   const view_type& v_, bool p_ = true) {
+                   const view_type& v_, bool p_ = true, bool s_ = true) {
     svg::object v;
     v._tag = "g";
     v._id = id_;
@@ -397,6 +399,13 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
     if (p_) {
         for (auto [ip, p] : utils::enumerate(dv_._portals)) {
             v.add_object(portal(id_ + "_portal_" + std::to_string(ip), p, v_));
+        }
+    }
+    // Draw the surfaces
+    if (s_) {
+        for (auto [is, s] : utils::enumerate(dv_._v_surfaces)) {
+            v.add_object(display::surface(
+                id_ + "_surface_" + std::to_string(is), s, v_));
         }
     }
     return v;
