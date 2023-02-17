@@ -99,7 +99,7 @@ svg::object surface_sheet_xy(const std::string& id_,
     if (draw_axes) {
         display::prepare_axes(x_axis, y_axis, s_x, s_y, 30., 30.);
         auto axis_font = __a_font;
-        axis_font._size = static_cast<scalar>(0.035 * sh_[0]);
+        axis_font._size = static_cast<unsigned int>(0.035 * sh_[0]);
 
         so.add_object(draw::x_y_axes(id_ + "_axes_xy", x_axis, y_axis,
                                      __a_stroke, "x", "y", axis_font));
@@ -107,7 +107,7 @@ svg::object surface_sheet_xy(const std::string& id_,
 
     // The measures, markers & stroke with scaling
     style::font m_font = __m_font;
-    m_font._size = static_cast<scalar>(0.035 * sh_[0]);
+    m_font._size = static_cast<unsigned int>(0.035 * sh_[0]);
     style::marker m_marker = __m_marker;
     m_marker._size = static_cast<scalar>(0.015 * sh_[0]);
 
@@ -727,7 +727,7 @@ svg::object sheet(const std::string& id_,
 
     //  Add the title text
     auto title_font = __t_font;
-    title_font._size = 0.05 * sh_[0];
+    title_font._size = static_cast<unsigned int>(0.05 * sh_[0]);
     auto title = draw::text(id_ + "sheet_title",
                             {static_cast<scalar>(-0.55 * sh_[0]),
                              static_cast<scalar>(0.6 * sh_[1])},
