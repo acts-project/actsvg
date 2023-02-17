@@ -91,7 +91,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                                  s_._stroke, draw_transform);
 
                 // A ring is present
-                if (s_._radii[0u]) {
+                if (s_._radii[0u] != 0.) {
 
                     std::string mask_id = id_ + "_mask";
 

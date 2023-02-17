@@ -104,9 +104,9 @@ static inline std::pair<svg::object, svg::object> cluster(
         // Scale the colors for the filling
         scalar rel_delta_data = (channel_._data - low_data) / delta_data;
 
-        int ch_r = low_r + rel_delta_data * delta_r;
-        int ch_g = low_g + rel_delta_data * delta_g;
-        int ch_b = low_b + rel_delta_data * delta_b;
+        int ch_r = low_r + int(rel_delta_data * delta_r);
+        int ch_g = low_g + int(rel_delta_data * delta_g);
+        int ch_b = low_b + int(rel_delta_data * delta_b);
 
         return style::fill{style::color{{ch_r, ch_g, ch_b}}};
     };
