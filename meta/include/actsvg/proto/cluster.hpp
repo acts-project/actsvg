@@ -22,7 +22,7 @@ namespace proto {
 template <size_t DIM = 1>
 struct channel {
     /// Channel identification
-    std::array<scalar, DIM> _cid;
+    std::array<unsigned int, DIM> _cid;
     /// The data
     scalar _data;
 };
