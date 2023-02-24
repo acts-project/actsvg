@@ -6,6 +6,7 @@ actsvg_add_test( meta
   "endcap_sheet.cpp"
   "eta_lines.cpp"
   "grid.cpp"
+  "wire_chamber.cpp"
   "portal.cpp"
   "surface_sheet.cpp"
   "surfaces.cpp"
