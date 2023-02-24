@@ -321,3 +321,32 @@ TEST(proto, sector_cylinder) {
     rstream << rfile_zr;
     rstream.close();
 }
+
+TEST(proto, straw_surface) {
+
+    proto::surface<point3_container> straw;
+    straw._radii = {2., 20.};
+    straw._zparameters = {0., 200};
+    straw._name = "straw surface";
+    straw._type = proto::surface<point3_container>::type::e_straw;
+    straw._fill = style::fill({{0, 100, 0}, 0.5});
+    straw._stroke = style::stroke({{0, 0, 0}}, 1.);
+    straw._stroke._hl_width = 2.;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    // Full cylinder in x-y
+    svg::object sc_xy =
+        display::surface("straw", straw, views::x_y{});
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(sc_xy);
+
+    std::ofstream rstream;
+    rstream.open("test_meta_straw_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+
+}

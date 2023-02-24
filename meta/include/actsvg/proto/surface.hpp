@@ -38,6 +38,7 @@ struct surface {
         e_disc,
         e_polygon,
         e_rectangle,
+        e_straw,
         e_trapez
     };
 

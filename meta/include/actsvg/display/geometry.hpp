@@ -169,6 +169,21 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             s = draw::line(id_, start, end, s_._stroke, draw_transform);
         }
 
+    } else if (s_._type == surface_type::type::e_straw) {
+
+        // xy view
+        if constexpr (std::is_same_v<view_type, views::x_y>) { 
+             // Skin of the straw
+             auto ss = draw::circle(id_, {0., 0.}, s_._radii[1u], __w_fill,
+                              s_._stroke, draw_transform);
+             // Wire of the straw
+             auto ws = draw::circle(id_, {0., 0.}, s_._radii[0u], __s_fill,
+                              s_._stroke, draw_transform);
+             s._tag = "g";
+             s.add_object(ss);
+             s.add_object(ws);
+        }    
+    
     } else if (not s_._vertices.empty()) {
 
         // View activiation, deactivation
