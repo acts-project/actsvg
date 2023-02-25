@@ -35,7 +35,7 @@ struct channel {
 template <size_t DIM = 1>
 struct cluster {
 
-    enum type { e_cartesian, e_fan, e_polar };
+    enum type { e_cartesian, e_fan, e_polar, e_drift };
 
     enum coordinate { e_x, e_y, e_r, e_phi };
 
