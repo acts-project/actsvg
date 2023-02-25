@@ -9,11 +9,13 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "actsvg/core.hpp"
 #include "actsvg/display/geometry.hpp"
+#include "actsvg/proto/cluster.hpp"
 #include "actsvg/proto/surface.hpp"
 
 using namespace actsvg;
@@ -21,6 +23,15 @@ using namespace actsvg;
 using point3 = std::array<scalar, 3>;
 using point3_container = std::vector<point3>;
 
+/// Helper method to create a wire chamber
+///
+/// @param chamber_name the name of the chamber
+/// @param chamber_offset_y where the straws are posistioned
+/// @param r_tube the tube radius
+/// @param n_tubes the number of tubes
+/// @param n_layers the number of wire layers
+///
+/// @return a vector of surfaces
 std::vector<proto::surface<point3_container>> wire_chamber(
     const std::string chamber_name, scalar chamber_offset_y = 0.,
     scalar r_tube = 20., unsigned int n_tubes = 40u,
@@ -57,12 +68,36 @@ std::vector<proto::surface<point3_container>> wire_chamber(
     return wires;
 }
 
+/// Helper method to find the closest approach of the line
+///
+///
+std::optional<proto::cluster<1u>> drift_cluster(
+    const proto::surface<point3_container>& s_, const point2& start_,
+    scalar alpha_) {
+
+    auto t = s_._transform._tr;
+
+    scalar d_r = std::abs(std::cos(alpha_) * (start_[1u] - t[1u]) -
+                          std::sin(alpha_) * (start_[0u] - t[0u]));
+
+    if (d_r <= s_._radii[1u]) {
+        proto::cluster<1u> drift_cluster;
+        drift_cluster._type = proto::cluster<1u>::type::e_drift;
+        drift_cluster._coords = {proto::cluster<1u>::coordinate::e_r};
+        drift_cluster._measurement = {d_r};
+        return drift_cluster;
+    }
+    return std::nullopt;
+}
+
 TEST(proto, wire_chamber) {
 
-    // Create the multiwire chamber
-    svg::file rfile;
+    // Files: geometry (+track)
+    svg::file gfile;
 
+    // The surfaces
     std::vector<proto::surface<point3_container>> all_wires;
+    std::vector<point2> all_wires_positions;
     std::vector<scalar> s_offsets = {-200, 200};
     for (auto [io, s_o] : utils::enumerate(s_offsets)) {
         auto multi_wires =
@@ -73,11 +108,74 @@ TEST(proto, wire_chamber) {
 
     for (const auto& s : all_wires) {
         svg::object wire = display::surface(s._name, s, views::x_y{});
-        rfile.add_object(wire);
+        // Collect the wire positions
+        auto tr = s._transform._tr;
+        all_wires_positions.push_back({tr[0], tr[1]});
+        gfile.add_object(wire);
     }
 
     std::ofstream rstream;
     rstream.open("test_meta_wire_chamber.svg");
-    rstream << rfile;
+    rstream << gfile;
+    rstream.close();
+}
+
+TEST(proto, wire_chamber_with_track) {
+
+    // Files: geometry with track
+    svg::file tfile;
+
+    std::vector<proto::surface<point3_container>> all_wires;
+    std::vector<point2> all_wires_positions;
+    std::vector<scalar> s_offsets = {-200, 200};
+    for (auto [io, s_o] : utils::enumerate(s_offsets)) {
+        auto multi_wires =
+            wire_chamber("multilayer_" + std::to_string(io), s_o, 20u, 20u);
+        all_wires.insert(all_wires.end(), multi_wires.begin(),
+                         multi_wires.end());
+    }
+
+    // Track start
+    point2 start = {-200, -300};
+    scalar alpha = 1.3;
+
+    for (const auto& s : all_wires) {
+        // Collect the wire positions
+        svg::object wire = display::surface(s._name, s, views::x_y{});
+        const auto& tr = s._transform._tr;
+        all_wires_positions.push_back({tr[0], tr[1]});
+        // Intersect the wire
+        auto dc = drift_cluster(s, start, alpha);
+        if (dc.has_value()) {
+            wire._fill._fc._rgb = {100, 100, 100};
+            tfile.add_object(wire);
+            // Add the drift circle
+            const auto& dcv = dc.value();
+            auto dco = draw::circle("dc_wire_" + s._name, {tr[0], tr[1]},
+                                    dcv._measurement[0u]);
+            tfile.add_object(dco);
+        } else {
+            tfile.add_object(wire);
+        }
+    }
+
+    // Create the track
+    style::stroke track_stroke = style::stroke({});
+    track_stroke._width = 2;
+
+    style::marker track_head = style::marker({"<<"});
+
+    scalar length = 700.;
+    point2 direction = {static_cast<scalar>(std::cos(alpha)),
+                        static_cast<scalar>(std::sin(alpha))};
+    point2 end = {start[0] + direction[0] * length,
+                  start[1] + direction[1] * length};
+    auto track = draw::measure("track", start, end, track_stroke,
+                               style::marker({""}), track_head);
+    tfile.add_object(track);
+
+    std::ofstream rstream;
+    rstream.open("test_meta_wire_chamber_with_track.svg");
+    rstream << tfile;
     rstream.close();
 }
