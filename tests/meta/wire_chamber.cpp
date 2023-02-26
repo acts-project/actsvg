@@ -141,13 +141,19 @@ TEST(proto, wire_chamber_with_track) {
 
     for (const auto& s : all_wires) {
         // Collect the wire positions
-        svg::object wire = display::surface(s._name, s, views::x_y{});
         const auto& tr = s._transform._tr;
-        all_wires_positions.push_back({tr[0], tr[1]});
+        all_wires_positions.push_back({tr[0u], tr[1u]});
         // Intersect the wire
         auto dc = drift_cluster(s, start, alpha);
         if (dc.has_value()) {
-            wire._fill._fc._rgb = {100, 100, 100};
+            // Make a copy of the surface
+            style::fill hit_wire_fill = style::fill({{0, 0, 0}, 1.0});
+            style::fill hit_tube_fill = style::fill({{200, 200, 200}, 1.0});
+            auto wire = draw::circle(s._name, {tr[0u], tr[1u]}, s._radii[0u],
+                                     hit_wire_fill);
+            auto tube = draw::circle(s._name, {tr[0u], tr[1u]}, s._radii[1u],
+                                     hit_tube_fill, s._stroke);
+            tfile.add_object(tube);
             tfile.add_object(wire);
             // Add the drift circle
             const auto& dcv = dc.value();
@@ -155,7 +161,7 @@ TEST(proto, wire_chamber_with_track) {
                                     dcv._measurement[0u]);
             tfile.add_object(dco);
         } else {
-            tfile.add_object(wire);
+            tfile.add_object(display::surface(s._name, s, views::x_y{}));
         }
     }
 
