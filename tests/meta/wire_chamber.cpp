@@ -58,7 +58,7 @@ std::vector<proto::surface<point3_container>> wire_chamber(
             wire._zparameters = {0., 200};
             wire._name = chamber_name + "_wire_" + std::to_string(il);
             wire._type = proto::surface<point3_container>::type::e_straw;
-            wire._fill = style::fill({{0, 100, 0}, 0.5});
+            wire._fill = style::fill({{200, 200, 200}, 0.5});
             wire._stroke = style::stroke({{0, 0, 0}}, 1.);
             wire._stroke._hl_width = 2.;
             wire._transform._tr = {t_x, t_y + chamber_offset_y};
@@ -147,14 +147,10 @@ TEST(proto, wire_chamber_with_track) {
         auto dc = drift_cluster(s, start, alpha);
         if (dc.has_value()) {
             // Make a copy of the surface
-            style::fill hit_wire_fill = style::fill({{0, 0, 0}, 1.0});
-            style::fill hit_tube_fill = style::fill({{200, 200, 200}, 1.0});
-            auto wire = draw::circle(s._name, {tr[0u], tr[1u]}, s._radii[0u],
-                                     hit_wire_fill);
-            auto tube = draw::circle(s._name, {tr[0u], tr[1u]}, s._radii[1u],
-                                     hit_tube_fill, s._stroke);
-            tfile.add_object(tube);
-            tfile.add_object(wire);
+            proto::surface<point3_container> sc = s;
+            sc._fill = style::fill({{0, 100, 200}, 0.5});
+            // Draw the copy
+            tfile.add_object(display::surface(s._name, sc, views::x_y{}));
             // Add the drift circle
             const auto& dcv = dc.value();
             auto dco = draw::circle("dc_wire_" + s._name, {tr[0], tr[1]},

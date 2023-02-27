@@ -174,7 +174,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         // xy view
         if constexpr (std::is_same_v<view_type, views::x_y>) { 
              // Skin of the straw
-             auto ss = draw::circle(id_, {0., 0.}, s_._radii[1u], __w_fill,
+             auto ss = draw::circle(id_, {0., 0.}, s_._radii[1u], s_._fill,
                               s_._stroke, draw_transform);
              // Wire of the straw
              auto ws = draw::circle(id_, {0., 0.}, s_._radii[0u], __s_fill,
