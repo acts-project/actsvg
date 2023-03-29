@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "actsvg/core/defs.hpp"
 
@@ -17,29 +17,30 @@ namespace actsvg {
 
 namespace proto {
 
-    /** A proto grid class to describe the grid setup
-     * 
-     * For convenience, it is forced to be 2-dimensional, for 1-dim
-     * grid descriptions, only provide 2 eges
-     * 
-     */
-    struct grid {
+/** A proto grid class to describe the grid setup
+ *
+ * For convenience, it is forced to be 2-dimensional, for 1-dim
+ * grid descriptions, only provide 2 eges
+ *
+ */
+struct grid {
 
-        /** Type of grid, enum defintion */ 
-        enum type { e_x_y = 0, e_r_phi = 1, e_z_phi };
+    /** Type of grid, enum defintion */
+    enum type { e_x_y = 0, e_r_phi = 1, e_z_phi };
 
-        /// Name the type
-        type _type = e_r_phi;
+    /// Name the type
+    type _type = e_r_phi;
 
-        /// The edges in the two given directions, loc0
-        std::vector<scalar> _edges_0 = {};
-        
-        /// The edges in the two given directions, loc1
-        std::vector<scalar> _edges_1 = {};
-        
-    };
+    /// The edges in the two given directions, loc0
+    std::vector<scalar> _edges_0 = {};
+
+    /// The edges in the two given directions, loc1
+    std::vector<scalar> _edges_1 = {};
+
+    /// Reference r for drawing
+    scalar _reference_r = 0.;
+};
 
 }  // namespace proto
 
 }  // namespace actsvg
-
