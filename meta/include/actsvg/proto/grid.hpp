@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "actsvg/core/defs.hpp"
+#include "actsvg/styles/defaults.hpp"
 
 namespace actsvg {
 
@@ -39,6 +40,19 @@ struct grid {
 
     /// Reference r for drawing
     scalar _reference_r = 0.;
+
+    /// Connections
+    std::vector<svg::object> _connections;
+    /// Connection types
+    std::vector<connectors::type> _connection_types = {};
+    /// Associations
+    std::vector<std::vector<size_t>> _connection_associations = {};
+
+    /// Stroke
+    style::fill _fill = defaults::__g_fill;
+
+    /// Stroke
+    style::stroke _stroke = defaults::__g_stroke;
 };
 
 }  // namespace proto
