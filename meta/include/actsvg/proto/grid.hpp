@@ -41,6 +41,9 @@ struct grid {
     /// Reference r for drawing
     scalar _reference_r = 0.;
 
+    /// Bin identifications
+    std::vector<std::string> _bin_ids = {};
+
     /// Connections
     std::vector<svg::object> _connections;
     /// Connection types

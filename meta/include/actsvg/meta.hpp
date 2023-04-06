@@ -18,7 +18,8 @@
 
 #include "actsvg/styles/defaults.hpp"
 
+#include "actsvg/display/datamodel.hpp"
+#include "actsvg/display/grids.hpp"
+#include "actsvg/display/geometry.hpp"
 #include "actsvg/display/helpers.hpp"
 #include "actsvg/display/sheets.hpp"
-#include "actsvg/display/geometry.hpp"
-#include "actsvg/display/datamodel.hpp"
