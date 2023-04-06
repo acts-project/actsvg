@@ -30,7 +30,7 @@ namespace display {
  *
  * @return an svg object representing the grid
  */
-svg::object grid(const std::string& id_, const proto::grid& g_) {
+static inline svg::object grid(const std::string& id_, const proto::grid& g_) {
 
     // The grid object
     svg::object g;
