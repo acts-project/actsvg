@@ -41,7 +41,6 @@ TEST(proto, rectanglular_surface) {
 
     svg::file rfile;
     rfile.add_object(pg);
-    // standard markers
     rfile.add_object(rec);
 
     std::ofstream rstream;
@@ -87,6 +86,69 @@ TEST(proto, rectanglular_subtracted_surface) {
     std::ofstream rstream;
     rstream.open("test_meta_subtracted_rectangle.svg");
     rstream << rfile;
+    rstream.close();
+}
+
+TEST(proto, rectanglular_surfaces_at_phi_poles) {
+
+    scalar d_phi = 0.23;
+    point3_container around_0_vertices = {
+        {70., static_cast<scalar>(70. * std::sin(d_phi)), -100.},
+        {70., static_cast<scalar>(70. * std::sin(-d_phi)), -100.},
+        {70., static_cast<scalar>(70. * std::sin(-d_phi)), 100.},
+        {70., static_cast<scalar>(70. * std::sin(d_phi)), 100.}};
+
+    proto::surface<point3_container> rectangle_0;
+    rectangle_0._vertices = around_0_vertices;
+    rectangle_0._name = "rectangle surface around phi = 0";
+    rectangle_0._type = proto::surface<point3_container>::type::e_rectangle;
+    rectangle_0._fill = style::fill({{0, 0, 100}, 0.5});
+    rectangle_0._radii[0u] = 70.;
+
+    point3_container around_pi_vertices = {
+        {-70., static_cast<scalar>(70. * std::sin(-M_PI+d_phi)), -200.},
+        {-70., static_cast<scalar>(70. * std::sin(M_PI-d_phi)), -200.},
+        {-70., static_cast<scalar>(70. * std::sin(M_PI-d_phi)), -100.},
+        {-70., static_cast<scalar>(70. * std::sin(-M_PI+d_phi)), -100.}};
+
+    proto::surface<point3_container> rectangle_pi;
+    rectangle_pi._vertices = around_pi_vertices;
+    rectangle_pi._name = "rectangle surface around phi = M_PI";
+    rectangle_pi._type = proto::surface<point3_container>::type::e_rectangle;
+    rectangle_pi._fill = style::fill({{0, 100, 0}, 0.5});
+    rectangle_pi._radii[0u] = 70.;
+
+    svg::object rec_0_xy =
+        display::surface("rectangle", rectangle_0, views::x_y{});
+    svg::object rec_pi_xy =
+        display::surface("rectangle", rectangle_pi, views::x_y{});
+
+    svg::object rec_0_zphi = display::surface(
+        "rectangle", rectangle_0, views::z_rphi{views::scene(), 70.});
+
+    svg::object rec_pi_zphi = display::surface(
+        "rectangle", rectangle_pi, views::z_rphi{views::scene(), 70.});
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(rec_0_xy);
+    rfile_xy.add_object(rec_pi_xy);
+
+    svg::file rfile_zphi;
+    rfile_zphi.add_object(pg);
+    rfile_zphi.add_object(rec_0_zphi);
+    rfile_zphi.add_object(rec_pi_zphi);
+
+    std::ofstream rstream;
+    rstream.open("test_meta_rectangle_phi_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+
+    rstream.open("test_meta_rectangle_phi_zphi.svg");
+    rstream << rfile_zphi;
     rstream.close();
 }
 
@@ -337,8 +399,7 @@ TEST(proto, straw_surface) {
     auto pg = test::playground({-400, -400}, {400, 400});
 
     // Full cylinder in x-y
-    svg::object sc_xy =
-        display::surface("straw", straw, views::x_y{});
+    svg::object sc_xy = display::surface("straw", straw, views::x_y{});
 
     svg::file rfile_xy;
     rfile_xy.add_object(pg);
@@ -348,5 +409,4 @@ TEST(proto, straw_surface) {
     rstream.open("test_meta_straw_xy.svg");
     rstream << rfile_xy;
     rstream.close();
-
 }

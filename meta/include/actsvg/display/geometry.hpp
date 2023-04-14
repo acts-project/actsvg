@@ -202,8 +202,78 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             s._active = view_active;
             return s;
         }
-
         auto view_vertices = v_(s_._vertices);
+
+        if constexpr (std::is_same_v<view_type, views::z_rphi>) {
+
+            std::cout << "z-rphi view detected!" << std::endl;
+
+            // Check if we have to split the surface
+            // - currently supported for rectangular surfaces only
+            if (s_._vertices.size() == 4u) {
+                scalar min_phi = std::numeric_limits<scalar>::max();
+                scalar max_phi = std::numeric_limits<scalar>::min();
+                // Pre-emptively split the vertices
+                std::vector<typename surface_type::point3_type> n_vertices;
+                std::vector<typename surface_type::point3_type> p_vertices;
+                // Calculate phi
+                for (const auto& v : s_._vertices) {
+                    scalar phi = std::atan2(v[1u], v[0u]);
+                    min_phi = std::min(min_phi, phi);
+                    max_phi = std::max(max_phi, phi);
+                    if (phi < 0.) {
+                        n_vertices.push_back(v);
+                    } else {
+                        p_vertices.push_back(v);
+                    }
+                }
+                // Detect phi boundary jump
+                if (max_phi - min_phi > 1.5 * M_PI) {
+                    // The surface turns into a group of two
+                    s._tag = "g";
+                    // Split part on negative side
+                    auto n4 = n_vertices[0u];
+                    auto n2 = n_vertices[1u];
+                    n2[1u] = -std::numeric_limits<scalar>::epsilon();
+                    n4[1u] = -std::numeric_limits<scalar>::epsilon();
+                    // Create the wiggle in 
+                    typename surface_type::point3_type n3 = {
+                        n2[0u],
+                        static_cast<scalar>(0.5 *
+                                            (n_vertices[1u][1u] + n2[1u])),
+                        static_cast<scalar>(0.5 * (n2[2u] + n4[2u]))};
+                    n_vertices.push_back(n2);
+                    n_vertices.push_back(n3);
+                    n_vertices.push_back(n4);
+                    auto s_n = draw::polygon(id_ + std::string("_n_split"),
+                                             v_(n_vertices), s_._fill,
+                                             s_._stroke, draw_transform);
+                    // Split art on positive side
+                    auto p4 = p_vertices[0u];
+                    auto p2 = p_vertices[1u];
+                    p2[1u] = std::numeric_limits<scalar>::epsilon();
+                    p4[1u] = std::numeric_limits<scalar>::epsilon();
+                    typename surface_type::point3_type p3 = { p2[0u], p2[1u], static_cast<scalar>(0.5 * (p2[2u] + p4[2u]))};
+                    p_vertices.push_back(p2);
+                    p_vertices.push_back(p3);
+                    p_vertices.push_back(p4);
+                    // Create the wiggle out (on view to not fall into phi trap)
+                    auto p_view_vertices = v_(p_vertices);
+                    const auto& p_v_1 = p_view_vertices[1u];
+                    const auto& p_v_2 = p_view_vertices[2u];
+                    auto& p_v_3 = p_view_vertices[3u];
+                    p_v_3[1u] = static_cast<scalar>(1.5 *  p_v_2[1u] - 0.5 * p_v_1[1u]);
+                    auto s_p = draw::polygon(id_ + std::string("_p_split"),
+                                            p_view_vertices, s_._fill,
+                                             s_._stroke, draw_transform);
+                    s.add_object(s_n);
+                    s.add_object(s_p);
+
+                    return s;
+                }
+            }
+        }
+
         s = draw::polygon(id_, view_vertices, s_._fill, s_._stroke,
                           draw_transform);
     }
