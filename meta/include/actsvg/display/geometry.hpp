@@ -536,7 +536,7 @@ svg::object detector(const std::string& id_, const detector_type& d_,
         }
     }
     // Now draw the portals
-    for (const auto [n, p] : portals) {
+    for (const auto& [n, p] : portals) {
         d.add_object(portal(n, p, v_));
     }
 
