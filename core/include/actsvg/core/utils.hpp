@@ -62,6 +62,66 @@ scalar perp(const point2_type &p_) {
     return std::sqrt(p_[0] * p_[0] + p_[1] * p_[1]);
 }
 
+/** Helper method for calculating the distance between two points
+ *
+ * @param x0_ the starting point
+ * @param x1_ the ending point
+ *
+ * @return the distance
+ **/
+template <typename point2_type>
+scalar distance(const point2_type &x0_, const point2_type &x1_) {
+    return std::sqrt(std::pow(x1_[0] - x0_[0], 2) +
+                     std::pow(x1_[1] - x0_[1], 2));
+}
+
+/** Helper method to intersect two lines in 2-d
+ * @param x0_ the starting point of line 0
+ * @param d0_ the direction of line 0
+ * @param x1_ the starting point of line 1
+ * @param d1_ the direction of line 1
+ *
+ * @return the intersection point
+ **/
+template <typename point2_type>
+point2_type intersect(const point2_type &x0_, const point2_type &d0_,
+                      const point2_type &x1_, const point2_type &d1_) {
+    point2_type p_int;
+
+    struct line {
+        scalar a;
+        scalar d;
+
+        line(const point2_type &x_, const point2_type &d_) {
+            a = d_[1u] / d_[0u];
+            d = x_[1u] - a * x_[0u];
+        }
+    };
+
+    if (d0_[0u] == 0) {
+
+        line l1(x1_, d1_);
+        p_int[0u] = x0_[0u];
+        p_int[1u] = l1.a * p_int[0u] + l1.d;
+
+    } else if (d1_[0u] == 0) {
+
+        line l0(x0_, d0_);
+        p_int[0u] = x1_[0u];
+        p_int[1u] = l0.a * p_int[0u] + l0.d;
+
+    } else {
+
+        line l0(x0_, d0_);
+        line l1(x1_, d1_);
+
+        p_int[0u] = (l1.d - l0.d) / (l0.a - l1.a);
+        p_int[1u] = l0.a * p_int[0u] + l0.d;
+    }
+
+    return p_int;
+}
+
 /** Helper from id to url
  * @param id_ the idnetification to be transformed
  **/
@@ -208,8 +268,8 @@ point3_type place(const point3_type &p_, const point3_type &tr_,
  **/
 template <typename point3_container, typename point3_type>
 point3_container place_vertices(const point3_container &pc_,
-                                 const point3_type &tr_,
-                                 const std::array<point3_type, 3> &rt_) {
+                                const point3_type &tr_,
+                                const std::array<point3_type, 3> &rt_) {
     point3_container placed;
     for (const auto &p : pc_) {
         placed.push_back(place(p, tr_, rt_));
