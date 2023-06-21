@@ -199,9 +199,6 @@ static inline svg::object bezier(
         // intesect the two lines
         point2 intersect = utils::intersect(lx, ld, x, d);
 
-        scalar ldist = utils::distance(lx, intersect);
-        scalar dist = utils::distance(x, intersect);
-
         std::string path_string =
             "M " + utils::to_string(lx[0]) + " " + utils::to_string(-lx[1]) +
             " C " + utils::to_string(intersect[0]) + " " +
