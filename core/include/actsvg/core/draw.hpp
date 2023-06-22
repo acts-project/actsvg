@@ -167,6 +167,59 @@ static inline svg::object arc(
     return a;
 }
 
+/** Draw a Bezier path
+ * input is defined as pairs of position, momentum
+ *
+ * @parm id_ is the identification
+ * @param xds_ is the collection of point, direction tuples
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @return a group object representing the curve
+ */
+static inline svg::object bezier(
+    const std::string &id_, const std::vector<std::array<point2, 2u>> &xds_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+
+    svg::object c;
+    c._tag = "g";
+    c._id = id_;
+
+    point2 lx = {0, 0};
+    point2 ld = {0, 0};
+
+    for (const auto &[x, d] : xds_) {
+        if (ld == point2{0, 0}) {
+            ld = d;
+            lx = x;
+            continue;
+        }
+        // Buid the Bezier segments
+        // intesect the two lines
+        point2 intersect = utils::intersect(lx, ld, x, d);
+
+        std::string path_string =
+            "M " + utils::to_string(lx[0]) + " " + utils::to_string(-lx[1]) +
+            " C " + utils::to_string(intersect[0]) + " " +
+            utils::to_string(-intersect[1]) + " " +
+            utils::to_string(intersect[0]) + " " +
+            utils::to_string(-intersect[1]) + " " + utils::to_string(x[0]) +
+            " " + utils::to_string(-x[1]);
+
+        svg::object path;
+        path._tag = "path";
+        path._id = id_ + "_segment_" + std::to_string(c._sub_objects.size());
+        path._attribute_map["d"] = path_string;
+        path._stroke = stroke_;
+        c.add_object(path);
+        ld = d;
+        lx = x;
+    }
+
+    return c;
+}
+
 /** Draw a circle object
  *  - will translate into ellipse to allow for a scale
  *
