@@ -21,6 +21,7 @@ namespace actsvg::web {
 
 namespace {
 
+/// @brief compares to the ids of two svg objects alpha-numerically.
 bool alphanumericCompare(const svg::object& svg1, const svg::object& svg2) {
     const std::string s1 = svg1._id;
     const std::string s2 = svg2._id;
@@ -61,11 +62,17 @@ bool alphanumericCompare(const svg::object& svg1, const svg::object& svg2) {
 
 };
 
+/// @brief Class for generating a web page to view and merge svgs.
 class web_builder{
     public:
 
     using comparison_function = bool (*)(const actsvg::svg::object&, const actsvg::svg::object&);
 
+    /// @brief Generates a webpage configured with the given svgs.
+    /// @param output_directory the root of the web page.
+    /// @param svgs the svgs avaible for selection on the web page.
+    /// @param order_comparator a compartor function to determine 
+    /// the display order of the svgs.
     template <typename iterator_t>
     void build(const std::filesystem::path& output_directory, const iterator_t& svgs, comparison_function order_comparator)
     {
@@ -76,6 +83,11 @@ class web_builder{
         configure_svgs(output_directory, svgs, order_comparator);
     }
 
+    /// @brief Generates a webpage configured with the given svgs.
+    /// @param output_directory the root of the web page.
+    /// @param svgs the svgs avaible for selection on the web page.
+    /// @note uses an alpha-numeric comparator on the svgs' ids
+    /// to determine the display order.
     template <typename iterator_t>
     void build(const std::filesystem::path& output_directory, const iterator_t& svgs)
     {
@@ -84,6 +96,7 @@ class web_builder{
 
     private:
 
+    /// @brief Writes the svgs to the svgs folder in the output directory and generates the config.json file.
     template <typename iterator_t>
     void configure_svgs(const std::filesystem::path& output_directory, const iterator_t& it_svgs, comparison_function order_comparator){
         auto svgs = std::vector(it_svgs.cbegin(), it_svgs.cend());
@@ -107,6 +120,7 @@ class web_builder{
         write_file(output_directory / "config.json", get_config(file_names));
     }
 
+    /// @brief Writes a file.
     template <typename content_t>
     void write_file(const std::filesystem::path& path, const content_t& content)
     {
@@ -116,6 +130,7 @@ class web_builder{
         rstream.close();
     }
 
+    /// @returns the json of the config file.
     template <typename iterator_t>
     auto get_config(const iterator_t& file_names_it)
     {
@@ -131,6 +146,7 @@ class web_builder{
         return "[" + res + "]";
     }
 
+    /// @brief Creates the folder structure for the webpage.
     auto create_directory_structure(const std::filesystem::path& directory_path){
         if (!std::filesystem::exists(directory_path)) {
             std::filesystem::create_directory(directory_path);
