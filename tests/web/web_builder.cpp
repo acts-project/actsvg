@@ -10,7 +10,7 @@
 #include <filesystem>
 
 #include "actsvg/core/draw.hpp"
-#include "actsvg/web/web_viewer.hpp"
+#include "actsvg/web/web_builder.hpp"
 
 using namespace actsvg;
 
