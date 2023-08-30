@@ -59,9 +59,15 @@
     font-family: monospace;
 }
 
-.result{
-    box-shadow: 0 4px 17px rgba(0, 0, 0, 0.35);
-    width: 60%;
-    height: 60%;
+.result-div{
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    height: 40%;
+    width: 40%;
     display: inline-block;
+    cursor: grab;
 }
+
+.result-div svg g{
+    cursor: pointer;
+}
+
