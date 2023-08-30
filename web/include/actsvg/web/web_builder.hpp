@@ -63,6 +63,8 @@ bool alphanumericCompare(const svg::object& svg1, const svg::object& svg2) {
 };
 
 /// @brief Class for generating a web page to view and merge svgs.
+/// @note When used a debugging tool and rebuilding mutliple times,
+/// if the webpage does not refresh as expected it is likely caused by browser caching.
 class web_builder{
     public:
 
@@ -73,6 +75,8 @@ class web_builder{
     /// @param svgs the svgs avaible for selection on the web page.
     /// @param order_comparator a compartor function to determine 
     /// the display order of the svgs.
+    /// @note When used a debugging tool and rebuilding mutliple times,
+    /// if the webpage does not refresh as expected it is likely caused by browser caching.
     template <typename iterator_t>
     void build(const std::filesystem::path& output_directory, const iterator_t& svgs, comparison_function order_comparator)
     {
@@ -88,6 +92,8 @@ class web_builder{
     /// @param svgs the svgs avaible for selection on the web page.
     /// @note uses an alpha-numeric comparator on the svgs' ids
     /// to determine the display order.
+    /// @note When used a debugging tool and rebuilding mutliple times,
+    /// if the webpage does not refresh as expected it is likely caused by browser caching.
     template <typename iterator_t>
     void build(const std::filesystem::path& output_directory, const iterator_t& svgs)
     {
