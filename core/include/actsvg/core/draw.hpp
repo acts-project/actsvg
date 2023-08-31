@@ -999,9 +999,9 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
         scalar a_y = at_[1];
         scalar h_s = 0.5 * size;
         marker_group.add_object(
-            line(id_ + "_ml0", {a_x - h_s, a_y - h_s}, {a_x + h_s, a_y + h_s}));
+            line(id_ + "_ml0", {a_x - h_s, a_y - h_s}, {a_x + h_s, a_y + h_s}, marker_._stroke));
         marker_group.add_object(
-            line(id_ + "_ml1", {a_x - h_s, a_y + h_s}, {a_x + h_s, a_y - h_s}));
+            line(id_ + "_ml1", {a_x - h_s, a_y + h_s}, {a_x + h_s, a_y - h_s}, marker_._stroke));
     }
 
     // Plot the arrow if not empty
