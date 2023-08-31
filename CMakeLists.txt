@@ -49,7 +49,7 @@ if ( ACTSVG_BUILD_META )
 endif()
 
 option(ACTSVG_BUILD_WEB "Build the webpage builder interface of ACTSVG" ON )
-if ( ACTSVG_BUILD_META )
+if ( ACTSVG_BUILD_WEB )
    add_subdirectory(web)
 endif()
 
