@@ -48,6 +48,11 @@ if ( ACTSVG_BUILD_META )
    add_subdirectory(meta)
 endif()
 
+option(ACTSVG_BUILD_WEB "Build the webpage builder interface of ACTSVG" ON )
+if ( ACTSVG_BUILD_WEB )
+   add_subdirectory(web)
+endif()
+
 option(ACTSVG_BUILD_EXAMPLES "Build the example applications of ACTSVG" OFF )
 if ( ACTSVG_BUILD_EXAMPLES )
    # Setup boost for the examples 
