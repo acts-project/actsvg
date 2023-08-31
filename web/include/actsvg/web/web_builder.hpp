@@ -84,6 +84,7 @@ class web_builder{
         write_file(output_directory / "index.html", index_text);
         write_file(output_directory / "script.js", script_text);
         write_file(output_directory / "styles.css", css_text);
+        write_file(output_directory / "rebuild.py", rebuild_text);
         configure_svgs(output_directory, svgs, order_comparator);
     }
 

@@ -4,7 +4,7 @@
 cd "$(dirname "$0")"
 
 # Run the build.py script
-python3 build.py
+python3 rebuild.py
 
 # Start the Python 3 HTTP server
 python3 -m http.server
