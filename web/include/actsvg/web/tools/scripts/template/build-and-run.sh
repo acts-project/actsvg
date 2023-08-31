@@ -3,7 +3,7 @@
 # Change to the directory of the Bash script
 cd "$(dirname "$0")"
 
-# Run the build.py script
+# Run the build script
 python3 rebuild.py
 
 # Start the Python 3 HTTP server
