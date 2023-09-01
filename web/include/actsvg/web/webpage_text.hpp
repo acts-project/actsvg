@@ -36,7 +36,7 @@ const std::string index_text = R"(<!DOCTYPE html>
         </div>
         <br>
         <div class="tooltip">&#9432;
-            <span>Click and drag to move around and use the mouse wheel to zoom</span>
+            <span>Click and drag to move around. Use the mouse wheel to zoom.</span>
         </div>
         
     </div>
