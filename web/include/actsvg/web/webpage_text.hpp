@@ -30,11 +30,18 @@ const std::string index_text = R"(<!DOCTYPE html>
         </div>
 
         <div id="result-div" class="result-div" onmouseover="document.body.style.overflow='hidden';"  onmouseout="document.body.style.overflow='auto';">
-            <svg id="result-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-300 -300 600 600">
+            <svg id="result-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-500 -500 1000 1000">
             
             </svg>
         </div>
+        <br>
+        <div class="tooltip">&#9432;
+            <span>Click and drag to move around and use the mouse wheel to zoom</span>
+        </div>
+        
     </div>
+  
+
 
     <script src="script.js"></script>
 </body>
@@ -149,7 +156,7 @@ const maxHalfLengths = { x: 3000, y: 3000 };
 
 let pivot = { x: 0, y: 0 };
 let position = { x: 0, y: 0 };
-let halfSize = { x: 300, y: 300 };
+let halfSize = { x: 500, y: 500 };
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 setViewBox();
@@ -281,6 +288,28 @@ const std::string css_text = R"(.app{
     cursor: pointer;
 }
 
+.tooltip {
+  font-size: 16px;
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip span {
+  width: 300px;
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover span {
+  visibility: visible;
+}
 )";
 
 const std::string rebuild_text = R"(import os
