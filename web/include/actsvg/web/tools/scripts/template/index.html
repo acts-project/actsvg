@@ -2,6 +2,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>SVG Viewer</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
@@ -12,8 +15,10 @@
             <!-- The checkboxes will be added here -->
         </div>
 
-        <div id="result" class="result">
-            <!-- The resulting SVG will be added here -->
+        <div id="result-div" class="result-div" onmouseover="document.body.style.overflow='hidden';"  onmouseout="document.body.style.overflow='auto';">
+            <svg id="result-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-300 -300 600 600">
+            
+            </svg>
         </div>
     </div>
 
