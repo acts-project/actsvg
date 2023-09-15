@@ -25,8 +25,7 @@ namespace python {
 
 using surface = proto::surface<point3_collection>;
 
-/// @brief  Adding the proto module to the
-/// python bindings
+/// @brief  Adding the proto module to the python bindings
 ///
 /// @param ctx the python context
 void add_io_module(context& ctx) {

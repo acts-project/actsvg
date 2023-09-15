@@ -104,7 +104,7 @@ if(ACTSVG_BUILD_PYTHON_BINDINGS)
   if(ACTSVG_USE_SYSTEM_PYBIND11) 
     find_package(pybind11 CONFIG REQUIRED)
   else()
-    add_subdirectory(thirdparty/pybind11)
+    add_subdirectory(extern/pybind11)
   endif()
   # Add the python sub directory
   add_subdirectory(python)
