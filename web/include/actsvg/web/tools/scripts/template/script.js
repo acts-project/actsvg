@@ -105,7 +105,7 @@ const maxHalfLengths = { x: 3000, y: 3000 };
 
 let pivot = { x: 0, y: 0 };
 let position = { x: 0, y: 0 };
-let halfSize = { x: 300, y: 300 };
+let halfSize = { x: 500, y: 500 };
 const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
 setViewBox();

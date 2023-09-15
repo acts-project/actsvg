@@ -71,3 +71,25 @@
     cursor: pointer;
 }
 
+.tooltip {
+  font-size: 16px;
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip span {
+  width: 300px;
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+}
+
+.tooltip:hover span {
+  visibility: visible;
+}
