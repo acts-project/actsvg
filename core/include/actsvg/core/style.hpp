@@ -152,9 +152,14 @@ struct stroke {
     /// Nothing is written out
     bool _sterile = false;
 
+    /// @brief Contructor for stroke 
+    /// @param c_ the color of the stroke
+    /// @param w_ the with of the stroke
+    /// @param d_ the dashed harray of the stroke
     stroke(const color &c_, scalar w_ = 0.5, const std::vector<int> &d_ = {})
         : _sc(c_), _width(w_), _dasharray(d_) {}
 
+    /// @brief Constructor for sterile stroke
     stroke(bool s_ = false) : _sterile(s_) {}
 
     /** Attach this fill attribute to an object
@@ -337,6 +342,7 @@ struct marker {
     fill _fill = fill{{{0, 0, 0}}};
 
     stroke _stroke = stroke();
+
 };
 
 // The axis marker types
@@ -347,7 +353,7 @@ using axis_markers = std::array<std::array<marker, 2u>, kDIM>;
 
 }  // namespace style
 
-static style::marker __no_marker = style::marker();
+static style::marker __no_marker = style::marker{};
 static style::marker __standard_marker = style::marker{{"<<"}};
 static std::array<style::marker, 2u> __standard_axis_markers = {
     __no_marker, __standard_marker};

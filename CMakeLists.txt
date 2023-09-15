@@ -99,5 +99,17 @@ if (ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
    endif()
 endif()
 
+if(ACTSVG_BUILD_PYTHON_BINDINGS)
+  find_package(Python 3.8 REQUIRED COMPONENTS Interpreter Development)
+  if(ACTSVG_USE_SYSTEM_PYBIND11) 
+    find_package(pybind11 CONFIG REQUIRED)
+  else()
+    add_subdirectory(thirdparty/pybind11)
+  endif()
+  # Add the python sub directory
+  add_subdirectory(python)
+endif()
+
+
 # Set up the packaging of the project.
 include( actsvg-packaging )
