@@ -42,6 +42,8 @@ struct surface {
         e_trapez
     };
 
+    enum class sf_type { e_portal, e_sensitive, e_passive };
+
     enum class boolean { e_clipping, e_union, e_subtraction, e_none };
 
     /// Name of the surface
@@ -70,6 +72,7 @@ struct surface {
 
     /// Type of the surfaces
     type _type = type::e_trapez;
+    sf_type _sf_type = sf_type::e_sensitive;
 
     /// And their measures
     std::vector<scalar> _measures = {};
@@ -90,6 +93,7 @@ struct surface {
         surface<point3_container> s;
         s._name = name_;
         s._type = t_._type;
+        s._sf_type = t_._sf_type;
         s._aux_info = t_._aux_info;
         s._vertices = t_._vertices;
         s._measures = t_._measures;

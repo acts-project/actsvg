@@ -71,6 +71,8 @@ proto::volume<point3_container> generate_endcap(
     if (m_t_ == proto::surface<point3_container>::type::e_disc) {
 
         inner_template_surface._type = m_t_;
+        inner_template_surface._sf_type =
+            proto::surface<point3_container>::sf_type::e_sensitive;
         inner_template_surface._radii = {100, 200};
         inner_template_surface._opening = {
             static_cast<scalar>(-half_opening - 0.05),
@@ -80,6 +82,8 @@ proto::volume<point3_container> generate_endcap(
 
         middle_template_surface._type =
             proto::surface<point3_container>::type::e_disc;
+        middle_template_surface._sf_type =
+            proto::surface<point3_container>::sf_type::e_sensitive;
         middle_template_surface._radii = {190, 320};
         middle_template_surface._opening = {
             static_cast<scalar>(-half_opening - 0.05),
@@ -89,6 +93,8 @@ proto::volume<point3_container> generate_endcap(
 
         outer_template_surface._type =
             proto::surface<point3_container>::type::e_disc;
+        outer_template_surface._sf_type =
+            proto::surface<point3_container>::sf_type::e_sensitive;
         outer_template_surface._radii = {310, 450};
         outer_template_surface._opening = {
             static_cast<scalar>(-half_opening - 0.05),
@@ -100,6 +106,8 @@ proto::volume<point3_container> generate_endcap(
 
     } else if (m_t_ == proto::surface<point3_container>::type::e_trapez) {
         inner_template_surface._type = m_t_;
+        inner_template_surface._sf_type =
+            proto::surface<point3_container>::sf_type::e_sensitive;
         inner_template_surface._measures = {26., 40., 55.};
         inner_template_surface._vertices = {
             {-inner_template_surface._measures[0],
@@ -112,6 +120,8 @@ proto::volume<point3_container> generate_endcap(
              inner_template_surface._measures[2], 0}};
 
         middle_template_surface._type = m_t_;
+        middle_template_surface._sf_type =
+            proto::surface<point3_container>::sf_type::e_sensitive;
         middle_template_surface._measures = {40., 68., 75.};
         middle_template_surface._vertices = {
             {-middle_template_surface._measures[0],
@@ -124,6 +134,8 @@ proto::volume<point3_container> generate_endcap(
              middle_template_surface._measures[2], 0}};
 
         outer_template_surface._type = m_t_;
+        outer_template_surface._sf_type =
+            proto::surface<point3_container>::sf_type::e_sensitive;
         outer_template_surface._measures = {68., 100., 75.};
         outer_template_surface._vertices = {
             {-outer_template_surface._measures[0],
@@ -176,6 +188,7 @@ proto::volume<point3_container> generate_endcap(
                 // (b) as individual objects
                 s._name = ts._name + std::to_string(isc);
                 s._type = ts._type;
+                s._sf_type = ts._sf_type;
                 s._aux_info = ts._aux_info;
                 s._vertices = ts._vertices;
                 s._measures = ts._measures;
@@ -283,6 +296,8 @@ proto::volume<point3_container> generate_endcap(
         proto::surface<point3_container> support_disk;
         support_disk._name = "support_disk";
         support_disk._type = proto::surface<point3_container>::type::e_disc;
+        support_disk._sf_type =
+            proto::surface<point3_container>::sf_type::e_passive;
         scalar r_min = 100.;
         scalar r_max = 450.;
         point3 A = {r_max, 0., 0.};

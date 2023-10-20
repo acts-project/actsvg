@@ -127,7 +127,7 @@ TEST(proto, grid_r_phi_full) {
             std::string tile_name = std::string("tile_") + std::to_string(i0) +
                                     std::string("_") + std::to_string(i1);
 
-            point2 text_pos = {r * cos(phi), r * sin(phi)};
+            point2 text_pos = {r * std::cos(phi), r * std::sin(phi)};
             tile_ids.push_back(
                 draw::text(tile_name, text_pos, {global_id, local_id}));
         }

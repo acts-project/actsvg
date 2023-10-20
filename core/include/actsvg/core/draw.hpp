@@ -180,7 +180,7 @@ static inline svg::object arc(
 static inline svg::object bezier(
     const std::string &id_, const std::vector<std::array<point2, 2u>> &xds_,
     const style::stroke &stroke_ = style::stroke(),
-    const style::transform &transform_ = style::transform()) {
+    const style::transform & /*transform_*/ = style::transform()) {
 
     svg::object c;
     c._tag = "g";
@@ -998,10 +998,10 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
         scalar a_x = at_[0];
         scalar a_y = at_[1];
         scalar h_s = 0.5 * size;
-        marker_group.add_object(
-            line(id_ + "_ml0", {a_x - h_s, a_y - h_s}, {a_x + h_s, a_y + h_s}, marker_._stroke));
-        marker_group.add_object(
-            line(id_ + "_ml1", {a_x - h_s, a_y + h_s}, {a_x + h_s, a_y - h_s}, marker_._stroke));
+        marker_group.add_object(line(id_ + "_ml0", {a_x - h_s, a_y - h_s},
+                                     {a_x + h_s, a_y + h_s}, marker_._stroke));
+        marker_group.add_object(line(id_ + "_ml1", {a_x - h_s, a_y + h_s},
+                                     {a_x + h_s, a_y - h_s}, marker_._stroke));
     }
 
     // Plot the arrow if not empty
