@@ -233,31 +233,38 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     // re-evaluate the intersections with
                     // the grid to show split surfaces correcly
                     if (n_vertices.size() < p_vertices.size()) {
-                        std::vector<typename surface_type::point3_type> bottom_vertices = {p_vertices[2u], p_vertices[0u]};
-                        std::vector<typename surface_type::point3_type> top_vertices = {n_vertices[0u], n_vertices[0u]};
+                        std::vector<typename surface_type::point3_type>
+                            bottom_vertices = {p_vertices[2u], p_vertices[0u]};
+                        std::vector<typename surface_type::point3_type>
+                            top_vertices = {n_vertices[0u], n_vertices[0u]};
 
-                        for (size_t index = 0u; index<2u; index++) {
+                        for (size_t index = 0u; index < 2u; index++) {
                             auto p_bottom = bottom_vertices[index];
                             auto p_top = top_vertices[index];
-                            float m = (p_bottom[1u] - p_top[1u]) / (p_bottom[2u] - p_top[2u]);
-                            float q = p_bottom[1u] - m*p_bottom[2u];
-                            float z = -q/m;
+                            float m = (p_bottom[1u] - p_top[1u]) /
+                                      (p_bottom[2u] - p_top[2u]);
+                            float q = p_bottom[1u] - m * p_bottom[2u];
+                            float z = -q / m;
 
                             typename surface_type::point3_type add = {
                                 p_bottom[0u],
-                                std::numeric_limits<scalar>::epsilon(),
-                                z};
+                                std::numeric_limits<scalar>::epsilon(), z};
                             p_vertices.push_back(add);
-                            add[1u]=-std::numeric_limits<scalar>::epsilon();
+                            add[1u] = -std::numeric_limits<scalar>::epsilon();
                             n_vertices.push_back(add);
-
                         }
 
                         auto p_view_vertices = v_(p_vertices);
                         auto p_middle = p_view_vertices.back();
-                        p_middle[1u] = static_cast<scalar>(1.5 *  p_view_vertices.back()[1u] - 0.5 * p_view_vertices.front()[1u]);
-                        p_middle[0u] = static_cast<scalar>(0.5 *  (p_view_vertices.at(p_view_vertices.size()-2)[0u] + p_view_vertices.back()[0u]));
-                        p_view_vertices.insert(p_view_vertices.end()-1,p_middle);
+                        p_middle[1u] = static_cast<scalar>(
+                            1.5 * p_view_vertices.back()[1u] -
+                            0.5 * p_view_vertices.front()[1u]);
+                        p_middle[0u] = static_cast<scalar>(
+                            0.5 * (p_view_vertices.at(p_view_vertices.size() -
+                                                      2)[0u] +
+                                   p_view_vertices.back()[0u]));
+                        p_view_vertices.insert(p_view_vertices.end() - 1,
+                                               p_middle);
 
                         auto s_n = draw::polygon(id_ + std::string("_n_split"),
                                                  v_(n_vertices), s_._fill,
@@ -304,7 +311,9 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     auto p2 = p_vertices[1u];
                     p2[1u] = std::numeric_limits<scalar>::epsilon();
                     p4[1u] = std::numeric_limits<scalar>::epsilon();
-                    typename surface_type::point3_type p3 = { p2[0u], p2[1u], static_cast<scalar>(0.5 * (p2[2u] + p4[2u]))};
+                    typename surface_type::point3_type p3 = {
+                        p2[0u], p2[1u],
+                        static_cast<scalar>(0.5 * (p2[2u] + p4[2u]))};
                     p_vertices.push_back(p2);
                     p_vertices.push_back(p3);
                     p_vertices.push_back(p4);
@@ -313,10 +322,11 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     const auto& p_v_1 = p_view_vertices[1u];
                     const auto& p_v_2 = p_view_vertices[2u];
                     auto& p_v_3 = p_view_vertices[3u];
-                    p_v_3[1u] = static_cast<scalar>(1.5 *  p_v_2[1u] - 0.5 * p_v_1[1u]);
+                    p_v_3[1u] =
+                        static_cast<scalar>(1.5 * p_v_2[1u] - 0.5 * p_v_1[1u]);
 
                     auto s_p = draw::polygon(id_ + std::string("_p_split"),
-                                            p_view_vertices, s_._fill,
+                                             p_view_vertices, s_._fill,
                                              s_._stroke, draw_transform);
                     s.add_object(s_n);
                     s.add_object(s_p);
@@ -648,7 +658,8 @@ static inline svg::object eta_lines(
                 if (eta == 0.) {
                     end[0] -= static_cast<scalar>(0.5 * font._size);
                 }
-                auto e_text = utils::to_string(eta);
+                const std::string eta_code = "\u03B7";
+                auto e_text = eta_code + " = " + utils::to_string(eta);
                 auto e_label =
                     draw::text(id_ + "eta_label_" + uid, end, {e_text}, font);
                 e.add_object(e_label);
