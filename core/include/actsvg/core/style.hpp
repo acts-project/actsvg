@@ -192,12 +192,31 @@ struct font {
 /// The transform struct
 struct transform {
 
-    std::array<scalar, 3> _tr = {0., 0.};
+    std::array<scalar, 3> _tr = {0., 0., 0.};
     std::array<scalar, 3> _rot = {0., 0., 0.};
     std::array<scalar, 2> _skew = {0., 0.};
     std::array<scalar, 2> _scale = {1., 1.};
 
     bool _sterile = false;
+
+    /** Apply to a point
+     *
+     * @param p_ the point to be transformed
+     * @param flip is the y-axis flipped (for viewing)
+     *
+     * @return the transformed point
+     **/
+    template <typename point_type>
+    point_type apply(const point_type &p_, bool flip = true) const {
+        // Apply the scale and the translation
+        point_type p = p_;
+        p[0] = _scale[0] * (p[0] + _tr[0]);
+        p[1] = _scale[1] * (p[1] + _tr[1]);
+        if (flip) {
+            p[1] = -p[1];
+        }
+        return p;
+    }
 
     /** Attrribute conversion
      *

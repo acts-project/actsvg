@@ -123,6 +123,7 @@ point2_type intersect(const point2_type &x0_, const point2_type &d0_,
     return p_int;
 }
 
+
 /** Helper from id to url
  * @param id_ the idnetification to be transformed
  **/

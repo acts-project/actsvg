@@ -182,7 +182,7 @@ static inline svg::object bezier(
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
 
-    svg::object c;
+svg::object c;
     c._tag = "g";
     c._id = id_;
 
@@ -196,16 +196,18 @@ static inline svg::object bezier(
             continue;
         }
         // Buid the Bezier segments
-        // intesect the two lines
-        point2 intersect = utils::intersect(lx, ld, x, d);
+        // intesect the two lines, apply transform to draw frame
+        point2 intersect = transform_.apply(utils::intersect(lx, ld, x, d));
+        point2 dlx = transform_.apply(lx);
+        point2 dx = transform_.apply(x);
 
         std::string path_string =
-            "M " + utils::to_string(lx[0]) + " " + utils::to_string(-lx[1]) +
+            "M " + utils::to_string(dlx[0]) + " " + utils::to_string(dlx[1]) +
             " C " + utils::to_string(intersect[0]) + " " +
-            utils::to_string(-intersect[1]) + " " +
+            utils::to_string(intersect[1]) + " " +
             utils::to_string(intersect[0]) + " " +
-            utils::to_string(-intersect[1]) + " " + utils::to_string(x[0]) +
-            " " + utils::to_string(-x[1]);
+            utils::to_string(intersect[1]) + " " + utils::to_string(dx[0]) +
+            " " + utils::to_string(dx[1]);
 
         svg::object path;
         path._tag = "path";
@@ -246,23 +248,24 @@ static inline svg::object circle(
     e._id = id_;
 
     // Apply the transform & scale
+    point2 c = transform_.apply(p_);
 
+    // Apply the transform & scale
     scalar sx = transform_._scale[0];
     scalar sy = transform_._scale[1];
-    scalar cx = sx * (p_[0] + transform_._tr[0]);
-    scalar cy = sy * (-p_[1] - transform_._tr[1]);
 
     // Fill the points attributes
-    e._attribute_map["cx"] = utils::to_string(cx);
-    e._attribute_map["cy"] = utils::to_string(cy);
-    e._attribute_map["rx"] = utils::to_string(r_ * sx);
-    e._attribute_map["ry"] = utils::to_string(r_ * sy);
+    scalar rx = r_ * sx;
+    scalar ry = r_ * sy;
+    e._attribute_map["cx"] = utils::to_string(c[0]);
+    e._attribute_map["cy"] = utils::to_string(c[1]);
+    e._attribute_map["rx"] = utils::to_string(rx);
+    e._attribute_map["ry"] = utils::to_string(ry);
 
     // Adapt the range of this object
-    detail::adapt_range(
-        e, {{cx - sx * r_, cy - sy * r_}, {cx + sx * r_, cy + sy * r_}});
-
-    e._barycenter = {cx, cy};
+    detail::adapt_range(e, {{c[0] - rx, c[1] - ry}, {c[0] + rx, c[1] + ry}});
+    // Assign it as new barycenter
+    e._barycenter = c;
 
     // Attach fill, stroke & transform attributes and apply
     e._fill = fill_;
@@ -998,10 +1001,10 @@ static inline svg::object marker(const std::string &id_, const point2 &at_,
         scalar a_x = at_[0];
         scalar a_y = at_[1];
         scalar h_s = 0.5 * size;
-        marker_group.add_object(
-            line(id_ + "_ml0", {a_x - h_s, a_y - h_s}, {a_x + h_s, a_y + h_s}, marker_._stroke));
-        marker_group.add_object(
-            line(id_ + "_ml1", {a_x - h_s, a_y + h_s}, {a_x + h_s, a_y - h_s}, marker_._stroke));
+        marker_group.add_object(line(id_ + "_ml0", {a_x - h_s, a_y - h_s},
+                                     {a_x + h_s, a_y + h_s}, marker_._stroke));
+        marker_group.add_object(line(id_ + "_ml1", {a_x - h_s, a_y + h_s},
+                                     {a_x + h_s, a_y - h_s}, marker_._stroke));
     }
 
     // Plot the arrow if not empty
