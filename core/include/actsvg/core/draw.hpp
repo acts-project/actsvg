@@ -182,7 +182,7 @@ static inline svg::object bezier(
     const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
 
-    svg::object c;
+svg::object c;
     c._tag = "g";
     c._id = id_;
 
@@ -191,22 +191,23 @@ static inline svg::object bezier(
 
     for (const auto &[x, d] : xds_) {
         if (ld == point2{0, 0}) {
-            ld = transform_.apply(d);
-            lx = transform_.apply(x);
+            ld = d;
+            lx = x;
             continue;
         }
         // Buid the Bezier segments
-        // intesect the two lines
-        point2 intersect =
-            utils::intersect(lx, ld, transform_.apply(x), transform_.apply(d));
+        // intesect the two lines, apply transform to draw frame
+        point2 intersect = transform_.apply(utils::intersect(lx, ld, x, d));
+        point2 dlx = transform_.apply(lx);
+        point2 dx = transform_.apply(x);
 
         std::string path_string =
-            "M " + utils::to_string(lx[0]) + " " + utils::to_string(lx[1]) +
+            "M " + utils::to_string(dlx[0]) + " " + utils::to_string(dlx[1]) +
             " C " + utils::to_string(intersect[0]) + " " +
             utils::to_string(intersect[1]) + " " +
             utils::to_string(intersect[0]) + " " +
-            utils::to_string(intersect[1]) + " " + utils::to_string(x[0]) +
-            " " + utils::to_string(x[1]);
+            utils::to_string(intersect[1]) + " " + utils::to_string(dx[0]) +
+            " " + utils::to_string(dx[1]);
 
         svg::object path;
         path._tag = "path";
@@ -214,8 +215,8 @@ static inline svg::object bezier(
         path._attribute_map["d"] = path_string;
         path._stroke = stroke_;
         c.add_object(path);
-        ld = transform_.apply(d);
-        lx = transform_.apply(x);
+        ld = d;
+        lx = x;
     }
 
     return c;
