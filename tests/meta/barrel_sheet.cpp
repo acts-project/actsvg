@@ -53,6 +53,8 @@ proto::volume<point3_container> generate_barrel(
     barrel_module_template._measures = {hx, hy};
     barrel_module_template._type =
         proto::surface<point3_container>::type::e_rectangle;
+    barrel_module_template._sf_type =
+        proto::surface<point3_container>::sf_type::e_sensitive;
 
     scalar offz = (0.5 * stave_modules - 0.5) * (1.98 * hy);
     scalar nexz = offz / (0.5 * stave_modules - 0.5);
@@ -120,6 +122,7 @@ proto::volume<point3_container> generate_barrel(
                 barrel_module._vertices = {ll, lr, hr, hl};
                 barrel_module._measures = barrel_module_template._measures;
                 barrel_module._type = barrel_module_template._type;
+                barrel_module._sf_type = barrel_module_template._sf_type;
                 barrel_module._aux_info["module_info"] = {
                     std::string("Module " + std::to_string(is) + " " +
                                 std::to_string(iz)),
@@ -160,6 +163,10 @@ proto::volume<point3_container> generate_barrel(
                     barrel_module_backside._measures =
                         barrel_module_template._measures;
                     barrel_module_backside._type = barrel_module_template._type;
+                    barrel_module_backside._sf_type =
+                        barrel_module_template._sf_type;
+                    barrel_module_backside._sf_type =
+                        barrel_module_template._sf_type;
                     barrel_module_backside._aux_info["module_info"] = {
                         std::string("Module (backside) " + std::to_string(is) +
                                     " " + std::to_string(iz)),

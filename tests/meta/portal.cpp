@@ -31,6 +31,7 @@ TEST(proto, cylinder_portal) {
 
     proto::surface<point3_container> s;
     s._type = proto::surface<point3_container>::type::e_cylinder;
+    s._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     s._radii = {0., 100.};
     s._zparameters = {0., 200.};
 
@@ -83,6 +84,7 @@ TEST(proto, full_disc_portal) {
 
     proto::surface<point3_container> s;
     s._type = proto::surface<point3_container>::type::e_disc;
+    s._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     s._radii = {10., 100.};
     s._zparameters = {50., 0.};
     s._fill = defaults::__nn_fill;

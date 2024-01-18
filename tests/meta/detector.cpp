@@ -60,6 +60,7 @@ TEST(proto, cylindrical_detector) {
     proto::portal<point3_container> bp_nec;
     proto::surface<point3_container> bp_s_nec;
     bp_s_nec._type = proto::surface<point3_container>::type::e_disc;
+    bp_s_nec._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     bp_s_nec._radii = {0., 40.};
     bp_s_nec._zparameters = {-400., 0.};
 
@@ -76,6 +77,7 @@ TEST(proto, cylindrical_detector) {
     nec._name = "joint_nec";
     proto::surface<point3_container> s_nec;
     s_nec._type = proto::surface<point3_container>::type::e_disc;
+    s_nec._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     s_nec._radii = {0., 100.};
     s_nec._zparameters = {-400., 0.};
 
@@ -98,6 +100,7 @@ TEST(proto, cylindrical_detector) {
     ci._name = "joint_c_i";
     proto::surface<point3_container> s_ci;
     s_ci._type = proto::surface<point3_container>::type::e_cylinder;
+    s_ci._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     s_ci._radii = {0., 40.};
     s_ci._zparameters = {0., 400.};
 
@@ -154,6 +157,7 @@ TEST(proto, cylindrical_detector) {
     co._name = "joint_c_o";
     proto::surface<point3_container> s_co;
     s_co._type = proto::surface<point3_container>::type::e_cylinder;
+    s_co._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     s_co._radii = {0., 100.};
     s_co._zparameters = {0., 400.};
 
@@ -182,6 +186,7 @@ TEST(proto, cylindrical_detector) {
     pix_nec_b._name = "pix_nec_b";
     proto::surface<point3_container> s_pix_nec_b;
     s_pix_nec_b._type = proto::surface<point3_container>::type::e_disc;
+    s_pix_nec_b._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     s_pix_nec_b._radii = {40., 100.};
     s_pix_nec_b._zparameters = {-300., 0.};
 
@@ -205,6 +210,7 @@ TEST(proto, cylindrical_detector) {
     pix_b_pec._name = "pix_b_pec";
     proto::surface<point3_container> s_pix_b_pec;
     s_pix_b_pec._type = proto::surface<point3_container>::type::e_disc;
+    s_pix_b_pec._sf_type = proto::surface<point3_container>::sf_type::e_portal;
     s_pix_b_pec._radii = {40., 100.};
     s_pix_b_pec._zparameters = {300., 0.};
 

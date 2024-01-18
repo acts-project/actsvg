@@ -81,7 +81,7 @@ std::optional<proto::cluster<1u>> drift_cluster(
                           std::sin(alpha_) * (start_[0u] - t[0u]));
 
     if (d_r <= s_._radii[1u]) {
-        proto::cluster<1u> drift_cluster;
+        proto::cluster<1u> drift_cluster{};
         drift_cluster._type = proto::cluster<1u>::type::e_drift;
         drift_cluster._coords = {proto::cluster<1u>::coordinate::e_r};
         drift_cluster._measurement = {d_r};
