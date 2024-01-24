@@ -74,6 +74,7 @@ struct portal {
 
     /// The list of volume links
     std::vector<link> _volume_links;
+
 };
 
 }  // namespace proto
