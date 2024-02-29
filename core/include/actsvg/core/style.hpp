@@ -89,6 +89,55 @@ struct fill {
     }
 };
 
+// Define a gradient definition
+struct gradient {
+
+    /// Define a gradient id
+    std::string _id = "";
+    /// The gradient direction (x1, y1, 2, y2)
+    /// default is left to right
+    std::array<scalar, 4> _direction = {0., 0., 1., 0.};
+    /// The type of the gradient
+    std::string _type = "linear";
+
+    using stop = std::pair<scalar, color>;
+
+    /// The gradient stops
+    std::vector<stop> _stops = {};
+
+    /// Get a color from a scale parameter
+    ///
+    /// @param s_ the scale parameter for the lookup point
+    rgb rgb_from_scale(scalar s_) const {
+        scalar s_reg = s_ < 0. ? 0. : (s_ > 1. ? 1. : s_);
+        // find our stops
+        unsigned int is = 1u;
+        for (; is <= _stops.size(); ++is) {
+            if (_stops[is].first > s_reg) {
+                break;
+            }
+        }
+        // Bail out
+        if (is >= _stops.size()) {
+            return _stops.back().second._rgb;
+        }
+
+        // Interpolate between the two stops to get the new color
+        scalar s0 = _stops[is - 1].first;
+        scalar s1 = _stops[is].first;
+        rgb c0 = _stops[is - 1].second._rgb;
+        rgb c1 = _stops[is].second._rgb;
+        scalar s_diff = s1 - s0;
+        scalar s_rel = (s_reg - s0) / s_diff;
+
+        rgb c;
+        for (unsigned int ic = 0; ic < 3; ++ic) {
+            c[ic] = static_cast<int>(c0[ic] + s_rel * (c1[ic] - c0[ic]));
+        }
+        return c;
+    }
+};
+
 /// Stroke type speficiation
 struct stroke {
 
@@ -179,7 +228,7 @@ struct font {
     template <typename object_type>
     void attach_attributes(object_type &o_) const {
         o_._attribute_map["fill"] = rgb_attr(_fc._rgb);
-        o_._attribute_map["font-size"] = utils::to_string(_size);
+        o_._attribute_map["font-size"] = std::to_string(_size);
         if (not _family.empty()) {
             o_._attribute_map["font-family"] = _family;
         }

@@ -180,7 +180,7 @@ static inline svg::object arc(
 static inline svg::object bezier(
     const std::string &id_, const std::vector<std::array<point2, 2u>> &xds_,
     const style::stroke &stroke_ = style::stroke(),
-    const style::transform & transform_ = style::transform()) {
+    const style::transform &transform_ = style::transform()) {
 
     svg::object c;
     c._tag = "g";
@@ -1216,6 +1216,135 @@ static inline svg::object x_y_axes(
     }
 
     return axes;
+}
+
+/** Helper method to create a gradient object
+ *
+ * @param id_ is the id of the gradient
+ * @param g_ is the gradient definition
+ *
+ * @return the gradient as an object
+ **/
+static inline svg::object gradient_as_object(const style::gradient &g_) {
+    svg::object grad;
+    grad._id = g_._id;
+    grad._tag = g_._type + "Gradient";
+    grad._sterile = true;
+    grad._attribute_map["x1"] = utils::to_string(g_._direction[0] * 100) + "%";
+    ;
+    grad._attribute_map["y1"] = utils::to_string(g_._direction[1] * 100) + "%";
+    ;
+    grad._attribute_map["x2"] = utils::to_string(g_._direction[2] * 100) + "%";
+    ;
+    grad._attribute_map["y2"] = utils::to_string(g_._direction[3] * 100) + "%";
+    ;
+    for (const auto &[s, c] : g_._stops) {
+        svg::object stop;
+        stop._tag = "stop";
+        stop._sterile = true;
+        stop._attribute_map["offset"] = utils::to_string(s * 100) + "%";
+        stop._attribute_map["stop-color"] = style::rgb_attr(c._rgb);
+        grad._sub_objects.push_back(stop);
+    }
+    return grad;
+}
+
+/** Place a gradient box
+ *
+ * @param id_ is the identification of this surface
+ * @param p_ is the position of the box
+ * @param w_h_ is the width and height of the box
+ * @param stops_ is the gradient definition
+ * @param font_ is the font of the box
+ * @param transform_ is the transform of the box
+ *
+ * @note make sure the gradient is added to the file definition
+ * @note this will flip the x-axis
+ *
+ * @return the create object
+ */
+static inline svg::object gradient_box(
+    const std::string &id_, const point2 &p_, const std::array<scalar, 2> &w_h_,
+    const std::vector<std::tuple<style::gradient::stop, scalar>> &stops_,
+    const style::stroke &stroke_ = style::stroke(),
+    const style::font &font_ = style::font{},
+    const style::transform t_ = style::transform()) {
+
+    svg::object g;
+    g._tag = "g";
+
+    auto [w_, h_] = w_h_;
+
+    style::gradient gradient;
+    gradient._id = id_ + "_gradient";
+    gradient._type = "linear";
+
+    std::vector<scalar> gradient_values;
+    for (auto [s, o] : stops_) {
+        gradient._stops.push_back(s);
+    }
+    bool vertical = w_ < h_;
+    // vertical
+    if (vertical) {
+        gradient._direction = {0., 1., 0., 0.};
+    } else {
+        // horizontal
+        gradient._direction = {0., 0., 1., 0.};
+    }
+    g.add_object(gradient_as_object(gradient));
+
+    scalar y_box = -p_[1] - h_;
+
+    // Create the box - by hand this time
+    svg::object gbox;
+    gbox._tag = "rect";
+    gbox._id = id_;
+    gbox._sterile = true;
+    gbox._attribute_map["x"] = std::to_string(p_[0]);
+    gbox._attribute_map["y"] = std::to_string(y_box);
+    gbox._attribute_map["width"] = std::to_string(w_);
+    gbox._attribute_map["height"] = std::to_string(h_);
+    gbox._attribute_map["fill"] = "url(#" + gradient._id + ")";
+    gbox._transform = t_;
+    g.add_object(gbox);
+
+    // Create the tick objects
+    for (auto [is, s] : utils::enumerate(gradient._stops)) {
+        // Create the tick
+        svg::object tick =
+            vertical ? line(id_ + "_tick_" + std::to_string(is),
+                            {p_[0], p_[1] + h_ * s.first},
+                            {p_[0] + w_, p_[1] + h_ * s.first}, stroke_)
+                     : line(id_ + "_tick_" + std::to_string(is),
+                            {p_[0] + w_ * s.first, p_[1]},
+                            {p_[0] + w_ * s.first, p_[1] + h_}, stroke_);
+        g.add_object(tick);
+
+        // Create the tick value
+        scalar value = std::get<1>(stops_[is]);
+
+        svg::object tval =
+            vertical
+                ? draw::text(
+                      id_ + "_tick_val_" + std::to_string(is),
+                      {static_cast<scalar>(p_[0] + w_ + 0.2 * font_._size),
+                       p_[1] + h_ * s.first},
+                      {utils::to_string(value)}, font_)
+                : draw::text(id_ + "_tick_val_" + std::to_string(is),
+                             {p_[0] + w_ * s.first,
+                              static_cast<scalar>(p_[1] - 1.2 * font_._size)},
+                             {utils::to_string(value)}, font_);
+        tval._sterile = true;
+        tval._attribute_map["alignment-baseline"] = "middle";
+        if (not vertical) {
+            tval._attribute_map["text-anchor"] = "middle";
+        }
+        font_.attach_attributes(tval);
+        tval._field = {utils::to_string(value)};
+        g.add_object(tval);
+    }
+
+    return g;
 }
 
 /** Place a copy with different attributes via xling
