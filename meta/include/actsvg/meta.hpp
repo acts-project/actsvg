@@ -14,6 +14,7 @@
 #include "actsvg/proto/detector.hpp"
 #include "actsvg/proto/grid.hpp"
 #include "actsvg/proto/surface.hpp"
+#include "actsvg/proto/material.hpp"
 #include "actsvg/proto/volume.hpp"
 
 #include "actsvg/styles/defaults.hpp"
@@ -22,4 +23,5 @@
 #include "actsvg/display/grids.hpp"
 #include "actsvg/display/geometry.hpp"
 #include "actsvg/display/helpers.hpp"
+#include "actsvg/display/materials.hpp"
 #include "actsvg/display/sheets.hpp"

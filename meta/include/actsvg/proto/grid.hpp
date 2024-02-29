@@ -38,7 +38,7 @@ struct grid {
     /// The edges in the two given directions, loc1
     std::vector<scalar> _edges_1 = {};
 
-    /// Reference r for drawing
+    /// Reference r for drawing (e.g. in case of phi axis)
     scalar _reference_r = 0.;
 
     /// Bin identifications

@@ -190,7 +190,7 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
     }
 
     // Attach the styles: fill, stroke, transform
-    if (not o_._sterile) {
+    if (not o_._sterile and o_._tag != "g") {
         o_._fill.attach_attributes(o_copy);
         o_._stroke.attach_attributes(o_copy);
         o_._transform.attach_attributes(o_copy);
