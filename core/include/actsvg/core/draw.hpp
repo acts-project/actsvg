@@ -179,7 +179,8 @@ static inline svg::object arc(
  */
 static inline svg::object bezier(
     const std::string &id_, const std::vector<std::array<point2, 2u>> &xds_,
-    const style::stroke &stroke_ = style::stroke()) {
+    const style::stroke &stroke_ = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
 
     svg::object c;
     c._tag = "g";

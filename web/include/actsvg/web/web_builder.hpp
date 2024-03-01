@@ -64,33 +64,6 @@ class web_builder{
 
     using comparison_function = bool (*)(const actsvg::svg::object&, const actsvg::svg::object&);
 
-    /// @returns the json of the config file.
-    template <typename iterator_t>
-    auto get_config(const iterator_t& file_names_it)
-    {
-        std::string res;
-        for (const auto& file_name : file_names_it){
-            if (res.size() == 0){
-                res += "\"" + file_name + "\"";
-            }
-            else{
-                res += ", \"" + file_name + "\"";
-            }
-        }
-        return "[" + res + "]";
-    }
-
-    /// @brief Creates the folder structure for the webpage.
-    auto create_directory_structure(const std::filesystem::path& directory_path){
-        if (!std::filesystem::exists(directory_path)) {
-            std::filesystem::create_directory(directory_path);
-        }
-        const auto svg_directory = directory_path / "svgs";
-        if (!std::filesystem::exists(svg_directory)) {
-            std::filesystem::create_directory(svg_directory);
-        }
-    }
-
     /// @brief Generates a webpage configured with the given svgs.
     /// @param output_directory the root of the web page.
     /// @param svgs the svgs avaible for selection on the web page.
