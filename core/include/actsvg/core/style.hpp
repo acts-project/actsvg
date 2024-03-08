@@ -11,6 +11,7 @@
 #include <array>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "defs.hpp"
 #include "utils.hpp"
