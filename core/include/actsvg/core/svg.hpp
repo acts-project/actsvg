@@ -268,6 +268,18 @@ struct file {
         }
     }
 
+    /** Add an object and respect the min/max range
+     *
+     * @param os_ is the vector of objects
+     **/
+    void add_objects(const std::vector<svg::object> &os_) {
+        // Add the objects one by one 
+        for (const auto& o_  : os_)
+            if (o_._active) {
+                _objects.push_back(o_);
+            }
+    }
+
     friend std::ostream &operator<<(std::ostream &os_, const file &f_);
 };
 
