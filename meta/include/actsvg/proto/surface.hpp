@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "actsvg/core/style.hpp"
+#include "actsvg/proto/material.hpp"
 #include "actsvg/styles/defaults.hpp"
 #include "grid.hpp"
 
@@ -79,6 +80,9 @@ struct surface {
 
 	/// Decoration
 	std::map<std::string, svg::object> _decorations;
+
+    /// The surface material
+    surface_material _material = {};
 
     /// A (potential) template for this surface
     svg::object _template_object;
