@@ -83,6 +83,17 @@ void add_style_module(context& ctx) {
                  py::arg("color"), py::arg("font_family"), py::arg("size"),
                  py::arg("line_spacing"), py::arg("style"));
     }
+
+    {
+        // The gradient python class
+        py::class_<style::gradient, std::shared_ptr<style::gradient>>(
+            s, "gradient")
+            .def(py::init<>())
+            .def_readwrite("id", &style::gradient::_id)
+            .def_readwrite("direction", &style::gradient::_direction)
+            .def_readwrite("type", &style::gradient::_type)
+            .def_readwrite("stops", &style::gradient::_stops);
+        }
 }
 }  // namespace python
 }  // namespace actsvg

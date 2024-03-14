@@ -16,9 +16,14 @@ pybind11_add_module(pyactsvg
   src/style.cpp
 )
 
-target_link_libraries( pyactsvg PUBLIC actsvg::core actsvg::meta)
+target_link_libraries(pyactsvg PUBLIC actsvg::core actsvg::meta)
 
 install(TARGETS pyactsvg DESTINATION ${_python_install_dir})
 
+configure_file(setup.sh.in ${_python_dir}/setup.sh @ONLY)
+install(FILES ${_python_dir}/setup.sh DESTINATION "python")
+
 set_target_properties(pyactsvg PROPERTIES INSTALL_RPATH "\$ORIGIN/../../${CMAKE_INSTALL_LIBDIR}")
 set_target_properties(pyactsvg PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${_python_dir}/actsvg)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/python/actsvg/ DESTINATION ${_python_install_dir})
