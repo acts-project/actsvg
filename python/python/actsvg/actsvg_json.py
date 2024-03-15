@@ -1,7 +1,6 @@
 import json as jsn
 import actsvg
 from actsvg import proto
-from progress.bar import Bar
 
 """ read a grid axis from a json file"""
 @staticmethod
