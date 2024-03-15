@@ -298,6 +298,17 @@ void add_display_module(context& ctx) {
             return track_views;
         });
     }
+
+    {
+        /// View surface material
+        ///
+        /// @param sm the surface material
+        /// @param view the view string (xy, zphi)
+        ///
+        /// @return a list of objects
+        d.def("surface_material", &display::surface_material);
+    }
+
 }  // namespace actsvg
 
 }  // namespace python
