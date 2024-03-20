@@ -7,7 +7,7 @@ file(MAKE_DIRECTORY ${_python_dir}/actsvg)
 
 set(_python_install_dir "python/actsvg")
 
-pybind11_add_module(pyactsvg 
+set(modules_src 
   src/core.cpp
   src/display.cpp
   src/io.cpp
@@ -16,7 +16,24 @@ pybind11_add_module(pyactsvg
   src/style.cpp
 )
 
+if (ACTSVG_BUILD_EXAMPLES)
+  list(APPEND modules_src
+    src/examples.cpp)
+else()
+  list(APPEND modules_src
+    src/dummies/examples.cpp)
+endif()
+  
+
+pybind11_add_module(pyactsvg 
+  ${modules_src}
+)
+
+
 target_link_libraries(pyactsvg PUBLIC actsvg::core actsvg::meta)
+if (ACTSVG_BUILD_EXAMPLES)
+  target_link_libraries(pyactsvg PUBLIC actsvg::data)
+endif()
 
 install(TARGETS pyactsvg DESTINATION ${_python_install_dir})
 

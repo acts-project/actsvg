@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "actsvg/core/defs.hpp"
+
 #include <array>
 #include <vector>
 
@@ -17,7 +19,7 @@ namespace actsvg {
 /// depicts one Pixel endcap layer
 namespace data {
 
-static std::vector<std::array<scalar, 3u>> odd_pixel_ec = {
+static std::vector<std::array<scalar, 3u>> odd_pixel_endcap = {
     {42, 8.5, -1515.6},
     {42, -8.5, -1515.6},
     {110, -14.5, -1515.6},
@@ -259,7 +261,7 @@ static std::vector<std::array<scalar, 3u>> odd_pixel_ec = {
     {16.5, 173, -1524.4},
     {-16.5, 173, -1524.4}};
 
-static std::vector<std::vector<size_t>> odd_pixel_ec_assoc = {
+static std::vector<std::vector<size_t>> odd_pixel_endcap_assoc = {
     {4, 33, 34, 35},  {4, 5, 34, 35, 37},   {5, 35, 37},  {5, 6, 35, 37, 38},
     {6, 37, 38, 39},  {6, 7, 38, 39, 40},   {7, 39, 40},  {7, 8, 39, 40, 41},
     {8, 40, 41, 42},  {8, 9, 41, 42, 43},   {9, 42, 43},  {9, 10, 42, 43, 44},
@@ -284,6 +286,20 @@ static std::vector<std::vector<size_t>> odd_pixel_ec_assoc = {
     {20, 26, 58, 59}, {20, 21, 26, 27, 59}, {21, 26, 27}, {21, 22, 26, 27, 28},
     {22, 27, 28, 29}, {22, 23, 28, 29, 30}, {23, 29, 30}, {2, 23, 29, 30, 31},
     {2, 30, 31, 32},  {2, 3, 31, 32, 33},   {3, 32, 33},  {3, 4, 32, 33, 34}};
+
+using trapezoid = std::array<std::array<scalar, 3u>, 4u>;
+
+inline static std::vector<trapezoid> generate_endcap_modules() {
+    std::vector<trapezoid> modules;
+    size_t number_of_modules = data::odd_pixel_endcap.size() / 4u;
+    modules.reserve(number_of_modules);
+    for (size_t im = 0; im < number_of_modules; ++im) {
+        modules.push_back(
+            {data::odd_pixel_endcap[4 * im], data::odd_pixel_endcap[4 * im + 1],
+             data::odd_pixel_endcap[4 * im + 2], data::odd_pixel_endcap[4 * im + 3]});
+    }
+    return modules;
+}
 
 }  // namespace data
 

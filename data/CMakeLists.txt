@@ -3,4 +3,6 @@ message(STATUS "Building 'actsvg::data' component")
 # Set up the library.
 actsvg_add_library( actsvg_data data
    "include/actsvg/data/odd_pixel_barrel.hpp"
-   "include/actsvg/data/odd_pixel_ec.hpp")
+   "include/actsvg/data/odd_pixel_endcap.hpp")
+
+target_link_libraries( actsvg_data INTERFACE actsvg::core)
