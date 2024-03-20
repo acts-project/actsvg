@@ -245,6 +245,10 @@ struct font {
 };
 
 /// The transform struct
+///
+/// This is a style transform, not an object transform,
+/// i.e. it applies to where to draw and modify the object
+/// while displaying
 struct transform {
 
     std::array<scalar, 3> _tr = {0., 0., 0.};

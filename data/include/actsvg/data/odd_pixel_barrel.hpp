@@ -11,6 +11,8 @@
 #include <array>
 #include <vector>
 
+#include "actsvg/core/defs.hpp"
+
 namespace actsvg {
 
 /// This file is generated from the Open Data detector and
@@ -914,6 +916,21 @@ static std::vector<std::array<scalar, 3u>> odd_pixel_barrel = {
     {-21.0795, 64.3311, 148},     {-5.11317, 69.5575, 148},
     {-5.11317, 69.5575, 148.5},   {-21.0795, 64.3311, 148.5},
     {-21.0795, 64.3311, 220.5},   {-5.11317, 69.5575, 220.5}};
+
+using rectangle = std::array<std::array<scalar, 3u>, 4u>;
+
+inline static std::vector<rectangle> generate_barrel_modules() {
+    std::vector<rectangle> modules;
+    size_t number_of_modules = data::odd_pixel_barrel.size() / 4u;
+    modules.reserve(number_of_modules);
+    for (size_t im = 0; im < number_of_modules; ++im) {
+        modules.push_back({data::odd_pixel_barrel[4 * im],
+                           data::odd_pixel_barrel[4 * im + 1],
+                           data::odd_pixel_barrel[4 * im + 2],
+                           data::odd_pixel_barrel[4 * im + 3]});
+    }
+    return modules;
+}
 
 }  // namespace data
 

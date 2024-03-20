@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
-#include "actsvg/data/odd_pixel_ec.hpp"
+#include "actsvg/data/odd_pixel_endcap.hpp"
 #include "actsvg/meta.hpp"
 
 using namespace actsvg;

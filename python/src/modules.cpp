@@ -24,18 +24,19 @@ namespace actsvg::python {
     void add_style_module(context& ctx);
     void add_proto_module(context& ctx);
     void add_display_module(context& ctx);
-
+    void add_examples_module(context& ctx);
 }
 
 PYBIND11_MODULE(pyactsvg, m) {
 
   actsvg::python::context ctx;
   ctx.modules["main"] = m;
-
+  // These modules are always present
   add_core_module(ctx);
   add_io_module(ctx);
   add_style_module(ctx);
   add_proto_module(ctx);
   add_display_module(ctx);
-
+  // Conditionally could be dummy module
+  add_examples_module(ctx);
 }

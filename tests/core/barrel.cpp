@@ -18,22 +18,7 @@
 
 using namespace actsvg;
 
-using rectangle = std::array<std::array<scalar, 3u>, 4u>;
-
-std::vector<rectangle> generate_barrel_modules() {
-    std::vector<rectangle> modules;
-    size_t number_of_modules = data::odd_pixel_barrel.size() / 4u;
-    modules.reserve(number_of_modules);
-    for (size_t im = 0; im < number_of_modules; ++im) {
-        modules.push_back({data::odd_pixel_barrel[4 * im],
-                           data::odd_pixel_barrel[4 * im + 1],
-                           data::odd_pixel_barrel[4 * im + 2],
-                           data::odd_pixel_barrel[4 * im + 3]});
-    }
-    return modules;
-}
-
-auto barrel_modules = generate_barrel_modules();
+auto barrel_modules = data::generate_barrel_modules();
 
 TEST(barrel, x_y_view) {
 

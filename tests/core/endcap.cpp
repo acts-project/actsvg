@@ -14,25 +14,11 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
-#include "actsvg/data/odd_pixel_ec.hpp"
+#include "actsvg/data/odd_pixel_endcap.hpp"
 
 using namespace actsvg;
 
-using trapezoid = std::array<std::array<scalar, 3u>, 4u>;
-
-std::vector<trapezoid> generate_endcap_modules() {
-    std::vector<trapezoid> modules;
-    size_t number_of_modules = data::odd_pixel_ec.size() / 4u;
-    modules.reserve(number_of_modules);
-    for (size_t im = 0; im < number_of_modules; ++im) {
-        modules.push_back(
-            {data::odd_pixel_ec[4 * im], data::odd_pixel_ec[4 * im + 1],
-             data::odd_pixel_ec[4 * im + 2], data::odd_pixel_ec[4 * im + 3]});
-    }
-    return modules;
-}
-
-auto endcap_modules = generate_endcap_modules();
+auto endcap_modules = data::generate_endcap_modules();
 
 TEST(endcap, z_r_view) {
 

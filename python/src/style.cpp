@@ -93,7 +93,18 @@ void add_style_module(context& ctx) {
             .def_readwrite("direction", &style::gradient::_direction)
             .def_readwrite("type", &style::gradient::_type)
             .def_readwrite("stops", &style::gradient::_stops);
-        }
+    }
+
+    {
+        // The transform python class
+        py::class_<style::transform, std::shared_ptr<style::transform>>(
+            s, "transform")
+            .def(py::init<>())
+            .def_readwrite("translate", &style::transform::_tr)
+            .def_readwrite("rotate", &style::transform::_rot)
+            .def_readwrite("scale", &style::transform::_scale)
+            .def_readwrite("skew", &style::transform::_skew);
+    }
 }
 }  // namespace python
 }  // namespace actsvg

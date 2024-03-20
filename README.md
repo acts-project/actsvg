@@ -2,8 +2,7 @@
 
 An SVG based C++17 plotting library for ACTS detectors, surfaces and relations.
 
-This library has itself no dependency, simply for unittesting it relies on `googletest`. For the applications and examples, additionally `Boost` is used.
-
+This library has itself no dependency, simply for unittesting it relies on `googletest`.
 ## Core module
 
 This module has the entire definition and plotting functionality. 
@@ -21,8 +20,8 @@ A view stand-alone files that are produced by the `googletest` based unit testin
 <table>
 <tr>
 <td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_barrel_xy.svg" width=200></td>
-<td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_xy.svg" width=200></td>
-<td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_ec_grid_xy.svg" width=200></td>
+<td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_endcap_xy.svg" width=200></td>
+<td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_pixel_endcap_grid_xy.svg" width=200></td>
 </tr>
 <tr>
 <td width=200><img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/basic_rectangle.svg" width=200></td>
