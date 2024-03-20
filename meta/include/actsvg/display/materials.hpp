@@ -39,6 +39,10 @@ static inline svg::object surface_material(const std::string& id_,
     std::string g_tag = "_grid";
     svg::object g = display::grid(id_ + g_tag, m_._grid);
 
+    if (m_._material_matrix.empty()) {
+        return g;
+    }
+
     std::vector<svg::object> m_info;
 
     for (auto& bin : g._sub_objects) {
@@ -83,11 +87,10 @@ static inline svg::object surface_material(const std::string& id_,
 
         // Connect the text info about the bin to it
         svg::object m_info_text =
-            draw::connected_text(bin_str + "_material_info", m_._info_pos_,
-                                 info, m_._info_font_, style::transform{}, bin);
+            draw::connected_text(bin_str + "_material_info", m_._info_pos, info,
+                                 m_._info_font, style::transform{}, bin);
         m_info.push_back(m_info_text);
     }
-
     // Draw the gradient box
     using stop_value = std::tuple<style::gradient::stop, scalar>;
     std::vector<stop_value> stops;

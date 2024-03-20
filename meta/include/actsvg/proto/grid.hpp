@@ -29,7 +29,10 @@ struct grid {
     /** Type of grid, enum defintion */
     enum type { e_x_y = 0, e_r_phi = 1, e_z_phi = 2 };
 
-    /// Name the type
+    /// Grid name
+    std::string _name = "grid";
+
+    /// Chose the type
     type _type = e_r_phi;
 
     /// The edges in the two given directions, loc0

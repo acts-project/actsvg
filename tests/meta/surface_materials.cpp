@@ -110,7 +110,7 @@ TEST(proto, surface_material_r_phi) {
         style::gradient::stop{0.1, style::color{style::rgb{255, 255, 0}}},
         style::gradient::stop{1., style::color{style::rgb{255, 0, 0}}}};
     m._gradient = gradient;
-    m._info_pos_ = {-200, 200};
+    m._info_pos = {-200, 200};
 
     m._gradient_pos = {200, -150};
     m._gradient_box = {20, 300};

@@ -159,7 +159,7 @@ void add_display_module(context& ctx) {
     }
 
     {
-        /// Select a surfaces according to their vertices in a specific z range
+        /// Select surfaces according to their vertices in a specific z range
         ///
         /// @param ss is the input surface vector
         /// @param val is the value in which should be selected: x,y,z,r,phi,eta
@@ -298,6 +298,17 @@ void add_display_module(context& ctx) {
             return track_views;
         });
     }
+
+    {
+        /// View surface material
+        ///
+        /// @param sm the surface material
+        /// @param view the view string (xy, zphi)
+        ///
+        /// @return a list of objects
+        d.def("surface_material", &display::surface_material);
+    }
+
 }  // namespace actsvg
 
 }  // namespace python

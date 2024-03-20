@@ -12,6 +12,7 @@
 
 #include "actsvg/core/defs.hpp"
 #include "actsvg/proto/grid.hpp"
+#include "actsvg/styles/defaults.hpp"
 
 namespace actsvg {
 
@@ -75,7 +76,7 @@ struct surface_material {
     std::array<std::array<scalar, 2u>, 3u> _material_ranges = {};
 
     /// The gradient
-    style::gradient _gradient = style::gradient{};
+    style::gradient _gradient = defaults::__rgb_gradient;
 
     /// The gradient pos
     point2 _gradient_pos = {0, 0};
@@ -90,11 +91,15 @@ struct surface_material {
     style::font _gradient_font = style::font{};
 
     /// The info position
-    point2 _info_pos_ = {0, 0};
+    point2 _info_pos = {0, 0};
 
     /// The info font
-    style::font _info_font_ = style::font{};
+    style::font _info_font = style::font{};
 
+    /// Evaluate the material ranges
+    void evaluate_material_ranges() {
+        _material_ranges = material_ranges(_material_matrix);
+    }
 };
 
 }  // namespace proto

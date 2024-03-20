@@ -61,6 +61,9 @@ static style::stroke __w_stroke;
 static style::fill __nn_fill;
 static style::stroke __nn_stroke;
 
+// A default gradient: r,g,b
+static style::gradient __rgb_gradient;
+
 /** Static method to create the defaults in situ */
 static bool create_defaults() {
 
@@ -111,7 +114,7 @@ static bool create_defaults() {
 
     // Whites
     __w_fill._fc._rgb = {255, 255, 255};
-    __w_stroke._sc._rgb = {255, 255, 255};;
+    __w_stroke._sc._rgb = {255, 255, 255};
 
     // Nulls
     __nn_fill = style::fill();
@@ -119,6 +122,11 @@ static bool create_defaults() {
     __nn_stroke = style::stroke();
     __nn_stroke._sterile = true;
     __nn_stroke._width = 0.;
+
+    __rgb_gradient = style::gradient();
+    __rgb_gradient._stops = {{0., style::color{style::rgb{255, 0, 0}}},
+                             {0.5, style::color{style::rgb{0, 255, 0}}},
+                             {1., style::color{style::rgb{0, 0, 255}}}};
 
     return true;
 }
