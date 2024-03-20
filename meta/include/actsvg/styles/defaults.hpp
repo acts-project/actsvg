@@ -115,7 +115,6 @@ static bool create_defaults() {
     // Whites
     __w_fill._fc._rgb = {255, 255, 255};
     __w_stroke._sc._rgb = {255, 255, 255};
-    ;
 
     // Nulls
     __nn_fill = style::fill();
