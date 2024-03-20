@@ -37,6 +37,6 @@ PYBIND11_MODULE(pyactsvg, m) {
   add_style_module(ctx);
   add_proto_module(ctx);
   add_display_module(ctx);
-  // Conditionally could be dummy module
+  // Conditionally: could be dummy module
   add_examples_module(ctx);
 }
