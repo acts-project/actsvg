@@ -37,6 +37,11 @@ void add_proto_module(context& ctx) {
         auto s =
             py::class_<surface, std::shared_ptr<surface>>(p, "surface")
                 .def(py::init<>())
+                .def_readwrite("name", &surface::_name)
+                .def_readwrite("type", &surface::_type)
+                .def_readwrite("vertices", &surface::_vertices)
+                .def_readwrite("fill", &surface::_fill)
+                .def_readwrite("stroke", &surface::_stroke)
                 .def_static(
                     "from_polygon",
                     [](const std::string& name, const point3_collection& pcs,

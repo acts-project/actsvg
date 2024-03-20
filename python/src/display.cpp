@@ -31,16 +31,15 @@ namespace {
 /// @tparam view_type
 ///
 /// @param ss the surfaces, @note they will be copied to apply the style
+/// @param apply_style is the boolean weather the style should be applied or not
 /// @param f is the fill object
 /// @param str is the stroke object
-/// @param apply_style is the boolean weather the style should be applied or not
 ///
 /// @return the surfaces
 template <typename view_type>
-auto view_surfaces(const std::vector<surface>& ss,
+auto view_surfaces(const std::vector<surface>& ss, bool apply_style = true,
                    const style::fill& f = __s_fill,
-                   const style::stroke& str = __s_stroke,
-                   bool apply_style = true) {
+                   const style::stroke& str = __s_stroke) {
 
     view_type vw;
     // Loop over the surfaces and view them
@@ -229,11 +228,11 @@ void add_display_module(context& ctx) {
               [](const std::vector<surface>& ss, const std::string& view) {
                   // xy view is chosen
                   if (view == "xy") {
-                      return view_surfaces<views::x_y>(ss);
+                      return view_surfaces<views::x_y>(ss, false);
                   }
                   // zphi view is chosen
                   if (view == "zphi") {
-                      return view_surfaces<views::z_phi>(ss);
+                      return view_surfaces<views::z_phi>(ss, false);
                   }
                   return std::vector<svg::object>{};
               });
@@ -251,11 +250,11 @@ void add_display_module(context& ctx) {
                  const style::stroke str, const std::string& view) {
                   // xy view is chosen
                   if (view == "xy") {
-                      return view_surfaces<views::x_y>(ss, f, str, true);
+                      return view_surfaces<views::x_y>(ss, true, f, str);
                   }
                   // zphi view is chosen
                   if (view == "zphi") {
-                      return view_surfaces<views::z_phi>(ss, f, str, true);
+                      return view_surfaces<views::z_phi>(ss, true, f, str);
                   }
                   return std::vector<svg::object>{};
               });
