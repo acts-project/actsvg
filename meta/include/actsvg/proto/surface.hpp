@@ -77,8 +77,8 @@ struct surface {
     /// And their measures
     std::vector<scalar> _measures = {};
 
-	/// Decoration
-	std::map<std::string, svg::object> _decorations;
+    /// Decoration
+    std::map<std::string, svg::object> _decorations;
 
     /// A (potential) template for this surface
     svg::object _template_object;
@@ -106,7 +106,7 @@ struct surface {
         s._stroke = t_._stroke;
         s._transform = t_._transform;
         s._template_object = o_;
-		s._decorations = t_._decorations;
+        s._decorations = t_._decorations;
         return s;
     }
 };

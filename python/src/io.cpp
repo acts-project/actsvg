@@ -31,7 +31,7 @@ using surface = proto::surface<point3_collection>;
 void add_io_module(context& ctx) {
 
     auto& m = ctx.get("main");
-    // The io module: acts.io
+    // The io module: actsvg.io
     auto io = m.def_submodule("io");
 
     {
@@ -48,7 +48,7 @@ void add_io_module(context& ctx) {
             });
     }
 
-    // The obj submodule: acts.io.obj
+    // The obj submodule: actsvg.io.obj
     auto obj = io.def_submodule("obj");
 
     // Adding a reader function from obj files for polygons
