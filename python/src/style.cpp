@@ -7,6 +7,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "actsvg/core/style.hpp"
+#include "actsvg/styles/defaults.hpp"
 
 #include <pybind11/eval.h>
 #include <pybind11/pybind11.h>
@@ -105,6 +106,15 @@ void add_style_module(context& ctx) {
             .def_readwrite("scale", &style::transform::_scale)
             .def_readwrite("skew", &style::transform::_skew);
     }
+{
+    // The style defaults
+    auto d = s.def_submodule("defaults");
+
+    d.def("sensitive_fill", [](){ return defaults::__s_fill; });
+    d.def("sensitive_stroke", [](){ return defaults::__s_stroke; });
+    
+}
+
 }
 }  // namespace python
 }  // namespace actsvg

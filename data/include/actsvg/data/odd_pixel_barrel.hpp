@@ -917,7 +917,7 @@ static std::vector<std::array<scalar, 3u>> odd_pixel_barrel = {
     {-5.11317, 69.5575, 148.5},   {-21.0795, 64.3311, 148.5},
     {-21.0795, 64.3311, 220.5},   {-5.11317, 69.5575, 220.5}};
 
-using rectangle = std::array<std::array<scalar, 3u>, 4u>;
+using rectangle = std::vector<std::array<scalar, 3u>>;
 
 inline static std::vector<rectangle> generate_barrel_modules() {
     std::vector<rectangle> modules;

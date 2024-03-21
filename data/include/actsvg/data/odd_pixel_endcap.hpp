@@ -287,7 +287,7 @@ static std::vector<std::vector<size_t>> odd_pixel_endcap_assoc = {
     {22, 27, 28, 29}, {22, 23, 28, 29, 30}, {23, 29, 30}, {2, 23, 29, 30, 31},
     {2, 30, 31, 32},  {2, 3, 31, 32, 33},   {3, 32, 33},  {3, 4, 32, 33, 34}};
 
-using trapezoid = std::array<std::array<scalar, 3u>, 4u>;
+using trapezoid = std::vector<std::array<scalar, 3u>>;
 
 inline static std::vector<trapezoid> generate_endcap_modules() {
     std::vector<trapezoid> modules;

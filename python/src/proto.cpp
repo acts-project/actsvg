@@ -34,32 +34,29 @@ void add_proto_module(context& ctx) {
 
     {
         // The python surface class
-        py::class_<surface, std::shared_ptr<surface>>(p, "surface")
-            .def(py::init<>());
-    }
-
-    {
-        /// Create a polygon surface from a point3 collection
-        ///
-        /// @param name is the name of the created object
-        /// @param pcs is the point3 collection
-        /// @param f is the fill style
-        /// @param s is the stroke style
-        p.def(
-            "create_polygon",
-            [](const std::string& name, const point3_collection& pcs,
-               const style::fill& f, const style::stroke& s) {
-                // Create the surface
-                surface sf{};
-                sf._name = name;
-                sf._type = surface::type::e_polygon;
-                sf._vertices = pcs;
-                sf._fill = f;
-                sf._stroke = s;
-                return sf;
-            },
-            py::arg("name"), py::arg("points"), py::arg("fill"),
-            py::arg("stroke"));
+        auto s =
+            py::class_<surface, std::shared_ptr<surface>>(p, "surface")
+                .def(py::init<>())
+                .def_readwrite("name", &surface::_name)
+                .def_readwrite("type", &surface::_type)
+                .def_readwrite("vertices", &surface::_vertices)
+                .def_readwrite("fill", &surface::_fill)
+                .def_readwrite("stroke", &surface::_stroke)
+                .def_static(
+                    "from_polygon",
+                    [](const std::string& name, const point3_collection& pcs,
+                       const style::fill& f, const style::stroke& s) {
+                        // Create the surface
+                        surface sf{};
+                        sf._name = name;
+                        sf._type = surface::type::e_polygon;
+                        sf._vertices = pcs;
+                        sf._fill = f;
+                        sf._stroke = s;
+                        return sf;
+                    },
+                    py::arg("name"), py::arg("points"), py::arg("fill"),
+                    py::arg("stroke"));
     }
 
     {
