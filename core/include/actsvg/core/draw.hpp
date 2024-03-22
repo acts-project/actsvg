@@ -66,7 +66,6 @@ namespace draw {
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
- *
  * @param transform_ is an optional transform of the object
  *
  * @note transform is directly applied and not attached as property
@@ -118,7 +117,7 @@ static inline svg::object line(
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
- *
+ * @param transform_ is an optional transform of the object
  *
  * @note transform is directly applied and not attached as property
  * for raw drawing objects
@@ -170,7 +169,7 @@ static inline svg::object arc(
 /** Draw a Bezier path
  * input is defined as pairs of position, momentum
  *
- * @parm id_ is the identification
+ * @param id_ is the identification
  * @param xds_ is the collection of point, direction tuples
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
