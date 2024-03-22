@@ -46,7 +46,7 @@ void add_core_module(context& ctx) {
     auto d = m.def_submodule("draw");
 
     {
-        /// Draw a line
+        /// Draw a line - name the arguments
         d.def("line", &draw::line);
 
         /// Draw an arc

@@ -169,7 +169,7 @@ static inline svg::object arc(
 /** Draw a Bezier path
  * input is defined as pairs of position, momentum
  *
- * @parm id_ is the identification
+ * @param id_ is the identification
  * @param xds_ is the collection of point, direction tuples
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
