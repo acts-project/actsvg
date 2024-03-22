@@ -66,7 +66,6 @@ namespace draw {
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
- *
  * @param transform_ is an optional transform of the object
  *
  * @note transform is directly applied and not attached as property
@@ -118,7 +117,7 @@ static inline svg::object line(
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
- *
+ * @param transform_ is an optional transform of the object
  *
  * @note transform is directly applied and not attached as property
  * for raw drawing objects
