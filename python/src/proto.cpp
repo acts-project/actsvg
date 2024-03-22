@@ -23,6 +23,14 @@ namespace python {
 
 using surface = proto::surface<point3_collection>;
 
+using channel1 = proto::channel<1u>;
+
+using channel2 = proto::channel<2u>;
+
+using cluster1 = proto::cluster<1u>;
+
+using cluster2 = proto::cluster<2u>;
+
 /// @brief  Adding the proto module to the
 /// python bindings
 ///
@@ -147,6 +155,46 @@ void add_proto_module(context& ctx) {
                    return psm;
                });
     }
+
+    {
+        // The channel class: 1D 
+        py::class_<channel1>(p, "channel1")
+            .def(py::init<>())
+            .def_readwrite("_cid", &channel1::_cid)
+            .def_readwrite("_data", &channel1::_data);
+
+        // The cluster class: 1D
+        py::class_<cluster1>(p, "cluster1")
+            .def(py::init<>())
+            .def_readwrite("_type", &cluster1::_type)
+            .def_readwrite("_coords", &cluster1::_coords)
+            .def_readwrite("_channels", &cluster1::_channels)
+            .def_readwrite("_measurement", &cluster1::_measurement)
+            .def_readwrite("_variance", &cluster1::_variance)
+            .def_readwrite("_correlation", &cluster1::_correlation)
+            .def_readwrite("_truth", &cluster1::_truth)
+            .def_readwrite("_mc", &cluster1::_mc);
+
+        // The channel class: 2D
+        py::class_<channel2>(p, "channel2")
+            .def(py::init<>())
+            .def_readwrite("_cid", &channel2::_cid)
+            .def_readwrite("_data", &channel2::_data);
+
+        // The cluster class: 2D
+        py::class_<cluster2>(p, "cluster2")
+            .def(py::init<>())
+            .def_readwrite("_type", &cluster2::_type)
+            .def_readwrite("_coords", &cluster2::_coords)
+            .def_readwrite("_channels", &cluster2::_channels)
+            .def_readwrite("_measurement", &cluster2::_measurement)
+            .def_readwrite("_variance", &cluster2::_variance)
+            .def_readwrite("_correlation", &cluster2::_correlation)
+            .def_readwrite("_truth", &cluster2::_truth)
+            .def_readwrite("_mc", &cluster2::_mc);                
+
+    }
+
 }
 
 }  // namespace python
