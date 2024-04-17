@@ -23,7 +23,7 @@ TEST(views, xy) {
     std::vector<point3> p3s = {{1., 2., 0.}, {3., 4., 0.}, {7., 8., 0.}};
 
     views::x_y x_y_view;
-    auto c = x_y_view(p3s);
+    auto c = x_y_view.path(p3s);
 
     ASSERT_TRUE(c.size() == 3u);
 
@@ -35,7 +35,7 @@ TEST(views, zr) {
     std::vector<point3> p3s = {{1., 0., 3.}, {0., 4., 0.}, {2., 2., 2.}};
 
     views::z_r z_r_view;
-    auto c = z_r_view(p3s);
+    auto c = z_r_view.path(p3s);
 
     ASSERT_TRUE(c.size() == 3u);
 
@@ -48,7 +48,7 @@ TEST(views, zphi) {
     std::vector<point3> p3s = {{1., 0., 3.}, {0., 4., 0.}, {2., 2., 2.}};
 
     views::z_phi z_phi_view;
-    auto c = z_phi_view(p3s);
+    auto c = z_phi_view.path(p3s);
 
     ASSERT_TRUE(c.size() == 3u);
 
@@ -61,7 +61,7 @@ TEST(views, zrphi) {
 
     views::z_rphi z_rphi_view;
     z_rphi_view._fixed_r = 2.;
-    auto c = z_rphi_view(p3s);
+    auto c = z_rphi_view.path(p3s);
 
     ASSERT_TRUE(c.size() == 3u);
 

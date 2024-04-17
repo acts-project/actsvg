@@ -37,7 +37,7 @@ TEST(barrel, x_y_view) {
     std::vector<svg::object> modules;
     for (auto [m, bm] : utils::enumerate(barrel_modules)) {
         std::string m_id = std::string("m") + std::to_string(m);
-        auto module_contour = x_y_view(bm);
+        auto module_contour = x_y_view.path(bm);
         modules.push_back(
             draw::polygon(m_id, module_contour, module_color, stroke_color));
     }
@@ -74,7 +74,7 @@ TEST(barrel, z_phi_view) {
     std::vector<svg::object> modules;
     for (auto [m, bm] : utils::enumerate(barrel_modules)) {
         std::string m_id = std::string("m") + std::to_string(m);
-        auto module_contour = z_phi_view(bm);
+        auto module_contour = z_phi_view.path(bm);
         modules.push_back(draw::polygon(m_id, module_contour, module_color,
                                         stroke_color, scale));
     }
@@ -122,7 +122,7 @@ TEST(barrel, z_phi_view_grid) {
     std::vector<svg::object> modules;
     for (auto [m, bm] : utils::enumerate(barrel_modules)) {
         std::string m_id = std::string("m") + std::to_string(m);
-        auto module_contour = z_phi_view(bm);
+        auto module_contour = z_phi_view.path(bm);
         modules.push_back(draw::polygon(m_id, module_contour, module_color,
                                         stroke_color, scale));
     }

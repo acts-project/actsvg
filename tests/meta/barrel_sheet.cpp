@@ -223,7 +223,7 @@ TEST(display, barrel_x_y_view) {
         for (auto [m, bm] : utils::enumerate(surfaces)) {
             std::string m_id =
                 std::string("m_") + std::to_string(s) + "_" + std::to_string(m);
-            auto module_contour = x_y_view(bm._vertices);
+            auto module_contour = x_y_view.path(bm._vertices);
             modules.push_back(draw::polygon(m_id, module_contour, module_color,
                                             stroke_color));
         }

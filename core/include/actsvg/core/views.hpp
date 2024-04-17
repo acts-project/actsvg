@@ -54,8 +54,21 @@ struct x_y {
     /// Make it screen obvious
     std::array<std::string, 2> _axis_names = {"x", "y"};
 
-    /** A single planar view operator, asuming a contour in
-     *  x/y plane
+    /** A planar view operator, asuming a contour in x/y plane
+     *
+     * @tparam point3 is a 3D-point type assuming [] operators exit
+     *
+     * @param point_ the point global coordinates
+     *
+     * @return a 2D point
+     */
+    template <typename point3_type>
+    point2 point(const point3_type &point_) const {
+        return point2{static_cast<scalar>(point_[0]),
+                      static_cast<scalar>(point_[1])};
+    }
+
+    /** A planar view operator, asuming a contour in x/y plane
      *
      * @tparam point3_container is a 3D-point container, where elements
      * of a single p3 object can be accessed via [] operators
@@ -66,12 +79,12 @@ struct x_y {
      * @return a 2D contour array
      */
     template <typename point3_container>
-    contour operator()(const point3_container &vertices_) const {
+    contour path(const point3_container &vertices_) const {
         contour c;
         c.reserve(vertices_.size());
         for (const auto &v : vertices_) {
             // flip y coordinate */
-            c.push_back({static_cast<scalar>(v[0]), static_cast<scalar>(v[1])});
+            c.push_back(point(v));
         }
         return c;
     }
@@ -86,6 +99,20 @@ struct z_r {
     /// Make it screen obvious
     std::array<std::string, 2> _axis_names = {"z", "r"};
 
+    /** A r-z view operator for single objects
+     *
+     * @tparam point3 is a 3D-point type assuming [] operators exit
+     *
+     * @param point_ the point global coordinates
+     *
+     * @return a 2D point
+     */
+    template <typename point3_type>
+    point2 point(const point3_type &point_) const {
+        scalar r = std::sqrt(point_[0] * point_[0] + point_[1] * point_[1]);
+        return point2{static_cast<scalar>(point_[2]), r};
+    }
+
     /** A r-z view operator
      *
      * @tparam point3_container is a 3D-point container, where elements
@@ -96,13 +123,12 @@ struct z_r {
      * @return a 2D contour array
      */
     template <typename point3_container>
-    contour operator()(const point3_container &vertices_) const {
+    contour path(const point3_container &vertices_) const {
         // Fill the contour accordingly
         contour c;
         c.reserve(vertices_.size());
         for (const auto &v : vertices_) {
-            scalar r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
-            c.push_back({static_cast<scalar>(v[2]), r});
+            c.push_back(point(v));
         }
         return c;
     }
@@ -122,6 +148,20 @@ struct z_phi {
 
     /** A z-phi view operator
      *
+     * @tparam point3 is a 3D-point type assuming [] operators exit
+     *
+     * @param point_ the point global coordinates
+     *
+     * @return a 2D point
+     */
+    template <typename point3_type>
+    point2 point(const point3_type &point_) const {
+        scalar phi = std::atan2(point_[1], point_[0]);
+        return point2{static_cast<scalar>(point_[2]), phi};
+    }
+
+    /** A z-phi view operator
+     *
      * @tparam point3_container is a 3D-point container, where elements
      * of a single p3 object can be accessed via [] operators
      *
@@ -131,7 +171,7 @@ struct z_phi {
      * @return a 2D contour array
      */
     template <typename point3_container>
-    contour operator()(const point3_container &vertices_) const {
+    contour path(const point3_container &vertices_) const {
 
         // Fill the contour accordingly
         contour c;
@@ -140,9 +180,9 @@ struct z_phi {
         phi_values.reserve(vertices_.size());
 
         for (const auto &v : vertices_) {
-            scalar phi = std::atan2(v[1], v[0]);
-            phi_values.push_back(phi);
-            c.push_back({static_cast<scalar>(v[2]), phi});
+            auto p2 = point(v);
+            phi_values.push_back(v[1u]);
+            c.push_back(p2);
         }
         // Run the phi detection and protection
         if (_protect_phi) {
@@ -178,6 +218,24 @@ struct z_rphi {
 
     /** A z-rphi view operator
      *
+     * @tparam point3 is a 3D-point type assuming [] operators exit
+     *
+     * @param point_ the point global coordinates
+     *
+     * @return a 2D point
+     */
+    template <typename point3_type>
+    point2 point(const point3_type &point_) const {
+        scalar r = _fixed_r;
+        if (std::isnan(r)) {
+            r = std::sqrt(point_[0] * point_[0] + point_[1] * point_[1]);
+        }
+        scalar phi = std::atan2(point_[1], point_[0]);
+        return point2{point_[2], r * phi};
+    }
+
+    /** A z-rphi view operator
+     *
      * @tparam point3_container is a 3D-point container, where elements
      * of a single p3 object can be accessed via [] operators
      *
@@ -186,17 +244,12 @@ struct z_rphi {
      * @return a 2D contour array
      */
     template <typename point3_container>
-    contour operator()(const point3_container &vertices_) const {
+    contour path(const point3_container &vertices_) const {
         // Fill the contour accordingly
         contour c;
         c.reserve(vertices_.size());
         for (const auto &v : vertices_) {
-            scalar r = _fixed_r;
-            if (std::isnan(r)) {
-                r = std::sqrt(v[0] * v[0] + v[1] * v[1]);
-            }
-            scalar phi = std::atan2(v[1], v[0]);
-            c.push_back({static_cast<scalar>(v[2]), r * phi});
+            c.push_back(point(v));
         }
         return c;
     }
