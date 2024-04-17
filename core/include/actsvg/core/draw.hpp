@@ -166,6 +166,62 @@ static inline svg::object arc(
     return a;
 }
 
+/** Draw a Polyline path
+ *
+ * @param id_ is the identification
+ * @param points_ are the points of the polyline
+ * @param stroke_ is the stroke style
+ * @param transform_ is the optional transform
+ *
+ * @return an object representing the polyline
+ */
+static inline svg::object polyline(
+    const std::string &id_, const std::vector<point2> &points_,
+    const style::stroke &stroke = style::stroke(),
+    const style::transform &transform_ = style::transform()) {
+
+    svg::object p;
+    p._tag = "polyline";
+    p._id = id_;
+
+    // Apply the transform & scale
+    scalar tx = transform_._tr[0];
+    scalar ty = transform_._tr[1];
+    scalar sx = transform_._scale[0];
+    scalar sy = transform_._scale[1];
+
+    std::string svg_points_string;
+    std::vector<point2> display_vertices;
+    display_vertices.reserve(points_.size());
+    for (auto v : points_) {
+        // Add display scaling
+        v[0] *= sx;
+        v[1] *= sy;
+        // Add scaled * translation
+        v[0] += sx * tx;
+        v[1] += sy * ty;
+        v[1] *= -1;
+        // Per vertex range estimation
+        detail::adapt_range(p, {v});
+
+        // Convert to string attributes, y-switch
+        svg_points_string += utils::to_string(v[0]);
+        svg_points_string += ",";
+        svg_points_string += utils::to_string(v[1]);
+        svg_points_string += " ";
+    }
+
+    // Barycenter
+    p._barycenter = utils::barycenter(display_vertices);
+    // Fill the points attributes
+    p._attribute_map["points"] = svg_points_string;
+    // Attach stroke
+    p._stroke = stroke;
+
+    // Return
+    return p;
+}
+
 /** Draw a Bezier path
  * input is defined as pairs of position, momentum
  *

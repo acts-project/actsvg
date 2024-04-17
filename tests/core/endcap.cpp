@@ -38,7 +38,7 @@ TEST(endcap, z_r_view) {
     std::vector<svg::object> modules;
     for (auto [m, ecm] : utils::enumerate(endcap_modules)) {
         std::string m_id = std::string("m") + std::to_string(m);
-        auto module_contour = z_r_view(ecm);
+        auto module_contour = z_r_view.path(ecm);
         modules.push_back(
             draw::polygon(m_id, module_contour, module_color, stroke_color));
     }
@@ -76,7 +76,7 @@ TEST(endcap, x_y_view) {
     for (auto [m, ecm] : utils::enumerate(endcap_modules)) {
         std::string m_id = std::string("m") + std::to_string(m);
         std::string t_id = std::string("t") + std::to_string(m);
-        auto module_contour = x_y_view(ecm);
+        auto module_contour = x_y_view.path(ecm);
         auto module =
             draw::polygon(m_id, module_contour, module_color, stroke_color);
         modules.push_back(module);
@@ -127,7 +127,7 @@ TEST(endcap, x_y_view_grid) {
     std::vector<svg::object> modules;
     for (auto [m, ecm] : utils::enumerate(endcap_modules)) {
         std::string m_id = std::string("m") + std::to_string(m);
-        auto module_contour = x_y_view(ecm);
+        auto module_contour = x_y_view.path(ecm);
         modules.push_back(
             draw::polygon(m_id, module_contour, module_color, stroke_color));
     }

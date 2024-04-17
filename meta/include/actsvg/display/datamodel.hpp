@@ -15,6 +15,7 @@
 
 #include "actsvg/core.hpp"
 #include "actsvg/proto/cluster.hpp"
+#include "actsvg/proto/track.hpp"
 
 namespace actsvg {
 
@@ -307,6 +308,99 @@ static inline std::pair<svg::object, svg::object> cluster(
     }
 
     return {cluster_group, grid_area};
+}
+
+/** Draw a trajectory object
+ *
+ * @tparam trajectory_type is the trajectory type
+ * @tparam view_type is the view type
+ *
+ * @param id_ is the identification tag
+ * @param trajectory_ is the trajectory object
+ * @param view_ is the view object
+ * @param bezier_ is the bezier curve flag
+ */
+template <typename trajectory_type, typename view_type>
+static inline svg::object trajectory(const std::string& id,
+                                     const trajectory_type& trajectory_,
+                                     const view_type& view_,
+                                     bool bezier_ = false) {
+    svg::object trajectory_group;
+    trajectory_group._tag = "g";
+    trajectory_group._id = id;
+
+    std::vector<point2> points;
+    points.reserve(trajectory_._path.size());
+    std::vector<point2> directions;
+    directions.reserve(trajectory_._path.size());
+    for (const auto& [pos, dir] : trajectory_._path) {
+        points.push_back(view_.point(pos));
+        if (dir.has_value()) {
+            directions.push_back(view_.point(dir.value()));
+        }
+    }
+
+    // Draw the line as polyline when there are no directions
+    if (directions.empty() or !bezier_) {
+        trajectory_group.add_object(
+            draw::polyline(id + "_path", points, trajectory_._path_stroke));
+    } else {
+        // Draw the line as a path with directions as bezier curve
+    }
+
+    // Add origin if configured
+    if (trajectory_._origin_size > 0.) {
+        trajectory_group.add_object(
+            draw::circle(id + "_origin", view_.point(trajectory_._origin),
+                         trajectory_._origin_size, trajectory_._origin_fill,
+                         trajectory_._origin_stroke));
+    }
+
+    // Add arrow head if configured
+    if (trajectory_._path_arrow._size > 0. and not directions.empty()) {
+        point2 arrow_pos = points.back();
+        point2 arrow_dir = directions.back();
+        scalar arrow_phi = std::atan2(arrow_dir[1], arrow_dir[0]);
+        trajectory_group.add_object(draw::marker(
+            id + "_arrow", arrow_pos, trajectory_._path_arrow, arrow_phi));
+    }
+
+    // Return the trajectory group
+    return trajectory_group;
+}
+
+/** Draw a seed object
+ *
+ * @tparam seed_type is the seed type
+ * @tparam view_type is the view type
+ *
+ * @param id_ is the identification tag
+ * @param seed_ is the seed object
+ * @param view_ is the view object
+ *
+ */
+template <typename seed_type, typename view_type>
+static inline svg::object seed(const std::string& id_, const seed_type& seed_,
+                               const view_type& view_) {
+    svg::object seed_group;
+    seed_group._tag = "g";
+    seed_group._id = id_;
+
+    // Draw the tranjectory if it exist
+    if (seed_._trajectory.has_value()) {
+        auto traj = trajectory(id_ + "_traj", seed_._trajectory.value(), view_);
+        seed_group.add_object(traj);
+    }
+
+    // Draw the space points
+    for (auto [is, sp] : utils::enumerate(seed_._space_points)) {
+        auto pos = view_.point(sp);
+        seed_group.add_object(draw::circle(
+            id_ + "_sp_" + std::to_string(is), pos, seed_._space_point_size,
+            seed_._space_point_fill, seed_._space_point_stroke));
+    }
+
+    return seed_group;
 }
 
 }  // namespace display

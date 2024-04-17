@@ -8,8 +8,10 @@ actsvg_add_test( meta
   "grid.cpp"
   "wire_chamber.cpp"
   "portal.cpp"
+  "seeds.cpp"
   "surface_sheet.cpp"
   "surface_materials.cpp"
   "surfaces.cpp"
+  "trajectories.cpp"
   "volume.cpp"
 LINK_LIBRARIES GTest::gtest_main actsvg::core actsvg::meta actsvg::data)

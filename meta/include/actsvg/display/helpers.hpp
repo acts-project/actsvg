@@ -112,7 +112,7 @@ views::contour range_contour(const surface_type& s_,
         contour = {bbl, bbr};
     } else if (not s_._vertices.empty()) {
         // Plain contours are present
-        contour = view(s_._vertices);
+        contour = view.path(s_._vertices);
         if (not fs_) {
             std::for_each(contour.begin(), contour.end(), [&](auto& v) {
                 scalar alpha = s_._transform._rot[0];
@@ -142,7 +142,7 @@ views::contour range_contour(const surface_type& s_,
         point3 F = {ro * cos_phi_low, ro * sin_phi_low, 0.};
 
         std::vector<point3> vertices_disc = {A, B, C, D, E, F};
-        contour = view(vertices_disc);
+        contour = view.path(vertices_disc);
     } else {
         throw std::invalid_argument(
             "surface_sheet_xy(...) - could not estimate range.");

@@ -202,7 +202,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             s._active = view_active;
             return s;
         }
-        auto view_vertices = v_(s_._vertices);
+        auto view_vertices = v_.path(s_._vertices);
 
         if constexpr (std::is_same_v<view_type, views::z_rphi>) {
             // Check if we have to split the surface in phi and
@@ -254,7 +254,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                             n_vertices.push_back(add);
                         }
 
-                        auto p_view_vertices = v_(p_vertices);
+                        auto p_view_vertices = v_.path(p_vertices);
                         auto p_middle = p_view_vertices.back();
                         p_middle[1u] = static_cast<scalar>(
                             1.5 * p_view_vertices.back()[1u] -
@@ -267,7 +267,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                                                p_middle);
 
                         auto s_n = draw::polygon(id_ + std::string("_n_split"),
-                                                 v_(n_vertices), s_._fill,
+                                                 v_.path(n_vertices), s_._fill,
                                                  s_._stroke, draw_transform);
 
                         auto s_p = draw::polygon(id_ + std::string("_p_split"),
@@ -304,7 +304,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     n_vertices.push_back(n4);
 
                     auto s_n = draw::polygon(id_ + std::string("_n_split"),
-                                             v_(n_vertices), s_._fill,
+                                             v_.path(n_vertices), s_._fill,
                                              s_._stroke, draw_transform);
                     // Split art on positive side
                     auto p4 = p_vertices[0u];
@@ -318,7 +318,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     p_vertices.push_back(p3);
                     p_vertices.push_back(p4);
                     // Create the wiggle out (on view to not fall into phi trap)
-                    auto p_view_vertices = v_(p_vertices);
+                    auto p_view_vertices = v_.path(p_vertices);
                     const auto& p_v_1 = p_view_vertices[1u];
                     const auto& p_v_2 = p_view_vertices[2u];
                     auto& p_v_3 = p_view_vertices[3u];
@@ -450,7 +450,7 @@ svg::object portal_link(const std::string& id_,
     } else {
         typename portal_type::container_type start_end_3d = {link_._start,
                                                              link_._end};
-        auto start_end = v_(start_end_3d);
+        auto start_end = v_.path(start_end_3d);
 
         l.add_object(draw::arrow(id_ + "_arrow", start_end[0u], start_end[1u],
                                  link_._stroke, link_._start_marker,
@@ -506,7 +506,7 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
 
     // The volume shape - only rz view currently supported
     if (not dv_._vertices.empty() and std::is_same_v<view_type, views::z_r>) {
-        auto view_vertices = v_(dv_._vertices);
+        auto view_vertices = v_.path(dv_._vertices);
         auto pv = draw::polygon(id_ + "_volume", view_vertices, dv_._fill,
                                 dv_._stroke, dv_._transform);
         v.add_object(pv);
