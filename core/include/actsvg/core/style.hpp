@@ -153,7 +153,7 @@ struct stroke {
     /// Nothing is written out
     bool _sterile = false;
 
-    /// @brief Contructor for stroke 
+    /// @brief Contructor for stroke
     /// @param c_ the color of the stroke
     /// @param w_ the with of the stroke
     /// @param d_ the dashed harray of the stroke
@@ -258,6 +258,14 @@ struct transform {
 
     bool _sterile = false;
 
+    /** Test if it is a identity/sterile transform */
+    bool is_identity() const {
+        return _sterile or
+               (_tr[0] == 0. and _tr[1] == 0. and _rot[0] == 0. and
+                _rot[1] == 0. and _rot[2] == 0. and _skew[0] == 0. and
+                _skew[1] == 0. and _scale[0] == 1. and _scale[1] == 1.);
+    }
+
     /** Apply to a point
      *
      * @param p_ the point to be transformed
@@ -347,7 +355,6 @@ struct marker {
     fill _fill = fill{{{0, 0, 0}}};
 
     stroke _stroke = stroke();
-
 };
 
 // The axis marker types

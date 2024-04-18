@@ -336,7 +336,12 @@ static inline svg::object trajectory(const std::string& id,
     for (const auto& [pos, dir] : trajectory_._path) {
         points.push_back(view_.point(pos));
         if (dir.has_value()) {
-            directions.push_back(view_.point(dir.value()));
+            point2 dir2 = view_.point(dir.value());
+            // normalize the direction
+            scalar norm = std::sqrt(dir2[0] * dir2[0] + dir2[1] * dir2[1]);
+            dir2[0] /= norm;
+            dir2[1] /= norm;
+            directions.push_back(view_.point(dir2));
         }
     }
 

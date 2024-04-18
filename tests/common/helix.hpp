@@ -64,7 +64,8 @@ inline static proto::trajectory<point3_type> generate_helix(
         // Create the current position
         point3_type p{x, y, z};
         // Create the direction
-        point3_type d{-std::sin(phi), std::cos(phi), direction_[2]};
+        point3_type d{-std::sin(phi + phi0), std::cos(phi + phi0),
+                      direction_[2]};
         trj._path.push_back({p, d});
     }
     // Return the trajectory

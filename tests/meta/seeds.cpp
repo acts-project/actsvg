@@ -43,6 +43,7 @@ TEST(proto, seeds_single_xy) {
     trj._origin_fill = defaults::__g_fill;
     trj._origin_stroke = style::stroke{style::color{{0, 0, 0}}, 0.5};
     trj._path_stroke = style::stroke{style::color{{0, 255, 0}}, 0.5};
+    trj._path_arrow = style::marker{"<<", 3., style::color{{0, 255, 0}}};
 
     proto::seed<point3> seed;
     scalar s0x = 30. * std::cos(0.3 * M_PI);
