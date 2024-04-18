@@ -190,10 +190,12 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
     }
 
     // Attach the styles: fill, stroke, transform
-    if (not o_._sterile and o_._tag != "g") {
+    if (not o_._sterile) {
         o_._fill.attach_attributes(o_copy);
         o_._stroke.attach_attributes(o_copy);
-        o_._transform.attach_attributes(o_copy);
+        if (not o_._transform.is_identity()) {
+            o_._transform.attach_attributes(o_copy);
+        }
     }
 
     // The attribute map
@@ -273,8 +275,8 @@ struct file {
      * @param os_ is the vector of objects
      **/
     void add_objects(const std::vector<svg::object> &os_) {
-        // Add the objects one by one 
-        for (const auto& o_  : os_)
+        // Add the objects one by one
+        for (const auto &o_ : os_)
             if (o_._active) {
                 _objects.push_back(o_);
             }
