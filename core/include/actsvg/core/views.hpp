@@ -88,6 +88,21 @@ struct x_y {
         }
         return c;
     }
+
+    /** A planar view operator, asuming a contour in x/y plane
+     *
+     * @tparam point3_container is a 3D-point container, where elements
+     * of a single p3 object can be accessed via [] operators
+     *
+     * @param vertices_ the vertices of the surface, they are
+     * assumed to be in global/display coorindates
+     *
+     * @return a 2D contour array
+     */
+    template <typename point3_container>
+    contour operator()(const point3_container &vertices_) const {
+        return path(vertices_);
+    }
 };
 
 /// z_r projection view
@@ -131,6 +146,21 @@ struct z_r {
             c.push_back(point(v));
         }
         return c;
+    }
+
+    /** A planar view operator
+     *
+     * @tparam point3_container is a 3D-point container, where elements
+     * of a single p3 object can be accessed via [] operators
+     *
+     * @param vertices_ the vertices of the surface, they are
+     * assumed to be in global/display coorindates
+     *
+     * @return a 2D contour array
+     */
+    template <typename point3_container>
+    contour operator()(const point3_container &vertices_) const {
+        return path(vertices_);
     }
 };
 
@@ -202,6 +232,21 @@ struct z_phi {
         }
         return c;
     }
+
+    /** A planar view operator
+     *
+     * @tparam point3_container is a 3D-point container, where elements
+     * of a single p3 object can be accessed via [] operators
+     *
+     * @param vertices_ the vertices of the surface, they are
+     * assumed to be in global/display coorindates
+     *
+     * @return a 2D contour array
+     */
+    template <typename point3_container>
+    contour operator()(const point3_container &vertices_) const {
+        return path(vertices_);
+    }
 };
 
 // z_rphi projection view
@@ -252,6 +297,21 @@ struct z_rphi {
             c.push_back(point(v));
         }
         return c;
+    }
+
+    /** A planar view operator
+     *
+     * @tparam point3_container is a 3D-point container, where elements
+     * of a single p3 object can be accessed via [] operators
+     *
+     * @param vertices_ the vertices of the surface, they are
+     * assumed to be in global/display coorindates
+     *
+     * @return a 2D contour array
+     */
+    template <typename point3_container>
+    contour operator()(const point3_container &vertices_) const {
+        return path(vertices_);
     }
 };
 
