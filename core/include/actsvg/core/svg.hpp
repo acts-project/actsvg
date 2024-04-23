@@ -52,7 +52,7 @@ struct object {
     /// Auxiliary info for this object
     std::vector<std::string> _aux_info = {};
 
-    /// Sterile - does not write _fill, stroke, transform
+    /// Sterile - does not write _fill, stroke
     bool _sterile = false;
 
     /// View is active - is set to false, it is not written out
@@ -118,17 +118,15 @@ struct object {
             // Collect eventual definitions
             _definitions.insert(_definitions.end(), o_._definitions.begin(),
                                 o_._definitions.end());
-            if (not _sterile) {
-                // Re-measure, x/y/r/phi ranges include transforms already
-                _x_range = {std::min(_x_range[0], o_._x_range[0]),
-                            std::max(_x_range[1], o_._x_range[1])};
-                _y_range = {std::min(_y_range[0], o_._y_range[0]),
-                            std::max(_y_range[1], o_._y_range[1])};
-                _r_range = {std::min(_r_range[0], o_._r_range[0]),
-                            std::max(_r_range[1], o_._r_range[1])};
-                _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
-                              std::max(_phi_range[1], o_._phi_range[1])};
-            }
+            // Re-measure, x/y/r/phi ranges include transforms already
+            _x_range = {std::min(_x_range[0], o_._x_range[0]),
+                        std::max(_x_range[1], o_._x_range[1])};
+            _y_range = {std::min(_y_range[0], o_._y_range[0]),
+                        std::max(_y_range[1], o_._y_range[1])};
+            _r_range = {std::min(_r_range[0], o_._r_range[0]),
+                        std::max(_r_range[1], o_._r_range[1])};
+            _phi_range = {std::min(_phi_range[0], o_._phi_range[0]),
+                          std::max(_phi_range[1], o_._phi_range[1])};
         }
     }
 
@@ -189,13 +187,15 @@ inline std::ostream &operator<<(std::ostream &os_, const object &o_) {
         os_ << __blk << "id=\"" << o_copy._id << "\"";
     }
 
-    // Attach the styles: fill, stroke, transform
+    // Attach the styles: fill, stroke,
     if (not o_._sterile) {
         o_._fill.attach_attributes(o_copy);
         o_._stroke.attach_attributes(o_copy);
-        if (not o_._transform.is_identity()) {
-            o_._transform.attach_attributes(o_copy);
-        }
+    }
+
+    // Attach the transform
+    if (not o_._transform.is_identity()) {
+        o_._transform.attach_attributes(o_copy);
     }
 
     // The attribute map
