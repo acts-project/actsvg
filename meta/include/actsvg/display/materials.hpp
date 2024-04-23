@@ -34,6 +34,7 @@ static inline svg::object surface_material(const std::string& id_,
     svg::object m;
     m._tag = "g";
     m._id = id_;
+    m._sterile = true;
 
     // Create the grid object
     std::string g_tag = "_grid";

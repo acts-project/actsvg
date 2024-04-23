@@ -1327,6 +1327,7 @@ static inline svg::object gradient_box(
 
     svg::object g;
     g._tag = "g";
+    g._sterile = true;
 
     auto [w_, h_] = w_h_;
 
