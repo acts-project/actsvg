@@ -15,123 +15,56 @@ namespace actsvg {
 namespace defaults {
 
 // Empty object for displaying
-static svg::object __e_object;
+extern svg::object __e_object;
 
 // Title style
-static style::font __t_font;
+extern style::font __t_font;
 
 // Sensitive surface section, including backside
-static style::fill __s_fill;
-static style::stroke __s_stroke;
+extern style::fill __s_fill;
+extern style::stroke __s_stroke;
 
-static style::fill __bs_fill;
-static style::stroke __bs_stroke;
+extern style::fill __bs_fill;
+extern style::stroke __bs_stroke;
 
 // Support surface section
-static style::fill __ss_fill;
-static style::stroke __ss_stroke;
+extern style::fill __ss_fill;
+extern style::stroke __ss_stroke;
 
 // Measure
-static style::marker __m_marker;
-static style::stroke __m_stroke;
-static style::stroke __m_stroke_guide;
-static style::font __m_font;
+extern style::marker __m_marker;
+extern style::stroke __m_stroke;
+extern style::stroke __m_stroke_guide;
+extern style::font __m_font;
 
 // Grid information
-static style::fill __g_fill;
-static style::stroke __g_stroke;
+extern style::fill __g_fill;
+extern style::stroke __g_stroke;
 
 // Axis section
-static style::stroke __a_stroke;
-static style::font __a_font;
-static std::array<style::marker, 2u> __a_markers = __standard_axis_markers;
+extern style::stroke __a_stroke;
+extern style::font __a_font;
+extern std::array<style::marker, 2u> __a_markers;
 
 // Background panel
-static style::fill __bg_fill;
-static style::stroke __bg_stroke;
+extern style::fill __bg_fill;
+extern style::stroke __bg_stroke;
 
 // Transform section
-static style::transform __t_identity;
+extern style::transform __t_identity;
 
 // White fill, white stroke
-static style::fill __w_fill;
-static style::stroke __w_stroke;
+extern style::fill __w_fill;
+extern style::stroke __w_stroke;
 
 // No fill, no stroke
-static style::fill __nn_fill;
-static style::stroke __nn_stroke;
+extern style::fill __nn_fill;
+extern style::stroke __nn_stroke;
 
 // A default gradient: r,g,b
-static style::gradient __rgb_gradient;
+extern style::gradient __rgb_gradient;
 
-/** Static method to create the defaults in situ */
-static bool create_defaults() {
-
-    // Title font
-    __t_font._size = 14;
-
-    // Sensitive fill and stroke
-    __s_fill._fc._rgb = {66, 182, 245};
-    __s_fill._fc._opacity = 0.75;
-    __s_fill._fc._highlight = {"mouseover", "mouseout"};
-    __s_fill._fc._hl_rgb = {245, 182, 66};
-
-    __bs_fill._fc._rgb = {40, 83, 237};
-    __bs_fill._fc._opacity = 0.75;
-    __bs_fill._fc._highlight = {"mouseover", "mouseout"};
-    __bs_fill._fc._hl_rgb = {237, 83, 40};
-
-    __ss_fill._fc._rgb = {86, 90, 112};
-    __ss_fill._fc._opacity = 0.75;
-    __ss_fill._fc._highlight = {"mouseover", "mouseout"};
-    __ss_fill._fc._hl_rgb = {76, 153, 84};
-
-    // Stroke definition
-    __s_stroke._sc._opacity = 1.;
-    __s_stroke._width = 0.75;
-
-    // Measurement
-    __m_stroke = style::stroke();
-    __m_stroke_guide = style::stroke();
-    __m_stroke_guide._dasharray = {1, 1};
-    __m_marker = style::marker({"|<"});
-
-    // Grid
-    __g_fill._fc._rgb = {200, 200, 200};
-    __g_fill._fc._opacity = 0.;
-    __g_stroke._sc._rgb = {255, 0, 0};
-    __g_stroke._width = 0.5;
-    __g_stroke._hl_width = 4;
-
-    // Background panel
-    __bg_fill._fc._rgb = {235, 235, 235};
-    __bg_fill._fc._opacity = 90.;
-    __bg_stroke._sc._rgb = {205, 205, 205};
-    __bg_stroke._width = 0.5;
-
-    // Transform
-    __t_identity = style::transform();
-
-    // Whites
-    __w_fill._fc._rgb = {255, 255, 255};
-    __w_stroke._sc._rgb = {255, 255, 255};
-
-    // Nulls
-    __nn_fill = style::fill();
-
-    __nn_stroke = style::stroke();
-    __nn_stroke._sterile = true;
-    __nn_stroke._width = 0.;
-
-    __rgb_gradient = style::gradient();
-    __rgb_gradient._stops = {{0., style::color{style::rgb{255, 0, 0}}},
-                             {0.5, style::color{style::rgb{0, 255, 0}}},
-                             {1., style::color{style::rgb{0, 0, 255}}}};
-
-    return true;
-}
-
-static bool __defaults_set = create_defaults();
+extern bool __defaults_set;
 
 }  // namespace defaults
 

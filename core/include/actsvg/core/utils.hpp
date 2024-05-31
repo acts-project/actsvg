@@ -126,9 +126,7 @@ point2_type intersect(const point2_type &x0_, const point2_type &d0_,
 /** Helper from id to url
  * @param id_ the idnetification to be transformed
  **/
-static inline std::string id_to_url(const std::string &id_) {
-    return std::string("url(#") + id_ + ")";
-}
+std::string id_to_url(const std::string &id_);
 
 /** Helper to format point2
  *
@@ -137,11 +135,7 @@ static inline std::string id_to_url(const std::string &id_) {
  *
  * @return a string
  */
-static inline std::string to_string(const scalar &s_, size_t pr_ = 4) {
-    std::stringstream sstream;
-    sstream << std::setprecision(pr_) << s_;
-    return sstream.str();
-}
+std::string to_string(const scalar &s_, size_t pr_ = 4);
 
 /** Helper to format point2
  *

@@ -13,7 +13,6 @@
 #include <array>
 #include <vector>
 
-#include "actsvg/core/defs.hpp"
 #include "actsvg/display/geometry.hpp"
 #include "actsvg/proto/surface.hpp"
 

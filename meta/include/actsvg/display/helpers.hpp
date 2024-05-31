@@ -58,20 +58,8 @@ std::string center_string(const point3_container& vs) {
  *
  * @return the marker size as 1 percent of the range
  **/
-static inline void prepare_axes(std::array<scalar, 2>& first_,
-                                std::array<scalar, 2>& second_, scalar sx_,
-                                scalar sy_, scalar ax_ = 0., scalar ay_ = 0.) {
-    // Add some extra space for the axis
-    first_[0] *= sx_;
-    first_[1] *= sx_;
-    first_[0] -= ax_;
-    first_[1] += ax_;
-
-    second_[0] *= sy_;
-    second_[1] *= sy_;
-    second_[0] -= ay_;
-    second_[1] += ay_;
-}
+void prepare_axes(std::array<scalar, 2>& first_, std::array<scalar, 2>& second_,
+                  scalar sx_, scalar sy_, scalar ax_ = 0., scalar ay_ = 0.);
 
 /** Helper method to get the contours
  *

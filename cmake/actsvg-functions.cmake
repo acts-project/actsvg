@@ -3,15 +3,16 @@ include( CMakeParseArguments )
 
 # Helper function for setting up the actsvg libraries.
 #
-# Usage: actsvg_add_library( actsvg_core core "header1.hpp"... )
+# Usage: actsvg_add_library( actsvg_core core "header1.cpp"... )
 #
 function( actsvg_add_library fullname basename )
+   cmake_parse_arguments( ARG "" "" "" ${ARGN} )
 
    # Create the library.
-   add_library( ${fullname} INTERFACE ${ARG_UNPARSED_ARGUMENTS} )
+   add_library( ${fullname} SHARED ${ARG_UNPARSED_ARGUMENTS} )
 
    # Set up how clients should find its headers.
-   target_include_directories( ${fullname} INTERFACE
+   target_include_directories( ${fullname} PUBLIC
       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}> )
 
@@ -30,6 +31,7 @@ function( actsvg_add_library fullname basename )
       DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" OPTIONAL )
 
 endfunction( actsvg_add_library )
+
 
 
 # Helper function for setting up the actsvg executables.
