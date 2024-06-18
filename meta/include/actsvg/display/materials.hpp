@@ -105,7 +105,7 @@ static inline svg::object surface_material(const std::string& id_,
     }
 
     svg::object gbox = draw::gradient_box(
-        id_ + "_gradient_box", m_._gradient_pos, m_._gradient_box, stops,
+        id_ + "_gradient_box", m_._gradient_pos, m_._gradient_box, stops, m_._gradient_label,
         m_._gradient_stroke, m_._gradient_font);
 
     m.add_object(g);

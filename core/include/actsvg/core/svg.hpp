@@ -43,6 +43,8 @@ struct object {
         std::array<scalar, 2> _scale = {1., 1.};
     };
 
+    using bounding_box = std::array<std::array<scalar, 2u>, 2u>;
+
     /// SVG tag of the objec
     std::string _tag = "";
 
@@ -105,6 +107,18 @@ struct object {
     /// The object is an empty group
     bool is_empty_group() const {
         return (_tag == "g" and _sub_objects.empty());
+    }
+
+    /// Generate bounding box
+    ///
+    /// @note this is in the logical frame of the object and not the view frame
+    ///
+    /// @return a bounding box as left lower corner and upper right corner
+    bounding_box generate_bounding_box() const {
+        bounding_box bb = {};
+        bb[0u] = {_x_range[0], std::min(-_y_range[0], -_y_range[1])};
+        bb[1u] = {_x_range[1], std::max(-_y_range[0], -_y_range[1])};
+        return bb;
     }
 
     /** Add a sub object and respect the min/max range

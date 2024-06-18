@@ -10,6 +10,7 @@ actsvg_add_test( core
   "gradient.cpp"
   "grids.cpp"
   "infobox.cpp"
+  "label.cpp"
   "line.cpp"
   "markers.cpp"
   "measures.cpp"

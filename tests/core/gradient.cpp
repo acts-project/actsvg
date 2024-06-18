@@ -83,6 +83,33 @@ TEST(core, gradient_box_vertical) {
     tstream.close();
 }
 
+TEST(core, gradient_box_vertical_label) {
+
+    svg::file ftemplate;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    auto g = draw::gradient_box(
+        "g_box", {100, 20}, {20, 200},
+        {{style::gradient::stop{0., style::color{style::rgb{0, 0, 255}}}, 0.},
+         {style::gradient::stop{0.45, style::color{style::rgb{0, 255, 0}}},
+          2.0},
+         {style::gradient::stop{0.75, style::color{style::rgb{255, 255, 0}}},
+          2.6},
+         {style::gradient::stop{1., style::color{style::rgb{255, 0, 0}}},
+          5.2}});
+
+    svg::file mfile;
+    mfile.add_object(pg);
+    mfile.add_object(g);
+
+    std::ofstream tstream;
+    tstream.open("test_core_gradient_box_vertical_label.svg");
+    tstream << mfile;
+    tstream.close();
+}
+
 TEST(core, gradient_box_horizontal) {
 
     svg::file ftemplate;
@@ -106,6 +133,35 @@ TEST(core, gradient_box_horizontal) {
 
     std::ofstream tstream;
     tstream.open("test_core_gradient_box_horizontal.svg");
+    tstream << mfile;
+    tstream.close();
+}
+
+
+TEST(core, gradient_box_horizontal_label) {
+
+    svg::file ftemplate;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    auto g = draw::gradient_box(
+        "g_box", {50, 50}, {200, 20},
+        {{style::gradient::stop{0., style::color{style::rgb{0, 0, 255}}}, 0.},
+         {style::gradient::stop{0.25, style::color{style::rgb{0, 255, 0}}},
+          1.3},
+         {style::gradient::stop{0.75, style::color{style::rgb{255, 255, 0}}},
+          2.6},
+         {style::gradient::stop{1., style::color{style::rgb{255, 0, 0}}},
+          5.2}},
+          style::label{"arb. unit", style::label::horizontal::right, style::label::vertical::top});
+
+    svg::file mfile;
+    mfile.add_object(pg);
+    mfile.add_object(g);
+
+    std::ofstream tstream;
+    tstream.open("test_core_gradient_box_horizontal_label.svg");
     tstream << mfile;
     tstream.close();
 }

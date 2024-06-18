@@ -15,6 +15,7 @@
 
 #include "defs.hpp"
 #include "utils.hpp"
+#include "views.hpp"
 
 namespace actsvg {
 
@@ -105,6 +106,9 @@ struct gradient {
 
     /// The gradient stops
     std::vector<stop> _stops = {};
+
+    /// An optional label string (non-empty will trigger label rendering)
+    std::string _label = "";
 
     /// Get a color from a scale parameter
     ///
@@ -241,6 +245,69 @@ struct font {
         if (not _style.empty()) {
             o_._attribute_map["font-style"] = _style;
         }
+    }
+};
+
+/// The label struct
+///
+struct label {
+    /// The horizontal alignment enum
+    enum class horizontal { left, center, right };
+
+    /// The vertical alignment enum
+    enum class vertical { top, center, bottom };
+
+    /// The label text
+    std::string _text = "";
+
+    /// The label horizontal alignment
+    horizontal _horizontal = horizontal::left;
+
+    /// The vertical horizontal alignment
+    vertical _vertical = vertical::bottom;
+
+    /// The font type of the label
+    font _font = font{};
+
+    /// The position
+    std::array<scalar, 2u> _position = {0., 0.};
+
+    /// Place the label at the position - assuming a bounding box
+    ///
+    /// @param lhc_ the left hand corner of the bounding box
+    /// @param ruc_ the right upper corner of the bounding box
+    void place(const std::array<scalar, 2u> &lhc_,
+                                const std::array<scalar, 2u> &rhc_) {
+
+
+        scalar x = 0.;
+        scalar y = 0.;
+
+        // First determine the y position
+        if (_vertical == vertical::top) {
+            y = rhc_[1] + 0.6 * _font._size;
+        } else if (_vertical == vertical::bottom) {
+            y = lhc_[1] - 1.1 * _font._size;
+        } else if (_vertical == vertical::center) {
+            y = 0.5 * (lhc_[1] + rhc_[1] - _font._size);
+        }
+
+        if (_horizontal == horizontal::left) {
+            x = lhc_[0];
+            if (_vertical == vertical::center) {
+                x -= 0.64 * _font._size * _text.size();
+            }
+        } else if (_horizontal == horizontal::right) {
+            x = rhc_[0] - 0.6 * _font._size * _text.size();
+            if (_vertical == vertical::center) {
+                x += 0.64 * _font._size * _text.size(); 
+            }
+        } else if (_horizontal == horizontal::center) {
+            x = 0.5 * (lhc_[0] + rhc_[0] - 0.6 * _font._size * _text.size());
+        }
+
+
+        _position =  {x, y};
     }
 };
 
