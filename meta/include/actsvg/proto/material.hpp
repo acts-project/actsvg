@@ -90,6 +90,9 @@ struct surface_material {
     /// Gradient font
     style::font _gradient_font = style::font{};
 
+    /// Gradient label
+    style::label _gradient_label = style::label{};
+
     /// The info position
     point2 _info_pos = {0, 0};
 

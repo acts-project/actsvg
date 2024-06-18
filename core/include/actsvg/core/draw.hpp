@@ -462,7 +462,8 @@ static inline svg::object polygon(
  */
 static inline svg::object rectangle(
     const std::string &id_, const point2 &c_, scalar half_x, scalar half_y,
-    const style::fill &fill_, const style::stroke &stroke_,
+    const style::fill &fill_ = style::fill{},
+    const style::stroke &stroke_ = style::stroke(),
     const style::transform &transform_ = style::transform()) {
 
     svg::object r;
@@ -477,6 +478,10 @@ static inline svg::object rectangle(
     r._fill = fill_;
     r._stroke = stroke_;
     r._transform = transform_;
+    // Set the range
+    detail::adapt_range(r, {{c_[0] - half_x, -c_[1] - half_y},
+                            {c_[0] + half_x, -c_[1] + half_y}});
+
     // Return the rectangle objec t
     return r;
 }
@@ -532,6 +537,18 @@ static inline svg::object text(
         {{x, y - l}, {static_cast<scalar>(x + 0.7 * fs * l), y + l}});
 
     return t;
+}
+
+/** Draw a label
+ *
+ * @param id_ is the label object id
+ *
+ * @return a label object
+ **/
+static inline svg::object label(const std::string &id_,
+                                const style::label &l_) {
+    auto t_o = text(id_, l_._position, {l_._text}, l_._font);
+    return t_o;
 }
 
 /** Draw a text object - connected
@@ -1275,7 +1292,6 @@ static inline svg::object x_y_axes(
 
 /** Helper method to create a gradient object
  *
- * @param id_ is the id of the gradient
  * @param g_ is the gradient definition
  *
  * @return the gradient as an object
@@ -1286,13 +1302,9 @@ static inline svg::object gradient_as_object(const style::gradient &g_) {
     grad._tag = g_._type + "Gradient";
     grad._sterile = true;
     grad._attribute_map["x1"] = utils::to_string(g_._direction[0] * 100) + "%";
-    ;
     grad._attribute_map["y1"] = utils::to_string(g_._direction[1] * 100) + "%";
-    ;
     grad._attribute_map["x2"] = utils::to_string(g_._direction[2] * 100) + "%";
-    ;
     grad._attribute_map["y2"] = utils::to_string(g_._direction[3] * 100) + "%";
-    ;
     for (const auto &[s, c] : g_._stops) {
         svg::object stop;
         stop._tag = "stop";
@@ -1310,6 +1322,7 @@ static inline svg::object gradient_as_object(const style::gradient &g_) {
  * @param p_ is the position of the box
  * @param w_h_ is the width and height of the box
  * @param stops_ is the gradient definition
+ * @param label_ is the label string (optional)
  * @param font_ is the font of the box
  * @param transform_ is the transform of the box
  *
@@ -1321,6 +1334,7 @@ static inline svg::object gradient_as_object(const style::gradient &g_) {
 static inline svg::object gradient_box(
     const std::string &id_, const point2 &p_, const std::array<scalar, 2> &w_h_,
     const std::vector<std::tuple<style::gradient::stop, scalar>> &stops_,
+    const style::label &label_ = style::label{},
     const style::stroke &stroke_ = style::stroke(),
     const style::font &font_ = style::font{},
     const style::transform t_ = style::transform()) {
@@ -1349,20 +1363,25 @@ static inline svg::object gradient_box(
     }
     g.add_object(gradient_as_object(gradient));
 
-    scalar y_box = -p_[1] - h_;
+    bool label_on = not label_._text.empty();
 
     // Create the box - by hand this time
-    svg::object gbox;
-    gbox._tag = "rect";
-    gbox._id = id_;
+    svg::object gbox = draw::rectangle(id_ + "_box",
+                                       {static_cast<scalar>(p_[0u] + 0.5 * w_),
+                                        static_cast<scalar>(p_[1u] + 0.5 * h_)},
+                                       0.5 * w_, 0.5 * h_);
     gbox._sterile = true;
-    gbox._attribute_map["x"] = std::to_string(p_[0]);
-    gbox._attribute_map["y"] = std::to_string(y_box);
-    gbox._attribute_map["width"] = std::to_string(w_);
-    gbox._attribute_map["height"] = std::to_string(h_);
     gbox._attribute_map["fill"] = "url(#" + gradient._id + ")";
     gbox._transform = t_;
+
     g.add_object(gbox);
+
+    if (label_on) {
+        style::label draw_label = label_;
+        auto [llc, urc] = gbox.generate_bounding_box();
+        draw_label.place(llc, urc);
+        g.add_object(draw::label(id_ + "_label", draw_label));
+    }
 
     // Create the tick objects
     for (auto [is, s] : utils::enumerate(gradient._stops)) {
