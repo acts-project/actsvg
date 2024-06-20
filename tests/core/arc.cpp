@@ -32,12 +32,11 @@ TEST(core, arc_plain) {
     point2 end = {r * std::cos(phi_max), r * std::sin(phi_max)};
 
     // Add the line
-    auto a =  draw::arc("a", r, start, end, style::fill(),
-                    style::stroke{{{255, 0, 0}}, 2});
+    auto a = draw::arc("a", r, start, end, style::fill(),
+                       style::stroke{{{255, 0, 0}}, 2});
 
-    auto descr = draw::text(
-        "descr", {150, 100},
-        {"arc at r = 125", "with phi in [-0.25,0.75]"});
+    auto descr = draw::text("descr", {150, 100},
+                            {"arc at r = 125", "with phi in [-0.25,0.75]"});
 
     svg::file of;
     of.add_object(pg);

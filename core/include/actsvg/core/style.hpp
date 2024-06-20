@@ -277,8 +277,7 @@ struct label {
     /// @param lhc_ the left hand corner of the bounding box
     /// @param ruc_ the right upper corner of the bounding box
     void place(const std::array<scalar, 2u> &lhc_,
-                                const std::array<scalar, 2u> &rhc_) {
-
+               const std::array<scalar, 2u> &rhc_) {
 
         scalar x = 0.;
         scalar y = 0.;
@@ -300,14 +299,13 @@ struct label {
         } else if (_horizontal == horizontal::right) {
             x = rhc_[0] - 0.6 * _font._size * _text.size();
             if (_vertical == vertical::center) {
-                x += 0.64 * _font._size * _text.size(); 
+                x += 0.64 * _font._size * _text.size();
             }
         } else if (_horizontal == horizontal::center) {
             x = 0.5 * (lhc_[0] + rhc_[0] - 0.6 * _font._size * _text.size());
         }
 
-
-        _position =  {x, y};
+        _position = {x, y};
     }
 };
 

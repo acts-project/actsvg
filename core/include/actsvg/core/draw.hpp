@@ -388,7 +388,7 @@ static inline svg::object ellipse(
  * @param fill_ is the fill style
  * @param stroke_ is the stroke style
  * @param transform_ is the optional transform
- * @param apply_transform_ is the option to either apply the transform 
+ * @param apply_transform_ is the option to either apply the transform
  * or not
  *
  * @note transform is directly applied and not attached as property
@@ -419,7 +419,7 @@ static inline svg::object polygon(
     display_vertices.reserve(polygon_.size());
     for (auto v : polygon_) {
         scalar alpha = transform_._rot[0];
-        if (alpha != 0. and apply_transform_ ) {
+        if (alpha != 0. and apply_transform_) {
             scalar alpha_rad = static_cast<scalar>(alpha / 180. * M_PI);
             v = utils::rotate(v, alpha_rad);
         }
@@ -430,7 +430,7 @@ static inline svg::object polygon(
 
         point2 vr = v;
         // Add scaled * translation
-        if (apply_transform_){
+        if (apply_transform_) {
             v[0] += sx * tx;
             v[1] += sy * ty;
         }
@@ -458,7 +458,7 @@ static inline svg::object polygon(
     // Attach fill, stroke & transform attributes and apply
     p._fill = fill_;
     p._stroke = stroke_;
-    if (not apply_transform_){
+    if (not apply_transform_) {
         p._transform = transform_;
     }
     // The svg object is now set up

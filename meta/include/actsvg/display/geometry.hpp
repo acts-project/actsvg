@@ -413,13 +413,12 @@ svg::object oriented_polygon(const std::string& id_, const surface_type& s_,
         scalar angle = std::atan2(center[1], center[0]);
 
         // Re-center the path
-        for_each(path.begin(), path.end(), [&center,&angle](point2& p) {
+        for_each(path.begin(), path.end(), [&center, &angle](point2& p) {
             p[0] -= center[0];
             p[1] -= center[1];
             // rotate
             utils::rotate(p, -angle);
         });
-
 
         style::transform s_transform{};
         s_transform._tr[0] = center[0];

@@ -97,12 +97,12 @@ struct volume {
         if (_index < colors_.size()) {
             _fill._fc = colors_[_index];
         }
-        // Colorize the portals 
+        // Colorize the portals
         for (auto& p : _portals) {
             // The portal itself has no fill color
-            p._surface._fill._fc._rgb = {255,255,255};
+            p._surface._fill._fc._rgb = {255, 255, 255};
             p._surface._fill._fc._opacity = 1.;
-            // The links are filled 
+            // The links are filled
             for (auto& vl : p._volume_links) {
                 if (vl._link_index < colors_.size()) {
                     vl._stroke._sc = colors_[vl._link_index];
@@ -114,12 +114,12 @@ struct volume {
             }
         }
         // Colorize the surfaces
-        for (auto& sbatch : _surfaces){
-            for (auto& s: sbatch){
+        for (auto& sbatch : _surfaces) {
+            for (auto& s : sbatch) {
                 s._fill._fc = colors_[_index];
-                s._fill._fc._opacity = 0.25; 
+                s._fill._fc._opacity = 0.25;
             }
-        } 
+        }
     }
 };
 

@@ -6,19 +6,19 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <fstream>
-#include <gtest/gtest.h>
-
-#include "actsvg/core/svg.hpp"
 #include "actsvg/core/style.hpp"
 
+#include <gtest/gtest.h>
+
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
+#include "actsvg/core/svg.hpp"
+
 using namespace actsvg;
 
-TEST(svg, fill_style)
-{
+TEST(svg, fill_style) {
 
     svg::object colored{"red_object"};
 
@@ -39,8 +39,7 @@ TEST(svg, fill_style)
     std::cout << highlight << std::endl;
 }
 
-TEST(svg, stroke_style)
-{
+TEST(svg, stroke_style) {
 
     svg::object stroked{"stroked_object"};
 
@@ -51,8 +50,7 @@ TEST(svg, stroke_style)
     std::cout << stroked << std::endl;
 }
 
-TEST(svg, transform)
-{
+TEST(svg, transform) {
     svg::object translated{"translated"};
     style::transform t0{{1., 2., 0.}};
     translated._transform = t0;
@@ -73,5 +71,4 @@ TEST(svg, transform)
     t3._scale = {100., 1.};
     translated_rotated_scaled._transform = t3;
     std::cout << translated_rotated_scaled << std::endl;
-
 }

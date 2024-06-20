@@ -106,10 +106,10 @@ TEST(proto, rectanglular_surfaces_at_phi_poles) {
     rectangle_0._radii[0u] = 70.;
 
     point3_container around_pi_vertices = {
-        {-70., static_cast<scalar>(70. * std::sin(-M_PI+d_phi)), -200.},
-        {-70., static_cast<scalar>(70. * std::sin(M_PI-d_phi)), -200.},
-        {-70., static_cast<scalar>(70. * std::sin(M_PI-d_phi)), -100.},
-        {-70., static_cast<scalar>(70. * std::sin(-M_PI+d_phi)), -100.}};
+        {-70., static_cast<scalar>(70. * std::sin(-M_PI + d_phi)), -200.},
+        {-70., static_cast<scalar>(70. * std::sin(M_PI - d_phi)), -200.},
+        {-70., static_cast<scalar>(70. * std::sin(M_PI - d_phi)), -100.},
+        {-70., static_cast<scalar>(70. * std::sin(-M_PI + d_phi)), -100.}};
 
     proto::surface<point3_container> rectangle_pi;
     rectangle_pi._vertices = around_pi_vertices;

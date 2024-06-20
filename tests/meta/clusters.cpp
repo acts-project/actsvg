@@ -91,14 +91,14 @@ void cluster_position(
 
             scalar low_y = 0.;
             scalar high_y = 0.;
-            if constexpr ( DIM > 1) {
+            if constexpr (DIM > 1) {
                 low_y = boundaries_[BOUNDS - 1][c._cid[DIM - 1]];
                 high_y = boundaries_[BOUNDS - 1][c._cid[DIM - 1] + 1];
             } else {
                 low_y = boundaries_[BOUNDS - 1][0];
                 high_y = boundaries_[BOUNDS - 1][1];
             }
-            
+
             scalar y = 0.5 * (low_y + high_y);
 
             scalar low_x_base =
@@ -436,7 +436,7 @@ TEST(display, cluster1D_fan_y) {
     std::vector<scalar> x_high_boundaries = {-96, 96};
     std::vector<scalar> y_boundaries = {-150, -100, -50, 0, 50, 100, 150};
 
-    cluster_position<1, 1>(cl, {y_boundaries} );
+    cluster_position<1, 1>(cl, {y_boundaries});
 
     style::fill no_fill = style::fill();
     auto segmentation =
@@ -494,9 +494,7 @@ TEST(display, cluster2D_fan_x_y) {
     clout.open("test_meta_cluster_fan_2D_x_y.svg");
     clout << cluster_file;
     clout.close();
-
 }
-
 
 TEST(display, cluster2D_fan_focus) {
 

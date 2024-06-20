@@ -117,7 +117,7 @@ TEST(proto, surface_material_r_phi) {
     m._gradient_font._size = 10;
 
     m._gradient_label = style::label{"t/X0", style::label::horizontal::right,
-                                    style::label::vertical::top};
+                                     style::label::vertical::top};
 
     auto sm_r_phi = display::surface_material("r_phi_material", m);
 

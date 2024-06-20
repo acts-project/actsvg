@@ -12,8 +12,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "actsvg/core.hpp"
 #include "../common/playground.hpp"
+#include "actsvg/core.hpp"
 
 using namespace actsvg;
 
@@ -34,7 +34,7 @@ TEST(text, unconnected_text) {
     fo << ftemplate._svg_def_end;
     // Add the playground
     fo << pg;
- 
+
     style::color red{{255, 0, 0}};
     style::font fs;
     fs._family = "Arial";
@@ -42,7 +42,6 @@ TEST(text, unconnected_text) {
 
     // Add the text
     fo << draw::text("t0", {10, 10}, {"Arial test text at (10,10)"}, fs);
-
 
     style::color blue{{0, 0, 255}};
     style::font fsb;
@@ -52,14 +51,11 @@ TEST(text, unconnected_text) {
 
     fo << draw::text("t1", {20, 80}, {"Bigger Times text"}, fsb);
 
-
     // Close the file
     fo << ftemplate._svg_tail;
     fo << ftemplate._html_tail;
     fo.close();
-
 }
-
 
 TEST(text, multiline_text) {
 

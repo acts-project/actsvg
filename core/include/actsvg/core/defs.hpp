@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <string>
 #include <array>
+#include <string>
 
 namespace actsvg {
 static const std::string __l = "<";
