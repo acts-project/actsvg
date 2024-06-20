@@ -49,7 +49,8 @@ const std::string index_text = R"(<!DOCTYPE html>
 
 )";
 
-const std::string script_text = R"(let SVGResult = document.getElementById('result-svg');
+const std::string script_text =
+    R"(let SVGResult = document.getElementById('result-svg');
 let formContainer = document.getElementById('formContainer');
 let SVGContainer = document.getElementById("result-div");
 
@@ -343,4 +344,4 @@ else:
     print("Build Error: Directory Not Found")
 )";
 
-} //  namespace actsvg::web
+}  //  namespace actsvg::web

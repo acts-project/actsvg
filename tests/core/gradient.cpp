@@ -137,7 +137,6 @@ TEST(core, gradient_box_horizontal) {
     tstream.close();
 }
 
-
 TEST(core, gradient_box_horizontal_label) {
 
     svg::file ftemplate;
@@ -152,9 +151,9 @@ TEST(core, gradient_box_horizontal_label) {
           1.3},
          {style::gradient::stop{0.75, style::color{style::rgb{255, 255, 0}}},
           2.6},
-         {style::gradient::stop{1., style::color{style::rgb{255, 0, 0}}},
-          5.2}},
-          style::label{"arb. unit", style::label::horizontal::right, style::label::vertical::top});
+         {style::gradient::stop{1., style::color{style::rgb{255, 0, 0}}}, 5.2}},
+        style::label{"arb. unit", style::label::horizontal::right,
+                     style::label::vertical::top});
 
     svg::file mfile;
     mfile.add_object(pg);

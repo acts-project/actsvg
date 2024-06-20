@@ -18,4 +18,3 @@
 #include "actsvg/core/svg.hpp"
 #include "actsvg/core/utils.hpp"
 #include "actsvg/core/views.hpp"
-

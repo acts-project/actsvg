@@ -6,11 +6,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include "actsvg/web/web_builder.hpp"
+
 #include <gtest/gtest.h>
+
 #include <filesystem>
 
 #include "actsvg/core/draw.hpp"
-#include "actsvg/web/web_builder.hpp"
 
 using namespace actsvg;
 
@@ -22,6 +24,6 @@ TEST(web, web_builder) {
                           style::fill{style::color{{0, 125, 0}}});
 
     web::web_builder wb;
-    wb.build(std::filesystem::current_path() / "test_web_web_builder", std::vector{c, cc});
+    wb.build(std::filesystem::current_path() / "test_web_web_builder",
+             std::vector{c, cc});
 }
-

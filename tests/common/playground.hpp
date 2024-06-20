@@ -24,13 +24,14 @@ namespace test {
  * @param ruc_ the right upper corner
  *
  **/
-static inline svg::object playground(const point2& llc_, const point2& ruc_,
-                                     const std::vector<scalar>& ticks_x_ = { 50., 100. },
-                                     const std::vector<scalar>& ticks_y_ = { 50., 100.} ) {
+static inline svg::object playground(
+    const point2& llc_, const point2& ruc_,
+    const std::vector<scalar>& ticks_x_ = {50., 100.},
+    const std::vector<scalar>& ticks_y_ = {50., 100.}) {
 
     svg::object pg;
-    pg._x_range = { llc_[0], ruc_[0]};
-    pg._y_range = { -ruc_[1], -llc_[1] };
+    pg._x_range = {llc_[0], ruc_[0]};
+    pg._y_range = {-ruc_[1], -llc_[1]};
 
     pg._tag = "g";
 
@@ -56,9 +57,9 @@ static inline svg::object playground(const point2& llc_, const point2& ruc_,
     // x and y axis
     svg::object x_axis;
     x_axis._tag = "line";
-    x_axis._attribute_map["x1"] = std::to_string(0.9*llc_[0]);
+    x_axis._attribute_map["x1"] = std::to_string(0.9 * llc_[0]);
     x_axis._attribute_map["y1"] = "0.";
-    x_axis._attribute_map["x2"] = std::to_string(0.9*ruc_[0]);
+    x_axis._attribute_map["x2"] = std::to_string(0.9 * ruc_[0]);
     x_axis._attribute_map["y2"] = "0.";
     x_axis._attribute_map["style"] = "stroke:black;stroke-width:1;";
     pg._sub_objects.push_back(x_axis);
@@ -66,14 +67,14 @@ static inline svg::object playground(const point2& llc_, const point2& ruc_,
     svg::object y_axis;
     y_axis._tag = "line";
     y_axis._attribute_map["x1"] = "0.";
-    y_axis._attribute_map["y1"] = std::to_string(-0.9*llc_[1]);
+    y_axis._attribute_map["y1"] = std::to_string(-0.9 * llc_[1]);
     y_axis._attribute_map["x2"] = "0.";
-    y_axis._attribute_map["y2"] = std::to_string(-0.9*ruc_[1]);
+    y_axis._attribute_map["y2"] = std::to_string(-0.9 * ruc_[1]);
     y_axis._attribute_map["style"] = "stroke:black;stroke-width:1;";
     pg._sub_objects.push_back(y_axis);
 
     // ticks with label
-    for (const auto& tx : ticks_x_){
+    for (const auto& tx : ticks_x_) {
         svg::object t_tick;
         t_tick._tag = "line";
         t_tick._attribute_map["x1"] = std::to_string(tx);
@@ -81,19 +82,19 @@ static inline svg::object playground(const point2& llc_, const point2& ruc_,
         t_tick._attribute_map["x2"] = std::to_string(tx);
         t_tick._attribute_map["y2"] = std::to_string(-0.005 * hy);
         t_tick._attribute_map["style"] = "stroke:black;stroke-width:1;";
-        pg._sub_objects.push_back(t_tick);    
+        pg._sub_objects.push_back(t_tick);
         // add the label
         svg::object t_text;
         t_text._tag = "text";
         t_text._attribute_map["x"] = std::to_string(tx - 0.01 * wx);
         t_text._attribute_map["y"] = std::to_string(0.025 * hy);
         t_text._attribute_map["font-family"] = "Arial";
-        t_text._fill = style::fill{{{0,0,0}}};        
-        t_text._field = { std::to_string(static_cast<int>(tx)) };
-        pg._sub_objects.push_back(t_text);    
+        t_text._fill = style::fill{{{0, 0, 0}}};
+        t_text._field = {std::to_string(static_cast<int>(tx))};
+        pg._sub_objects.push_back(t_text);
     }
 
-    for (const auto& ty : ticks_y_){
+    for (const auto& ty : ticks_y_) {
         svg::object t_tick;
         t_tick._tag = "line";
         t_tick._attribute_map["x1"] = std::to_string(-0.005 * wx);
@@ -101,19 +102,17 @@ static inline svg::object playground(const point2& llc_, const point2& ruc_,
         t_tick._attribute_map["x2"] = std::to_string(0.005 * wx);
         t_tick._attribute_map["y2"] = std::to_string(-ty);
         t_tick._attribute_map["style"] = "stroke:black;stroke-width:1;";
-        pg._sub_objects.push_back(t_tick);        
+        pg._sub_objects.push_back(t_tick);
         // add the label
         svg::object t_text;
         t_text._tag = "text";
         t_text._attribute_map["x"] = std::to_string(0.01 * wx);
         t_text._attribute_map["y"] = std::to_string(-ty + 0.005 * hy);
         t_text._attribute_map["font-family"] = "Arial";
-        t_text._fill = style::fill{{{0,0,0}}};          
-        t_text._field = { std::to_string(static_cast<int>(ty)) };
-        pg._sub_objects.push_back(t_text);    
-
+        t_text._fill = style::fill{{{0, 0, 0}}};
+        t_text._field = {std::to_string(static_cast<int>(ty))};
+        pg._sub_objects.push_back(t_text);
     }
-
 
     return pg;
 }

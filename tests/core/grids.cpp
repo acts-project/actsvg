@@ -172,12 +172,11 @@ TEST(core, tiled_fan_grid) {
     std::sort(tiles_reference.begin(), tiles_reference.end());
     // Get the tile names
     std::vector<std::string> tiles_test;
-    for (const auto& fg: fan_grid._sub_objects){
+    for (const auto& fg : fan_grid._sub_objects) {
         tiles_test.push_back(fg._id);
     }
     std::sort(tiles_test.begin(), tiles_test.end());
     ASSERT_TRUE(tiles_test == tiles_reference);
-
 
     fo << ftemplate._html_head;
     fo << ftemplate._svg_head;

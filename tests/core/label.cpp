@@ -17,30 +17,30 @@
 using namespace actsvg;
 
 namespace {
-    // Helper function
-    void test_label(style::label::horizontal h, style::label::vertical v,
-                    const std::string& name) {
-        // Set a playground
-        auto pg = test::playground({-400, -400}, {400, 400});
+// Helper function
+void test_label(style::label::horizontal h, style::label::vertical v,
+                const std::string& name) {
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
 
-        // Write out the file
-        std::ofstream fo;
-        fo.open(std::string("test_core_label_"+name+".svg").c_str());
+    // Write out the file
+    std::ofstream fo;
+    fo.open(std::string("test_core_label_" + name + ".svg").c_str());
 
-        auto box = draw::rectangle("box", {200, 100}, 150, 20,
-                                   style::fill{style::color{{255, 0, 0}}});
-        auto [llc, urc] = box.generate_bounding_box();
-        auto l = style::label{name, h, v}; 
-        l.place(llc, urc);
+    auto box = draw::rectangle("box", {200, 100}, 150, 20,
+                               style::fill{style::color{{255, 0, 0}}});
+    auto [llc, urc] = box.generate_bounding_box();
+    auto l = style::label{name, h, v};
+    l.place(llc, urc);
 
-        svg::file of;
-        of.add_object(pg);
-        of.add_object(box);
-        of.add_object(draw::label("label", l));
-        fo << of;
-        fo.close();
-    }
+    svg::file of;
+    of.add_object(pg);
+    of.add_object(box);
+    of.add_object(draw::label("label", l));
+    fo << of;
+    fo.close();
 }
+}  // namespace
 
 TEST(core, label_left_bottom) {
     test_label(style::label::horizontal::left, style::label::vertical::bottom,

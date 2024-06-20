@@ -8,10 +8,10 @@
 
 #pragma once
 
-#include "actsvg/core/defs.hpp"
-
 #include <array>
 #include <vector>
+
+#include "actsvg/core/defs.hpp"
 
 namespace actsvg {
 
@@ -294,9 +294,10 @@ inline static std::vector<trapezoid> generate_endcap_modules() {
     size_t number_of_modules = data::odd_pixel_endcap.size() / 4u;
     modules.reserve(number_of_modules);
     for (size_t im = 0; im < number_of_modules; ++im) {
-        modules.push_back(
-            {data::odd_pixel_endcap[4 * im], data::odd_pixel_endcap[4 * im + 1],
-             data::odd_pixel_endcap[4 * im + 2], data::odd_pixel_endcap[4 * im + 3]});
+        modules.push_back({data::odd_pixel_endcap[4 * im],
+                           data::odd_pixel_endcap[4 * im + 1],
+                           data::odd_pixel_endcap[4 * im + 2],
+                           data::odd_pixel_endcap[4 * im + 3]});
     }
     return modules;
 }
