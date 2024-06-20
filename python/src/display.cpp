@@ -60,6 +60,33 @@ auto view_surfaces(const std::vector<surface>& ss, bool apply_style = true,
     return surfaces;
 }
 
+/// draw the surface as polygon
+///
+/// @param s the surface
+/// @param f the fill
+/// @param str the stroke
+/// @param view the view string
+auto surface_as_oriented_polygon(const surface& s, const style::fill& f,
+                                 const style::stroke& str,
+                                 const std::string& view) {
+
+    auto sc = s;
+    sc._fill = f;
+    sc._stroke = str;
+    if (view == "xy") {
+        views::x_y xy;
+        return display::oriented_polygon(sc._name, s, xy);
+    }
+    if (view == "zphi") {
+        views::z_phi zphi;
+        return display::oriented_polygon(sc._name, s, zphi);
+    }
+    throw std::runtime_error(
+        "surface_as_oriented_polygon: No matching view type found");
+    // Return a sterile object
+    return svg::object{};
+}
+
 /// @brief cast helper
 ///
 /// @param v the vertex that should be casted
@@ -191,6 +218,22 @@ void add_display_module(context& ctx) {
 
     {
 
+        /// View a single surface as oriented polygon - surface style
+        ///
+        /// @param s is the surface
+        /// @param f is the fill style
+        /// @param str is the stroke style
+        /// @param view is the view string (xy, zphi)
+        ///
+        /// @note the surfaces will be copied to apply the style selection
+        ///
+        /// @return an object (sterile if now matching view type is found)
+        d.def("surface_as_oriented_polygon",
+              [](const surface& s, const style::fill& f,
+                 const style::stroke& str, const std::string& view) {
+                  return surface_as_oriented_polygon(s, f, str, view);
+              });
+
         /// View a single surface
         ///
         /// @param s is the surface
@@ -218,6 +261,22 @@ void add_display_module(context& ctx) {
             return svg::object{};
         });
 
+        /// View a single surface as oriented polygon - style applied
+        ///
+        /// @param s is the surface
+        /// @param f is the fill style
+        /// @param str is the stroke style
+        /// @param view is the view string (xy, zphi)
+        ///
+        /// @note the surfaces will be copied to apply the style selection
+        ///
+        /// @return an object (sterile if now matching view type is found)
+        d.def("surface_as_oriented_polygon",
+              [](const surface& s, const style::fill& f,
+                 const style::stroke& str, const std::string& view) {
+                  return surface_as_oriented_polygon(s, f, str, view);
+              });
+
         /// View surfaces -  with surface internal style
         ///
         /// @param ss the surfaces
@@ -236,6 +295,26 @@ void add_display_module(context& ctx) {
                   }
                   return std::vector<svg::object>{};
               });
+
+        /// View surfaces as oriented polygons -  with surface internal style
+        ///
+        /// @param ss is the surface collection
+        /// @param view is the view string (xy, zphi)
+        ///
+        /// @note the surfaces will be copied to apply the style selection
+        ///
+        /// @return an object (sterile if now matching view type is found)
+        d.def(
+            "surfaces_as_oriented_polygons",
+            [](const std::vector<const surface>& ss, const std::string& view) {
+                std::vector<svg::object> polygons;
+                for (const auto& s : ss) {
+                    polygons.push_back(surface_as_oriented_polygon(
+                        s, s._fill, s._stroke, view));
+                }
+                // Return a sterile object
+                return polygons;
+            });
 
         /// View surfaces -  with style appied
         ///
@@ -259,6 +338,28 @@ void add_display_module(context& ctx) {
                   return std::vector<svg::object>{};
               });
     }
+
+    /// View surfaces as oriented polygons - style applied
+    ///
+    /// @param ss the surfaces
+    /// @param f is the fill style
+    /// @param str is the stroke style
+    /// @param view is the view string (xy, zphi)
+    ///
+    /// @note the surfaces will be copied to apply the style selection
+    ///
+    /// @return an object (sterile if now matching view type is found)
+    d.def("surfaces_as_oriented_polygons",
+          [](const std::vector<const surface>& ss, const style::fill& f,
+             const style::stroke& str, const std::string& view) {
+              std::vector<svg::object> polygons;
+              for (const auto& s : ss) {
+                  polygons.push_back(
+                      surface_as_oriented_polygon(s, f, str, view));
+              }
+              // Return a sterile object
+              return polygons;
+          });
 
     {
         /// View step_tracks -  with style appied

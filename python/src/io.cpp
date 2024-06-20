@@ -58,6 +58,7 @@ void add_io_module(context& ctx) {
         ///
         /// @param objfiles the '.obj' files describing the geometry
         /// @param mtlfile the '.mtl' files for the color
+        /// @param read_as_template read as template, object + transform
         obj.def("read_polygons", [](const std::vector<std::string>& objfiles,
                                     const std::vector<std::string>& mtlfiles) {
             // The return polygon surfaces
@@ -164,7 +165,6 @@ void add_io_module(context& ctx) {
                         s._name = "polygon_obj_" + std::to_string(ip);
                         s._type = surface::type::e_polygon;
                         s._vertices = surface_vertices;
-
                         // Add to the polygons
                         polygons.push_back(std::move(s));
                     }

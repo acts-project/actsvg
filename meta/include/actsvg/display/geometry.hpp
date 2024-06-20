@@ -377,6 +377,62 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     return s;
 }
 
+/** Draw a surface as an oriented polygon
+ *
+ * @param id_ the identification of this surface
+ * @param s_ the surface type
+ * @param v_ the view type
+ *
+ */
+template <typename surface_type, typename view_type>
+svg::object oriented_polygon(const std::string& id_, const surface_type& s_,
+                             const view_type& v_) {
+    svg::object s;
+    s._tag = "g";
+    s._id = id_;
+    s._fill._sterile = true;
+    s._stroke._sterile = true;
+
+    if (s_._vertices.empty()) {
+        throw std::runtime_error("Surface is no polygon: no vertices defined!");
+    }
+
+    // View activation / deactivation
+    if constexpr (std::is_same_v<view_type, views::x_y>) {
+        // Get the path
+        auto path = v_.path(s_._vertices);
+        point2 center = {0., 0.};
+        for (const auto& p : path) {
+            center[0] += p[0];
+            center[1] += p[1];
+        }
+        center[0] /= path.size();
+        center[1] /= path.size();
+
+        // Get the angle
+        scalar angle = std::atan2(center[1], center[0]);
+
+        // Re-center the path
+        for_each(path.begin(), path.end(), [&center,&angle](point2& p) {
+            p[0] -= center[0];
+            p[1] -= center[1];
+            // rotate
+            utils::rotate(p, -angle);
+        });
+
+
+        style::transform s_transform{};
+        s_transform._tr[0] = center[0];
+        s_transform._tr[1] = center[1];
+        s_transform._rot[0] = angle;
+        auto polygon =
+            draw::polygon(id_, path, s_._fill, s_._stroke, s_transform, false);
+        return polygon;
+    }
+
+    return s;
+}
+
 /** Draw a portal link
  *
  * @param id_ the indentification of this portal link
