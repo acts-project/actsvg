@@ -1,46 +1,27 @@
-#!/bin/bash
-#
-# check that all code complies w/ the clang-format specification
-#
-# if all is well, returns w/o errors and does not print anything.
-# otherwise, return an error and print offending changes
+name: Checks
 
-set -e # abort on error
+# Cancel existing jobs on new pushes.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
-INCLUDE_DIRS=("core data meta tests web")
+on:
+  push:
+  pull_request:
+    branches:
+      - main
 
-if [ $# -ne 1 ]; then
-    echo "wrong number of arguments"
-    echo ""
-    echo "usage: check_format <DIR>"
-    exit 1
-fi
-
-_binary=${CLANG_FORMAT_BINARY:-clang-format}
-
-$_binary --version
-
-cd $1
-$_binary -i -style=file $(find ${INCLUDE_DIRS} \( -iname '*.cpp' -or -iname '*.hpp' -or -iname '*.ipp' -or -iname '*.inl' -or -iname '*.cu' -or -iname '*.cuh' -or -iname '*.hip' -or -iname '*.sycl' \))
-
-if ! [ -z $CI ] || ! [ -z $GITHUB_ACTIONS ]; then
-  mkdir changed
-  for f in $(git diff --name-only -- ${INCLUDE_DIRS[@]/#/:/}); do
-    cp --parents $f changed
-  done
-fi
-    
-echo "clang-format done"
-    
-set +e
-git diff --exit-code --stat -- ${INCLUDE_DIRS[@]/#/:/}
-result=$?
-
-if [ "$result" -eq "128" ]; then
-    echo "Format was successfully applied"
-    echo "Could not create summary of affected files"
-    echo "Are you in a submodule?"
-
-fi
-
-exit $result
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    container: ghcr.io/acts-project/format10:v11
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check
+        run: .github/check_format.sh .
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: changed
+          path: changed
+          
