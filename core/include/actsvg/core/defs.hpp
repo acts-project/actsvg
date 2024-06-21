@@ -12,16 +12,16 @@
 #include <string>
 
 namespace actsvg {
-static const std::string __l = "<";
-static const std::string __r = ">\n";
-static const std::string __el = "</";
-static const std::string __er = "/>\n";
-static const std::string __fs = "/";
-static const std::string __tab = "\t";
-static const std::string __nl = "\n";
-static const std::string __blk = " ";
-static const std::string __c = ",";
-static const std::string __d = ".";
+const std::string __l = "<";
+const std::string __r = ">\n";
+const std::string __el = "</";
+const std::string __er = "/>\n";
+const std::string __fs = "/";
+const std::string __tab = "\t";
+const std::string __nl = "\n";
+const std::string __blk = " ";
+const std::string __c = ",";
+const std::string __d = ".";
 
 /// @todo make configurable via compile time
 using scalar = float;

@@ -28,15 +28,7 @@ using rgb = std::array<int, 3>;
  * @param rgb_ is the r,g,b color to be represented
  *
  */
-static std::string rgb_attr(const rgb &rgb_) {
-    if (rgb_ == rgb{-1, -1, -1}) {
-        return "none";
-    }
-
-    return std::string("rgb(") + std::to_string(rgb_[0]) + __c +
-           std::to_string(rgb_[1]) + __c + std::to_string(rgb_[2]) +
-           std::string(")");
-}
+std::string rgb_attr(const rgb &rgb_);
 
 /// Color specification
 struct color {
@@ -57,13 +49,10 @@ struct fill {
     bool _sterile = false;
 
     /// A constructor from @param fc_ color
-    fill(const color &fc_) : _fc(fc_) {}
+    fill(const color &fc_);
 
     /// A constructor for empty
-    fill(bool s_ = false) : _sterile(s_) {
-        _fc = color();
-        _fc._opacity = 0.;
-    }
+    fill(bool s_ = false);
 
     /** Attach this fill attribute to an object
      *
@@ -113,34 +102,7 @@ struct gradient {
     /// Get a color from a scale parameter
     ///
     /// @param s_ the scale parameter for the lookup point
-    rgb rgb_from_scale(scalar s_) const {
-        scalar s_reg = s_ < 0. ? 0. : (s_ > 1. ? 1. : s_);
-        // find our stops
-        unsigned int is = 1u;
-        for (; is <= _stops.size(); ++is) {
-            if (_stops[is].first > s_reg) {
-                break;
-            }
-        }
-        // Bail out
-        if (is >= _stops.size()) {
-            return _stops.back().second._rgb;
-        }
-
-        // Interpolate between the two stops to get the new color
-        scalar s0 = _stops[is - 1].first;
-        scalar s1 = _stops[is].first;
-        rgb c0 = _stops[is - 1].second._rgb;
-        rgb c1 = _stops[is].second._rgb;
-        scalar s_diff = s1 - s0;
-        scalar s_rel = (s_reg - s0) / s_diff;
-
-        rgb c;
-        for (unsigned int ic = 0; ic < 3; ++ic) {
-            c[ic] = static_cast<int>(c0[ic] + s_rel * (c1[ic] - c0[ic]));
-        }
-        return c;
-    }
+    rgb rgb_from_scale(scalar s_) const;
 };
 
 /// Stroke type speficiation
@@ -161,11 +123,10 @@ struct stroke {
     /// @param c_ the color of the stroke
     /// @param w_ the with of the stroke
     /// @param d_ the dashed harray of the stroke
-    stroke(const color &c_, scalar w_ = 0.5, const std::vector<int> &d_ = {})
-        : _sc(c_), _width(w_), _dasharray(d_) {}
+    stroke(const color &c_, scalar w_ = 0.5, const std::vector<int> &d_ = {});
 
     /// @brief Constructor for sterile stroke
-    stroke(bool s_ = false) : _sterile(s_) {}
+    stroke(bool s_ = false);
 
     /** Attach this fill attribute to an object
      *
@@ -277,36 +238,7 @@ struct label {
     /// @param lhc_ the left hand corner of the bounding box
     /// @param ruc_ the right upper corner of the bounding box
     void place(const std::array<scalar, 2u> &lhc_,
-               const std::array<scalar, 2u> &rhc_) {
-
-        scalar x = 0.;
-        scalar y = 0.;
-
-        // First determine the y position
-        if (_vertical == vertical::top) {
-            y = rhc_[1] + 0.6 * _font._size;
-        } else if (_vertical == vertical::bottom) {
-            y = lhc_[1] - 1.1 * _font._size;
-        } else if (_vertical == vertical::center) {
-            y = 0.5 * (lhc_[1] + rhc_[1] - _font._size);
-        }
-
-        if (_horizontal == horizontal::left) {
-            x = lhc_[0];
-            if (_vertical == vertical::center) {
-                x -= 0.64 * _font._size * _text.size();
-            }
-        } else if (_horizontal == horizontal::right) {
-            x = rhc_[0] - 0.6 * _font._size * _text.size();
-            if (_vertical == vertical::center) {
-                x += 0.64 * _font._size * _text.size();
-            }
-        } else if (_horizontal == horizontal::center) {
-            x = 0.5 * (lhc_[0] + rhc_[0] - 0.6 * _font._size * _text.size());
-        }
-
-        _position = {x, y};
-    }
+               const std::array<scalar, 2u> &rhc_);
 };
 
 /// The transform struct
@@ -324,12 +256,7 @@ struct transform {
     bool _sterile = false;
 
     /** Test if it is a identity/sterile transform */
-    bool is_identity() const {
-        return _sterile or
-               (_tr[0] == 0. and _tr[1] == 0. and _rot[0] == 0. and
-                _rot[1] == 0. and _rot[2] == 0. and _skew[0] == 0. and
-                _skew[1] == 0. and _scale[0] == 1. and _scale[1] == 1.);
-    }
+    bool is_identity() const;
 
     /** Apply to a point
      *
@@ -355,37 +282,7 @@ struct transform {
      * @note that the scale is directly applied on the objects,
      * in order to control the viewBox boundaries
      **/
-    std::string attr() const {
-        bool translate = (_tr[0] != 0. or _tr[1] != 0.);
-        bool rotate = (_rot[0] != 0.);
-        bool scale = (_scale[0] != 1. or _scale[1] != 1.);
-        bool skew = (_skew[0] != 0. or _skew[1] != 0.);
-        std::stringstream tr_str;
-        if (translate) {
-            tr_str << "translate(" << utils::to_string(_scale[0] * _tr[0])
-                   << __c << utils::to_string(-_scale[0] * _tr[1]) << ")";
-            if (rotate or scale or skew) {
-                tr_str << __blk;
-            }
-        }
-        if (rotate) {
-            tr_str << "rotate(" << utils::to_string(-_rot[0]) << __c
-                   << utils::to_string(_rot[1]) << __c
-                   << utils::to_string(-_rot[2]) << ")";
-            if (scale or skew) {
-                tr_str << __blk;
-            }
-        }
-        if (skew) {
-            tr_str << "skewX(" << utils::to_string(_skew[0]) << ") skewY("
-                   << utils::to_string(_skew[1]) << ")";
-        }
-        if (scale) {
-            tr_str << "scale(" << utils::to_string(_scale[0]) << ","
-                   << utils::to_string(_scale[1]) << ")";
-        }
-        return tr_str.str();
-    }
+    std::string attr() const;
 
     /** Attach this fill attribute to an object
      *

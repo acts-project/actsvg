@@ -37,7 +37,7 @@ namespace display {
  *
  **/
 template <size_t DIM>
-static inline std::pair<svg::object, svg::object> cluster(
+std::pair<svg::object, svg::object> cluster(
     const svg::object& grid_, const std::string& id_,
     const proto::cluster<DIM>& cluster_,
     const style::fill& fill_low_ = style::fill{style::color{{255, 255, 0}}},
@@ -321,10 +321,9 @@ static inline std::pair<svg::object, svg::object> cluster(
  * @param bezier_ is the bezier curve flag
  */
 template <typename trajectory_type, typename view_type>
-static inline svg::object trajectory(const std::string& id,
-                                     const trajectory_type& trajectory_,
-                                     const view_type& view_,
-                                     bool bezier_ = false) {
+svg::object trajectory(const std::string& id,
+                       const trajectory_type& trajectory_,
+                       const view_type& view_, bool bezier_ = false) {
     svg::object trajectory_group;
     trajectory_group._tag = "g";
     trajectory_group._id = id;
@@ -385,8 +384,8 @@ static inline svg::object trajectory(const std::string& id,
  *
  */
 template <typename seed_type, typename view_type>
-static inline svg::object seed(const std::string& id_, const seed_type& seed_,
-                               const view_type& view_) {
+svg::object seed(const std::string& id_, const seed_type& seed_,
+                 const view_type& view_) {
     svg::object seed_group;
     seed_group._tag = "g";
     seed_group._id = id_;
