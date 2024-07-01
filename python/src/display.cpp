@@ -306,7 +306,7 @@ void add_display_module(context& ctx) {
         /// @return an object (sterile if now matching view type is found)
         d.def(
             "surfaces_as_oriented_polygons",
-            [](const std::vector<const surface>& ss, const std::string& view) {
+            [](const std::vector<surface>& ss, const std::string& view) {
                 std::vector<svg::object> polygons;
                 for (const auto& s : ss) {
                     polygons.push_back(surface_as_oriented_polygon(
@@ -350,7 +350,7 @@ void add_display_module(context& ctx) {
     ///
     /// @return an object (sterile if now matching view type is found)
     d.def("surfaces_as_oriented_polygons",
-          [](const std::vector<const surface>& ss, const style::fill& f,
+          [](const std::vector<surface>& ss, const style::fill& f,
              const style::stroke& str, const std::string& view) {
               std::vector<svg::object> polygons;
               for (const auto& s : ss) {
