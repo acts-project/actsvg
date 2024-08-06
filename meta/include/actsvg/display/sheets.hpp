@@ -17,6 +17,7 @@
 #include "actsvg/core.hpp"
 #include "actsvg/display/geometry.hpp"
 #include "actsvg/display/helpers.hpp"
+#include "actsvg/display/tools.hpp"
 #include "actsvg/proto/cluster.hpp"
 #include "actsvg/proto/surface.hpp"
 #include "actsvg/proto/volume.hpp"
@@ -410,49 +411,14 @@ svg::object surface_sheet_xy(const std::string& id_,
 
         point2 cart_origin = {origin_x, origin_y};
 
-        /// Find inner outer radius at edges in STRIP PC
-        ///
-        /// @note have a look at Acts/Surfaces/AnnulusBounds.hpp
-        /// for more information
-        ///
-        auto circIx = [](scalar O_x, scalar O_y, scalar r,
-                         scalar phi) -> point2 {
-            //                      _____________________________________________
-            //                     /      2  2                    2    2  2    2
-            //     O_x + O_y*m - \/  - O_x *m  + 2*O_x*O_y*m - O_y  + m *r  + r
-            // x =
-            // --------------------------------------------------------------
-            //                                  2
-            //                                 m  + 1
-            //
-            // y = m*x
-            //
-            scalar m = std::tan(phi);
-            point2 dir = {std::cos(phi), std::sin(phi)};
-            scalar x1 =
-                (O_x + O_y * m -
-                 std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) +
-                           2 * O_x * O_y * m - std::pow(O_y, 2) +
-                           std::pow(m, 2) * std::pow(r, 2) + std::pow(r, 2))) /
-                (std::pow(m, 2) + 1);
-            scalar x2 =
-                (O_x + O_y * m +
-                 std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) +
-                           2 * O_x * O_y * m - std::pow(O_y, 2) +
-                           std::pow(m, 2) * std::pow(r, 2) + std::pow(r, 2))) /
-                (std::pow(m, 2) + 1);
-
-            point2 v1 = {x1, m * x1};
-            if (v1[0] * dir[0] + v1[1] * dir[1] > 0) {
-                return v1;
-            }
-            return {x2, m * x2};
-        };
-
-        auto out_left_s_xy = circIx(origin_x, origin_y, max_r, max_phi_rel);
-        auto in_left_s_xy = circIx(origin_x, origin_y, min_r, max_phi_rel);
-        auto out_right_s_xy = circIx(origin_x, origin_y, max_r, min_phi_rel);
-        auto in_right_s_xy = circIx(origin_x, origin_y, min_r, min_phi_rel);
+        auto out_left_s_xy =
+            annulusCircleIx(origin_x, origin_y, max_r, max_phi_rel);
+        auto in_left_s_xy =
+            annulusCircleIx(origin_x, origin_y, min_r, max_phi_rel);
+        auto out_right_s_xy =
+            annulusCircleIx(origin_x, origin_y, max_r, min_phi_rel);
+        auto in_right_s_xy =
+            annulusCircleIx(origin_x, origin_y, min_r, min_phi_rel);
 
         std::vector<point2> corners = {in_right_s_xy, in_left_s_xy,
                                        out_right_s_xy, out_left_s_xy};

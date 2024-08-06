@@ -398,7 +398,7 @@ TEST(proto, straw_surface) {
     // Set a playground
     auto pg = test::playground({-400, -400}, {400, 400});
 
-    // Full cylinder in x-y
+    // Straw surface in x-y
     svg::object sc_xy = display::surface("straw", straw, views::x_y{});
 
     svg::file rfile_xy;
@@ -407,6 +407,43 @@ TEST(proto, straw_surface) {
 
     std::ofstream rstream;
     rstream.open("test_meta_straw_xy.svg");
+    rstream << rfile_xy;
+    rstream.close();
+}
+
+TEST(proto, annulus_surface) {
+
+    scalar min_radius = 120.;
+    scalar max_radius = 190.0;
+
+    scalar min_phi = 0.74195;
+    scalar max_phi = 1.33970;
+    scalar avg_phi = 0.5 * (min_phi + max_phi);
+
+    scalar center_x = -20.;
+    scalar center_y = 20.;
+
+    // construct the annulus
+    proto::surface<point3_container> annulus;
+    annulus._measures = {min_radius, max_radius, min_phi, max_phi,
+                         avg_phi,    center_x,   center_y};
+    annulus._type = proto::surface<point3_container>::type::e_annulus;
+    annulus._fill = style::fill({{0, 100, 0}, 0.5});
+    annulus._stroke = style::stroke({{0, 0, 0}}, 2.);
+    annulus._stroke._hl_width = 2.;
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+
+    // Annulus in x-y
+    svg::object an_xy = display::surface("annulus", annulus, views::x_y{});
+
+    svg::file rfile_xy;
+    rfile_xy.add_object(pg);
+    rfile_xy.add_object(an_xy);
+
+    std::ofstream rstream;
+    rstream.open("test_meta_annulus_xy.svg");
     rstream << rfile_xy;
     rstream.close();
 }

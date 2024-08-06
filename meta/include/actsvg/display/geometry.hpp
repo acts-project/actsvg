@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "actsvg/core.hpp"
+#include "actsvg/display/tools.hpp"
 #include "actsvg/proto/surface.hpp"
 
 namespace actsvg {
@@ -66,7 +67,47 @@ svg::object surface(const std::string& id_, const surface_type& s_,
     draw_transform._scale = s_._transform._scale;
 
     // Surface directly
-    if (s_._type == surface_type::type::e_disc) {
+    if (s_._type == surface_type::type::e_annulus) {
+
+        // Special annulus bounds code
+        scalar min_r = s_._measures[0];
+        scalar max_r = s_._measures[1];
+        scalar min_phi_rel = s_._measures[2];
+        scalar max_phi_rel = s_._measures[3];
+        // scalar average_phi = s_._measures[4];
+        scalar origin_x = s_._measures[5];
+        scalar origin_y = s_._measures[6];
+
+        auto in_left_s_xy =
+            annulusCircleIx(origin_x, origin_y, min_r, max_phi_rel);
+        auto in_right_s_xy =
+            annulusCircleIx(origin_x, origin_y, min_r, min_phi_rel);
+        auto out_right_s_xy =
+            annulusCircleIx(origin_x, origin_y, max_r, min_phi_rel);
+        auto out_left_s_xy =
+            annulusCircleIx(origin_x, origin_y, max_r, max_phi_rel);
+
+        // Dedicated path drawing of the annulus bounds
+        s._tag = "path";
+        std::string path = "M " + std::to_string(in_right_s_xy[0]) + " " +
+                           std::to_string(-in_right_s_xy[1]);
+        path += " A " + std::to_string(min_r) + " " + std::to_string(min_r);
+        path += " 0 0 0 ";
+        path += std::to_string(in_left_s_xy[0]) + " " +
+                std::to_string(-in_left_s_xy[1]);
+        path += " L " + std::to_string(out_left_s_xy[0]) + " " +
+                std::to_string(-out_left_s_xy[1]);
+        path += " A " + std::to_string(max_r) + " " + std::to_string(max_r);
+        path += " 0 0 1 ";
+        path += std::to_string(out_right_s_xy[0]) + " " +
+                std::to_string(-out_right_s_xy[1]);
+        path += " L " + std::to_string(in_right_s_xy[0]) + " " +
+                std::to_string(-in_right_s_xy[1]);
+        s._attribute_map["d"] = path;
+        s._fill = s_._fill;
+        s._stroke = s_._stroke;
+
+    } else if (s_._type == surface_type::type::e_disc) {
 
         // x-y view for discs
         if constexpr (std::is_same_v<view_type, views::x_y>) {
