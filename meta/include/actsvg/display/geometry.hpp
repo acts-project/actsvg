@@ -29,7 +29,7 @@ namespace display {
  * @param s_ the surface type
  * @param v_ the view type
  * @param b_ draw the boolean
- * @param fs_ draw as focus
+ * @param fs_ draw at focus
  * @param sc_ draw at scale
  * @param dt_ draw as template
  *
@@ -202,13 +202,23 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             s._active = view_active;
             return s;
         }
-        auto view_vertices = v_.path(s_._vertices);
+
+        // Check if the vertices have to be transformed into global at first
+        // place
+        std::vector<typename surface_type::point3_type> vertices = s_._vertices;
+        if (s_._surface_transform.has_value()) {
+            const auto& sftr = s_._surface_transform.value();
+            std::for_each(vertices.begin(), vertices.end(),
+                          [&sftr](auto& v) { v = sftr.point_to_global(v); });
+        }
+
+        auto view_vertices = v_.path(vertices);
 
         if constexpr (std::is_same_v<view_type, views::z_rphi>) {
             // Check if we have to split the surface in phi and
             // draw wiggle
             // - currently supported for rectangular surfaces only
-            if (s_._vertices.size() == 4u) {
+            if (vertices.size() == 4u) {
                 scalar min_phi = std::numeric_limits<scalar>::max();
                 scalar max_phi = std::numeric_limits<scalar>::min();
                 // Pre-emptively split the vertices

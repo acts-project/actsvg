@@ -1,6 +1,7 @@
 import json as jsn
 import actsvg
 from actsvg import proto
+from actsvg import style
 
 """ read a grid axis from a json file"""
 
@@ -107,6 +108,72 @@ def read_surface_material_maps(json_surface_material_maps):
 
 
 @staticmethod
-def read_surface(json_surface):
-    ps = proto.surface()
+def read_surface(json_surface, apply_transform=True):
+
+    # Construct the name
+    surface_name = (
+        "module_vol"
+        + str(json_surface["volume"])
+        + "_lay"
+        + str(json_surface["layer"])
+        + "_sen"
+        + str(json_surface["sensitive"])
+    )
+
+    # Read the surface description
+
+    surface_description = json_surface["value"]
+    surface_translation = (0.0, 0.0, 0.0)
+    surface_rotation = (
+        (1, 0, 0),
+        (0, 1, 0),
+        (0, 0, 1),
+    )
+
+    if apply_transform:
+        surface_transform = surface_description["transform"]
+        surface_translation = surface_transform["translation"]
+        if surface_transform["rotation"] is not None:
+            surface_rotation = surface_transform["rotation"]
+            surface_rotation = (
+                (surface_rotation[0], surface_rotation[1], surface_rotation[2]),
+                (surface_rotation[3], surface_rotation[4], surface_rotation[5]),
+                (surface_rotation[6], surface_rotation[7], surface_rotation[8]),
+            )
+
+    surface_vertices = []
+    bounds_type = surface_description["bounds"]["type"]
+    bounds_values = surface_description["bounds"]["values"]
+    if bounds_type == "TrapezoidBounds":
+        hx_miny = bounds_values[0]
+        hx_maxy = bounds_values[1]
+        hy = bounds_values[2]
+        surface_vertices = [
+            (-hx_miny, -hy, 0.0),
+            (hx_miny, -hy, 0.0),
+            (hx_maxy, hy, 0.0),
+            (-hx_maxy, hy, 0.0),
+        ]
+    elif bounds_type == "RectangleBounds":
+        hx = bounds_values[0]
+        hy = bounds_values[1]
+        surface_vertices = [
+            (-hx, -hy, 0.0),
+            (hx, -hy, 0.0),
+            (hx, hy, 0.0),
+            (-hx, hy, 0.0),
+        ]
+    else:
+        print("** pyactsvg **: `json.read_surface` bounds type not (yet) supported")
+        raise ValueError
+
+    ps = proto.surface.polygon_from_vertices_and_transform(
+        surface_name,
+        surface_vertices,
+        surface_translation,
+        surface_rotation,
+        style.defaults.sensitive_fill(),
+        style.defaults.sensitive_stroke(),
+    )
+
     return ps
