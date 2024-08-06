@@ -304,17 +304,16 @@ void add_display_module(context& ctx) {
         /// @note the surfaces will be copied to apply the style selection
         ///
         /// @return an object (sterile if now matching view type is found)
-        d.def(
-            "surfaces_as_oriented_polygons",
-            [](const std::vector<surface>& ss, const std::string& view) {
-                std::vector<svg::object> polygons;
-                for (const auto& s : ss) {
-                    polygons.push_back(surface_as_oriented_polygon(
-                        s, s._fill, s._stroke, view));
-                }
-                // Return a sterile object
-                return polygons;
-            });
+        d.def("surfaces_as_oriented_polygons",
+              [](const std::vector<surface>& ss, const std::string& view) {
+                  std::vector<svg::object> polygons;
+                  for (const auto& s : ss) {
+                      polygons.push_back(surface_as_oriented_polygon(
+                          s, s._fill, s._stroke, view));
+                  }
+                  // Return a sterile object
+                  return polygons;
+              });
 
         /// View surfaces -  with style appied
         ///
@@ -349,17 +348,17 @@ void add_display_module(context& ctx) {
     /// @note the surfaces will be copied to apply the style selection
     ///
     /// @return an object (sterile if now matching view type is found)
-    d.def("surfaces_as_oriented_polygons",
-          [](const std::vector<surface>& ss, const style::fill& f,
-             const style::stroke& str, const std::string& view) {
-              std::vector<svg::object> polygons;
-              for (const auto& s : ss) {
-                  polygons.push_back(
-                      surface_as_oriented_polygon(s, f, str, view));
-              }
-              // Return a sterile object
-              return polygons;
-          });
+    d.def("surfaces_as_oriented_polygons", [](const std::vector<surface>& ss,
+                                              const style::fill& f,
+                                              const style::stroke& str,
+                                              const std::string& view) {
+        std::vector<svg::object> polygons;
+        for (const auto& s : ss) {
+            polygons.push_back(surface_as_oriented_polygon(s, f, str, view));
+        }
+        // Return a sterile object
+        return polygons;
+    });
 
     {
         /// View step_tracks -  with style appied

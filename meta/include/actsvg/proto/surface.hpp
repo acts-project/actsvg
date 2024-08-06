@@ -32,6 +32,46 @@ namespace proto {
 template <typename point3_container>
 struct surface {
 
+    using point3 = typename point3_container::value_type;
+
+    /// A transform3 structure before placement
+    struct transform3 {
+        // original translation
+        point3 _translation = {0., 0., 0.};
+        // original rotation
+        std::array<point3, 3u> _rotation = {
+            {1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}};
+        // Rotate a point to the global frame
+        point3 rotate(const point3& p_) const {
+
+            point3 ret{0.f, 0.f, 0.f};
+
+            ret[0] += _rotation[0][0] * p_[0];
+            ret[1] += _rotation[1][0] * p_[0];
+            ret[2] += _rotation[2][0] * p_[0];
+
+            ret[0] += _rotation[0][1] * p_[1];
+            ret[1] += _rotation[1][1] * p_[1];
+            ret[2] += _rotation[2][1] * p_[1];
+
+            ret[0] += _rotation[0][2] * p_[2];
+            ret[1] += _rotation[1][2] * p_[2];
+            ret[2] += _rotation[2][2] * p_[2];
+
+            return ret;
+        }
+
+        /// Apply the translation and rotation
+        point3 point_to_global(const point3& p_) const {
+            // Apply the rotation
+            point3 ret = rotate(p_);
+            ret[0] += _translation[0];
+            ret[1] += _translation[1];
+            ret[2] += _translation[2];
+            return ret;
+        }
+    };
+
     enum class type {
         e_annulus,
         e_cylinder,
@@ -55,6 +95,10 @@ struct surface {
 
     /// The contained vertices - for polygon surfaces
     point3_container _vertices = {};
+
+    /// This is the optional surface transform - to be applied at the
+    /// vertices before the view is created
+    std::optional<transform3> _surface_transform = std::nullopt;
 
     /// Dedicated regular disc/cylinder descriptions
     /// - if this is not applicable the _vertices view needs to be chosen

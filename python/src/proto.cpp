@@ -51,7 +51,7 @@ void add_proto_module(context& ctx) {
                 .def_readwrite("fill", &surface::_fill)
                 .def_readwrite("stroke", &surface::_stroke)
                 .def_static(
-                    "from_polygon",
+                    "polygon_from_vertices",
                     [](const std::string& name, const point3_collection& pcs,
                        const style::fill& f, const style::stroke& s) {
                         // Create the surface
@@ -63,8 +63,28 @@ void add_proto_module(context& ctx) {
                         sf._stroke = s;
                         return sf;
                     },
-                    py::arg("name"), py::arg("points"), py::arg("fill"),
-                    py::arg("stroke"));
+                    py::arg("name"), py::arg("vertices"), py::arg("fill"),
+                    py::arg("stroke"))
+                .def_static(
+                    "polygon_from_vertices_and_transform",
+                    [](const std::string& name, const point3_collection& pcs,
+                       const point3& translation,
+                       const std::array<point3, 3u>& rotation,
+                       const style::fill& f, const style::stroke& s) {
+                        // Create the surface
+                        surface sf{};
+                        // Set the predefined transform
+                        sf._surface_transform =
+                            surface::transform3{translation, rotation};
+                        sf._vertices = pcs;
+                        sf._fill = f;
+                        sf._stroke = s;
+
+                        return sf;
+                    },
+                    py::arg("name"), py::arg("vertices"),
+                    py::arg("translation"), py::arg("rotation"),
+                    py::arg("fill"), py::arg("stroke"));
     }
 
     {
@@ -157,7 +177,7 @@ void add_proto_module(context& ctx) {
     }
 
     {
-        // The channel class: 1D 
+        // The channel class: 1D
         py::class_<channel1>(p, "channel1")
             .def(py::init<>())
             .def_readwrite("_cid", &channel1::_cid)
@@ -191,10 +211,8 @@ void add_proto_module(context& ctx) {
             .def_readwrite("_variance", &cluster2::_variance)
             .def_readwrite("_correlation", &cluster2::_correlation)
             .def_readwrite("_truth", &cluster2::_truth)
-            .def_readwrite("_mc", &cluster2::_mc);                
-
+            .def_readwrite("_mc", &cluster2::_mc);
     }
-
 }
 
 }  // namespace python
