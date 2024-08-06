@@ -19,8 +19,8 @@ namespace display {
 /// @note have a look at Acts/Surfaces/AnnulusBounds.hpp
 /// for more information
 ///
-auto annulusCircleIx = [](scalar O_x, scalar O_y, scalar r,
-                          scalar phi) -> point2 {
+static inline point2 annulusCircleIx(scalar O_x, scalar O_y, scalar r,
+                                     scalar phi) {
     //                      _____________________________________________
     //                     /      2  2                    2    2  2    2
     //     O_x + O_y*m - \/  - O_x *m  + 2*O_x*O_y*m - O_y  + m *r  + r
