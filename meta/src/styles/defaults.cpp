@@ -34,6 +34,10 @@ style::stroke __bg_stroke;
 style::transform __t_identity;
 style::fill __w_fill;
 style::stroke __w_stroke;
+style::fill __r_fill;
+style::stroke __r_stroke;
+style::fill __bl_fill;
+style::stroke __bl_stroke;
 style::fill __nn_fill;
 style::stroke __nn_stroke;
 style::gradient __rgb_gradient;
@@ -90,6 +94,14 @@ static bool create_defaults() {
     // Whites
     __w_fill._fc._rgb = {255, 255, 255};
     __w_stroke._sc._rgb = {255, 255, 255};
+
+    // Reds
+    __r_fill._fc._rgb = {1, 0, 0};
+    __r_stroke._sc._rgb = {1, 0, 0};
+
+    // Blacks
+    __bl_fill._fc._rgb = {0, 0, 0};
+    __bl_stroke._sc._rgb = {0, 0, 0};
 
     // Nulls
     __nn_fill = style::fill();

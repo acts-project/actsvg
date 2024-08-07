@@ -57,6 +57,14 @@ extern style::transform __t_identity;
 extern style::fill __w_fill;
 extern style::stroke __w_stroke;
 
+// Red fill, red stroke
+extern style::fill __r_fill;
+extern style::stroke __r_stroke;
+
+// Black fill, black stroke
+extern style::fill __bl_fill;
+extern style::stroke __bl_stroke;
+
 // No fill, no stroke
 extern style::fill __nn_fill;
 extern style::stroke __nn_stroke;

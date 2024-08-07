@@ -73,18 +73,57 @@ void add_proto_module(context& ctx) {
                        const style::fill& f, const style::stroke& s) {
                         // Create the surface
                         surface sf{};
-                        // Set the predefined transform
-                        sf._surface_transform =
-                            surface::transform3{translation, rotation};
+                        sf._name = name;
+                        auto identity = surface::transform3::identity();
+                        if (translation != identity._translation ||
+                            rotation != identity._rotation) {
+                            // Set the predefined transform
+                            sf._surface_transform =
+                                surface::transform3{translation, rotation};
+                        }
                         sf._vertices = pcs;
+                        sf._fill = f;
+                        sf._stroke = s;
+                        return sf;
+                    },
+                    py::arg("name"), py::arg("vertices"),
+                    py::arg("translation"), py::arg("rotation"),
+                    py::arg("fill"), py::arg("stroke"))
+                .def_static(
+                    "annulus_from_bounds_and_transform",
+                    [](const std::string& name,
+                       const std::vector<scalar>& bounds,
+                       const point3& translation,
+                       const std::array<point3, 3u>& rotation,
+                       const style::fill& f, const style::stroke& s) {
+                        // Create the surface
+                        surface sf{};
+                        sf._name = name;
+                        sf._type = surface::type::e_annulus;
+                        sf._measures = bounds;
+                        auto identity = surface::transform3::identity();
+                        if (translation != identity._translation ||
+                            rotation != identity._rotation) {
+                            // Set the predefined transform
+                            sf._surface_transform =
+                                surface::transform3{translation, rotation};
+                            // Only x, y view will be transformed correctly
+                            point3 sfx = rotation[0];
+                            scalar tr_y = (sfx[1] > 0.) ? -translation[1]
+                                                        : translation[1];
+                            // Calculate the rotation angle
+                            sf._transform._tr = {translation[0], tr_y};
+                            scalar alpha = std::acos(sfx[0]) / M_PI * 180;
+                            alpha += (sfx[1] > 0.) ? 180 : 0;
+                            sf._transform._rot = {alpha, 0., 0.};
+                        }
                         sf._fill = f;
                         sf._stroke = s;
 
                         return sf;
                     },
-                    py::arg("name"), py::arg("vertices"),
-                    py::arg("translation"), py::arg("rotation"),
-                    py::arg("fill"), py::arg("stroke"));
+                    py::arg("name"), py::arg("boounds"), py::arg("translation"),
+                    py::arg("rotation"), py::arg("fill"), py::arg("stroke"));
     }
 
     {
