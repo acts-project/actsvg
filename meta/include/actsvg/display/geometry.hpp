@@ -89,6 +89,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
         // Dedicated path drawing of the annulus bounds
         s._tag = "path";
+        s._id = id_;
         std::string path = "M " + std::to_string(in_right_s_xy[0]) + " " +
                            std::to_string(-in_right_s_xy[1]);
         path += " A " + std::to_string(min_r) + " " + std::to_string(min_r);
@@ -106,7 +107,11 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         s._attribute_map["d"] = path;
         s._fill = s_._fill;
         s._stroke = s_._stroke;
-
+        s._transform = draw_transform;
+        if (not fs_) {
+            s._x_range = {-max_r, max_r};
+            s._y_range = {-max_r, max_r};
+        }
     } else if (s_._type == surface_type::type::e_disc) {
 
         // x-y view for discs

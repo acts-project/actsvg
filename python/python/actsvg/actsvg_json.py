@@ -6,7 +6,6 @@ from actsvg import style
 """ read a grid axis from a json file"""
 
 
-@staticmethod
 def read_grid_axis(json_grid_axis):
     edges = []
     if json_grid_axis["type"] == 0:
@@ -20,7 +19,6 @@ def read_grid_axis(json_grid_axis):
 """ read a grid from a json file"""
 
 
-@staticmethod
 def read_grid(json_grid):
     grid = proto.grid()
     try:
@@ -38,7 +36,6 @@ def read_grid(json_grid):
 """ read surface mateiral from a json file"""
 
 
-@staticmethod
 def read_surface_material(json_surface_material):
     psm = proto.surface_material()
     try:
@@ -90,7 +87,6 @@ def read_surface_material(json_surface_material):
 """ read surface material maps from a json file """
 
 
-@staticmethod
 def read_surface_material_maps(json_surface_material_maps):
     proto_maps = []
     try:
@@ -107,7 +103,6 @@ def read_surface_material_maps(json_surface_material_maps):
 """ read a surface from a json file"""
 
 
-@staticmethod
 def read_surface(json_surface, apply_transform=True):
 
     # Construct the name
@@ -154,6 +149,15 @@ def read_surface(json_surface, apply_transform=True):
             (hx_maxy, hy, 0.0),
             (-hx_maxy, hy, 0.0),
         ]
+        # Trapezoid translates into a polygon
+        ps = proto.surface.polygon_from_vertices_and_transform(
+            surface_name,
+            surface_vertices,
+            surface_translation,
+            surface_rotation,
+            style.defaults.sensitive_fill(),
+            style.defaults.sensitive_stroke(),
+        )
     elif bounds_type == "RectangleBounds":
         hx = bounds_values[0]
         hy = bounds_values[1]
@@ -163,17 +167,26 @@ def read_surface(json_surface, apply_transform=True):
             (hx, hy, 0.0),
             (-hx, hy, 0.0),
         ]
+        # Rectangle translates into a polygon
+        ps = proto.surface.polygon_from_vertices_and_transform(
+            surface_name,
+            surface_vertices,
+            surface_translation,
+            surface_rotation,
+            style.defaults.sensitive_fill(),
+            style.defaults.sensitive_stroke(),
+        )
+    elif bounds_type == "AnnulusBounds":
+        ps = proto.surface.annulus_from_bounds_and_transform(
+            surface_name,
+            bounds_values,
+            surface_translation,
+            surface_rotation,
+            style.defaults.sensitive_fill(),
+            style.defaults.sensitive_stroke(),
+        )
     else:
         print("** pyactsvg **: `json.read_surface` bounds type not (yet) supported")
         raise ValueError
-
-    ps = proto.surface.polygon_from_vertices_and_transform(
-        surface_name,
-        surface_vertices,
-        surface_translation,
-        surface_rotation,
-        style.defaults.sensitive_fill(),
-        style.defaults.sensitive_stroke(),
-    )
 
     return ps

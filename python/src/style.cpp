@@ -7,7 +7,6 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #include "actsvg/core/style.hpp"
-#include "actsvg/styles/defaults.hpp"
 
 #include <pybind11/eval.h>
 #include <pybind11/pybind11.h>
@@ -15,6 +14,7 @@
 
 #include <memory>
 
+#include "actsvg/styles/defaults.hpp"
 #include "utilities.hpp"
 
 namespace py = pybind11;
@@ -106,15 +106,25 @@ void add_style_module(context& ctx) {
             .def_readwrite("scale", &style::transform::_scale)
             .def_readwrite("skew", &style::transform::_skew);
     }
-{
-    // The style defaults
-    auto d = s.def_submodule("defaults");
+    {
+        // The style defaults
+        auto d = s.def_submodule("defaults");
 
-    d.def("sensitive_fill", [](){ return defaults::__s_fill; });
-    d.def("sensitive_stroke", [](){ return defaults::__s_stroke; });
-    
-}
+        d.def("sensitive_fill", []() { return defaults::__s_fill; });
+        d.def("sensitive_stroke", []() { return defaults::__s_stroke; });
 
+        // Some handy defaults
+        d.def("black_fill", []() { return defaults::__bl_fill; });
+        d.def("black_stroke", []() { return defaults::__bl_stroke; });
+
+        d.def("red_fill", []() { return defaults::__r_fill; });
+        d.def("red_stroke", []() { return defaults::__r_stroke; });
+
+        d.def("white_fill", []() { return defaults::__w_fill; });
+        d.def("white_stroke", []() { return defaults::__w_stroke; });
+
+        d.def("font", []() { return defaults::__t_font; });
+        }
 }
 }  // namespace python
 }  // namespace actsvg

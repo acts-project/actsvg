@@ -40,7 +40,7 @@ struct surface {
         point3 _translation = {0., 0., 0.};
         // original rotation
         std::array<point3, 3u> _rotation = {
-            {1., 0., 0.}, {0., 1., 0.}, {0., 0., 1.}};
+            point3{1., 0., 0.}, point3{0., 1., 0.}, point3{0., 0., 1.}};
         // Rotate a point to the global frame
         point3 rotate(const point3& p_) const {
 
@@ -70,6 +70,9 @@ struct surface {
             ret[2] += _translation[2];
             return ret;
         }
+
+        // The identity tranform
+        static transform3 identity() { return transform3{}; }
     };
 
     enum class type {
