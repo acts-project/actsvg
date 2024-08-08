@@ -93,7 +93,7 @@ svg::object surface_sheet_xy(const std::string& id_,
     // The boolean parameters are : we draw the surface with booleans, focusses,
     // scaled, and as template
     auto surface = display::surface(s_._name + "_in_sheet", draw_surface,
-                                    x_y_view, true, true, true, true);
+                                    x_y_view, {true, true, true, true});
     so.add_object(surface);
 
     // disc/annulus may overwrite axis drawing

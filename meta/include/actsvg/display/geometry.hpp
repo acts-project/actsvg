@@ -24,22 +24,30 @@ using namespace defaults;
 
 namespace display {
 
+struct surface_options {
+
+    // @param b_ draw the boolean
+    bool _boolean_shape = true;
+    // @param fs_ draw at focus
+    bool _focus = false;
+    // @param sc_ draw at scale
+    bool _draw_at_scale = false;
+    // @param dt_ draw as template
+    bool _draw_as_template = false;
+};
+
 /** Draw the surface with a dedicated view
  *
  * @param id_ the identification of this surface
  * @param s_ the surface type
- * @param v_ the view type
- * @param b_ draw the boolean
- * @param fs_ draw at focus
- * @param sc_ draw at scale
- * @param dt_ draw as template
+ * @param o_ the options struct
  *
  * @note template surfaces ignore the view_type::scene range restriction
  */
 template <typename surface_type, typename view_type>
 svg::object surface(const std::string& id_, const surface_type& s_,
-                    const view_type& v_, bool _b = true, bool fs_ = false,
-                    bool sc_ = false, bool dt_ = false) {
+                    const view_type& v_,
+                    const surface_options& o_ = surface_options{}) {
 
     svg::object s;
 
@@ -48,12 +56,12 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
         style::transform draw_transform = s_._transform;
         // No rotation nor shift as template
-        if (dt_) {
+        if (o_._draw_as_template) {
             draw_transform._tr = {0., 0.};
             draw_transform._rot = {0., 0., 0.};
         }
         // Apply scale or not
-        if (not sc_) {
+        if (!o_._draw_at_scale) {
             draw_transform._scale = {1., 1.};
         }
 
@@ -63,7 +71,8 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         return s;
     }
 
-    style::transform draw_transform = fs_ ? style::transform{} : s_._transform;
+    style::transform draw_transform =
+        o_._focus ? style::transform{} : s_._transform;
     draw_transform._scale = s_._transform._scale;
 
     // Surface directly
@@ -87,6 +96,15 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         auto out_left_s_xy =
             annulusCircleIx(origin_x, origin_y, max_r, max_phi_rel);
 
+        std::cout << "r_i_l = " << in_left_s_xy[0] << ", " << in_left_s_xy[1]
+                  << std::endl;
+        std::cout << "r_i_r = " << in_right_s_xy[0] << ", " << in_right_s_xy[1]
+                  << std::endl;
+        std::cout << "r_o_r  = " << out_right_s_xy[0] << ", "
+                  << out_right_s_xy[1] << std::endl;
+        std::cout << "r_o_l = " << out_left_s_xy[0] << ", " << out_left_s_xy[1]
+                  << std::endl;
+
         // Dedicated path drawing of the annulus bounds
         s._tag = "path";
         s._id = id_;
@@ -108,7 +126,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         s._fill = s_._fill;
         s._stroke = s_._stroke;
         s._transform = draw_transform;
-        if (not fs_) {
+        if (!o_._focus) {
             s._x_range = {-max_r, max_r};
             s._y_range = {-max_r, max_r};
         }
@@ -145,14 +163,14 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     s_c_._radii = {0., s_._radii[1u]};
 
                     svg::object outer_mask =
-                        surface(id_ + "_mask_surface_outer", s_c_, v_, false);
+                        surface(id_ + "_mask_surface_outer", s_c_, v_, {false});
                     outer_mask._fill = style::fill{true};
                     outer_mask._stroke = style::stroke{true};
                     outer_mask._attribute_map["fill"] = "white";
 
                     s_c_._radii = {0., s_._radii[0u]};
                     svg::object inner_mask =
-                        surface(id_ + "_mask_surface_inner", s_c_, v_, false);
+                        surface(id_ + "_mask_surface_inner", s_c_, v_, {false});
                     inner_mask._fill = style::fill{true};
                     inner_mask._stroke = style::stroke{true};
                     inner_mask._attribute_map["fill"] = "black";
@@ -216,7 +234,6 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         }
 
     } else if (s_._type == surface_type::type::e_straw) {
-
         // xy view
         if constexpr (std::is_same_v<view_type, views::x_y>) {
             // Skin of the straw
@@ -395,7 +412,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                           draw_transform);
     }
 
-    if (_b) {
+    if (o_._boolean_shape) {
         /// Boolean surfaces only supported for x-y view so far
         if constexpr (std::is_same_v<view_type, views::x_y>) {
             if (s_._boolean_surface.size() == 1u and
@@ -403,7 +420,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                 std::string mask_id = id_ + "_mask";
                 // make a new boolean surface
                 svg::object outer_mask =
-                    surface(id_ + "_mask_surface_outer", s_, v_, false);
+                    surface(id_ + "_mask_surface_outer", s_, v_, {false});
                 outer_mask._fill = style::fill{true};
                 outer_mask._stroke = style::stroke{true};
                 outer_mask._attribute_map["fill"] = "white";

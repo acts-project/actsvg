@@ -488,9 +488,11 @@ svg::object connected_info_box(
 
     auto tebox = polygon(id_ + "_text_box", tec, text_fill_, stroke_);
     ib.add_object(tebox);
+
+    scalar toffset = text_.size() == 1u ? tih + title_font_._size : tih;
     auto te =
         text(id_ + "_text",
-             {p_[0] + title_font_._size, static_cast<scalar>(p_[1] - tih)},
+             {p_[0] + title_font_._size, static_cast<scalar>(p_[1] - toffset)},
              text_, text_font_);
     ib.add_object(te);
 
