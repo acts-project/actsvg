@@ -52,8 +52,6 @@ svg::object surface_sheet_xy(const std::string& id_,
     so._tag = "g";
     so._id = id_;
 
-    using point3 = typename point3_container::value_type;
-
     views::x_y x_y_view;
 
     std::vector<views::contour> contours = {range_contour(s_, fs_)};
