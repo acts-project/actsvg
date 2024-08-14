@@ -91,7 +91,7 @@ TEST(proto, rectanglular_subtracted_surface) {
 
 TEST(proto, rectanglular_surfaces_at_phi_poles) {
 
-    scalar d_phi = 0.23;
+    scalar d_phi = 0.23_scalar;
     point3_container around_0_vertices = {
         {70., static_cast<scalar>(70. * std::sin(d_phi)), -100.},
         {70., static_cast<scalar>(70. * std::sin(-d_phi)), -100.},
@@ -347,7 +347,7 @@ TEST(proto, sector_cylinder) {
 
     proto::surface<point3_container> sector_cylinder;
     sector_cylinder._radii = {0., 150.};
-    sector_cylinder._opening = {-0.2, 0.5};
+    sector_cylinder._opening = {-0.2_scalar, 0.5};
     sector_cylinder._zparameters = {10., 200};
     sector_cylinder._name = "sectoral cylinder surface";
     sector_cylinder._type = proto::surface<point3_container>::type::e_cylinder;
@@ -416,9 +416,9 @@ TEST(proto, annulus_surface) {
     scalar min_radius = 120.;
     scalar max_radius = 190.0;
 
-    scalar min_phi = 0.74195;
-    scalar max_phi = 1.33970;
-    scalar avg_phi = 0.5 * (min_phi + max_phi);
+    scalar min_phi = 0.74195_scalar;
+    scalar max_phi = 1.33970_scalar;
+    scalar avg_phi = 0.5_scalar * (min_phi + max_phi);
 
     scalar center_x = -20.;
     scalar center_y = 20.;

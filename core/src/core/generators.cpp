@@ -32,7 +32,7 @@ std::vector<point2> sector_contour(scalar inner_r, scalar outer_r,
 
     // Re-bound phi
     if (start_phi > 0. and end_phi < 0.) {
-        end_phi += 2 * M_PI;
+        end_phi += 2_scalar * pi;
     }
 
     auto inner_phi = phi_values(end_phi, start_phi, lseg);

@@ -225,7 +225,7 @@ struct z_phi {
                 ((*max_phi) - (*min_phi)) > M_PI) {
                 for (auto &cv : c) {
                     if (cv[1] < 0.) {
-                        cv[1] += 2 * M_PI;
+                        cv[1] += 2_scalar * pi;
                     }
                 }
             }
