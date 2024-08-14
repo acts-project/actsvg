@@ -25,7 +25,7 @@ TEST(core, info_box) {
     std::string title = "info box";
     style::fill title_blue;
     title_blue._fc._rgb = {0, 0, 150};
-    title_blue._fc._opacity = 0.8;
+    title_blue._fc._opacity = 0.8_scalar;
     style::font title_font;
     title_font._size = 24;
     title_font._fc = style::color{{255, 255, 255}};
@@ -35,7 +35,7 @@ TEST(core, info_box) {
 
     style::fill info_blue;
     info_blue._fc._rgb = {0, 0, 150};
-    info_blue._fc._opacity = 0.4;
+    info_blue._fc._opacity = 0.4_scalar;
     style::font info_font;
     info_font._size = 18;
 

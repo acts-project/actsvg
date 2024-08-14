@@ -535,12 +535,12 @@ svg::object portal_link(const std::string& id_,
                 draw::circle(id_ + "_arrow_top_tip",
                              {static_cast<scalar>(link_._start[0u]),
                               static_cast<scalar>(link_._start[1u])},
-                             link_._end_marker._size * 0.1, __w_fill));
+                             link_._end_marker._size * 0.1_scalar, __w_fill));
         } else {
-            scalar d_l_x =
-                link_._end_marker._size * 0.9 * std::cos(0.25 * M_PI);
-            scalar d_l_y =
-                link_._end_marker._size * 0.9 * std::sin(0.25 * M_PI);
+            scalar d_l_x = link_._end_marker._size * 0.9_scalar *
+                           std::cos(0.25_scalar * pi);
+            scalar d_l_y = link_._end_marker._size * 0.9_scalar *
+                           std::sin(0.25_scalar * pi);
             arr_xy.add_object(
                 draw::line(id_ + "_arrow_top_cl0",
                            {static_cast<scalar>(link_._start[0u] - d_l_x),

@@ -52,7 +52,7 @@ TEST(views, zphi) {
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {{3., 0.}, {0., 0.5 * M_PI}, {2., 0.25 * M_PI}};
+    views::contour exptected = {{3., 0.}, {0., 0.5 * pi}, {2., 0.25 * pi}};
     ASSERT_TRUE(exptected == c);
 }
 
@@ -65,6 +65,6 @@ TEST(views, zrphi) {
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {{3., 0.}, {0., 1. * M_PI}, {2., 0.5 * M_PI}};
+    views::contour exptected = {{3., 0.}, {0., 1. * pi}, {2., 0.5 * pi}};
     ASSERT_TRUE(exptected == c);
 }

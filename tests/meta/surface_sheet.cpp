@@ -151,7 +151,7 @@ TEST(display, sheet_wedge) {
     proto::surface<point3_container> wedge;
     wedge._type = proto::surface<point3_container>::type::e_disc;
     wedge._radii = {0., 30.};
-    wedge._opening = {-0.1, 0.7};
+    wedge._opening = {-0.1_scalar, 0.7_scalar};
     wedge._measures = {0., 30., 0.8};
 
     svg::object surface_sheet =
@@ -171,7 +171,7 @@ TEST(display, sheet_sector) {
     proto::surface<point3_container> sector;
     sector._type = proto::surface<point3_container>::type::e_disc;
     sector._radii = {10., 30.};
-    sector._opening = {1.0, 1.7};
+    sector._opening = {1.0, 1.7_scalar};
     sector._measures = {10., 30., 0.7};
 
     svg::object surface_sheet =
@@ -190,12 +190,22 @@ TEST(discplay, sheet_annulus) {
 
     proto::surface<point3_container> annulus;
     annulus._type = proto::surface<point3_container>::type::e_annulus;
-    annulus._vertices = {
+
+    auto convert =
+        [](const std::array<double, 3>& in) -> std::array<scalar, 3> {
+        return {static_cast<scalar>(in[0]), static_cast<scalar>(in[1]),
+                static_cast<scalar>(in[2])};
+    };
+
+    std::vector<std::array<double, 3>> raw = {
         {4.00364, 3.67003, 0.}, {3.82937, 4.28028, 0.}, {3.60204, 4.87282, 0.},
         {3.32341, 5.44303, 0.}, {2.99565, 5.9865, 0.},  {2.62131, 6.49899, 0.},
         {2.20329, 6.97652, 0.}, {1.74484, 7.41539, 0.}, {2.9259, 12.4347, 0.},
         {3.95183, 11.7812, 0.}, {4.90633, 11.0272, 0.}, {5.77959, 10.1804, 0.},
         {6.56264, 9.24955, 0.}, {7.24743, 8.24421, 0.}, {7.82692, 7.17472, 0.}};
+
+    std::transform(raw.begin(), raw.end(),
+                   std::back_inserter(annulus._vertices), convert);
 
     annulus._measures = {7.2, 12.0, 0.74195, 1.33970, 0., -3., 2.};
 

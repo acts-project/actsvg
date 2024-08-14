@@ -33,16 +33,18 @@ static inline point2 annulusCircleIx(scalar O_x, scalar O_y, scalar r,
     //
     scalar m = std::tan(phi);
     point2 dir = {std::cos(phi), std::sin(phi)};
-    scalar x1 = (O_x + O_y * m -
-                 std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) +
-                           2 * O_x * O_y * m - std::pow(O_y, 2) +
-                           std::pow(m, 2) * std::pow(r, 2) + std::pow(r, 2))) /
-                (std::pow(m, 2) + 1);
-    scalar x2 = (O_x + O_y * m +
-                 std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) +
-                           2 * O_x * O_y * m - std::pow(O_y, 2) +
-                           std::pow(m, 2) * std::pow(r, 2) + std::pow(r, 2))) /
-                (std::pow(m, 2) + 1);
+    scalar x1 = static_cast<scalar>(
+        (O_x + O_y * m -
+         std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) + 2 * O_x * O_y * m -
+                   std::pow(O_y, 2) + std::pow(m, 2) * std::pow(r, 2) +
+                   std::pow(r, 2))) /
+        (std::pow(m, 2) + 1));
+    scalar x2 = static_cast<scalar>(
+        (O_x + O_y * m +
+         std::sqrt(-std::pow(O_x, 2) * std::pow(m, 2) + 2 * O_x * O_y * m -
+                   std::pow(O_y, 2) + std::pow(m, 2) * std::pow(r, 2) +
+                   std::pow(r, 2))) /
+        (std::pow(m, 2) + 1));
 
     point2 v1 = {x1, m * x1};
     if (v1[0] * dir[0] + v1[1] * dir[1] > 0) {

@@ -32,11 +32,11 @@ TEST(proto, seeds_single_xy) {
     }
 
     point3 origin = {0., 0., 0.};
-    scalar oot = 1. / std::sqrt(3.);
+    scalar oot = 1._scalar / std::sqrt(3._scalar);
     point3 direction = {oot, oot, oot};
     scalar radius = 100.;
     scalar o = 1.;
-    std::array<scalar, 2u> phi_range = {-0.1, 0.35 * M_PI};
+    std::array<scalar, 2u> phi_range = {-0.1_scalar, 0.35_scalar * pi};
     proto::trajectory<point3> trj = test::generate_helix<point3>(
         origin, direction, radius, o, phi_range, 100);
     trj._origin_size = 0.;
@@ -46,12 +46,12 @@ TEST(proto, seeds_single_xy) {
     trj._path_arrow = style::marker{"<<", 3., style::color{{0, 255, 0}}};
 
     proto::seed<point3> seed;
-    scalar s0x = 30. * std::cos(0.3 * M_PI);
-    scalar s0y = 30. * std::sin(0.3 * M_PI);
-    scalar s1x = 50. * std::cos(0.33 * M_PI);
-    scalar s1y = 50. * std::sin(0.33 * M_PI);
-    scalar s2x = 70. * std::cos(0.365 * M_PI);
-    scalar s2y = 70. * std::sin(0.365 * M_PI);
+    scalar s0x = 30._scalar * std::cos(0.3_scalar * pi);
+    scalar s0y = 30._scalar * std::sin(0.3_scalar * pi);
+    scalar s1x = 50._scalar * std::cos(0.33_scalar * pi);
+    scalar s1y = 50._scalar * std::sin(0.33_scalar * pi);
+    scalar s2x = 70._scalar * std::cos(0.365_scalar * pi);
+    scalar s2y = 70._scalar * std::sin(0.365_scalar * pi);
 
     seed._space_points = {point3{s0x, s0y, 0.}, point3{s1x, s1y},
                           point3{s2x, s2y, 0.}};

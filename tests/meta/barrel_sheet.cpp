@@ -39,10 +39,10 @@ proto::volume<point3_container> generate_barrel(
     barrel._name = "Barrel";
     barrel._surface_grid._type = proto::grid::e_z_phi;
 
-    scalar hx = 8.4;
+    scalar hx = 8.4_scalar;
     scalar hy = 36.;
     scalar barrel_r = 32.;
-    scalar tilt_phi = 0.14;
+    scalar tilt_phi = 0.14_scalar;
     int staves = 16;
     int stave_modules = 14;
 
@@ -56,14 +56,15 @@ proto::volume<point3_container> generate_barrel(
     barrel_module_template._sf_type =
         proto::surface<point3_container>::sf_type::e_sensitive;
 
-    scalar offz = (0.5 * stave_modules - 0.5) * (1.98 * hy);
-    scalar nexz = offz / (0.5 * stave_modules - 0.5);
+    scalar offz =
+        (0.5_scalar * stave_modules - 0.5_scalar) * (1.98_scalar * hy);
+    scalar nexz = offz / (0.5_scalar * stave_modules - 0.5_scalar);
 
     // A view for the template
     views::z_phi z_phi_view;
     views::x_y x_y_view;
 
-    scalar delta_phi = 2 * M_PI / staves;
+    scalar delta_phi = 2 * pi / staves;
 
     /// The surface containers
     std::vector<proto::surface<point3_container>> regular;
@@ -81,13 +82,14 @@ proto::volume<point3_container> generate_barrel(
         barrel._surface_grid._edges_0.push_back(tr_z + hy);
 
         for (int is = 0; is < staves; ++is, cmodule++) {
-            scalar cphi = -M_PI + is * delta_phi;
+            scalar cphi = -pi + is * delta_phi;
             if (iz == 0) {
                 if (is == 0) {
-                    barrel._surface_grid._edges_1.push_back(cphi +
-                                                            0.5 * delta_phi);
+                    barrel._surface_grid._edges_1.push_back(
+                        cphi + 0.5_scalar * delta_phi);
                 }
-                barrel._surface_grid._edges_1.push_back(cphi + 1.5 * delta_phi);
+                barrel._surface_grid._edges_1.push_back(cphi +
+                                                        1.5_scalar * delta_phi);
             }
 
             // The position of the module
@@ -100,7 +102,7 @@ proto::volume<point3_container> generate_barrel(
             bin_associations.push_back(barrel_assoc);
 
             // The columns of the rotation matrix
-            scalar mphi = 0.5 * M_PI + cphi + tilt_phi;
+            scalar mphi = 0.5_scalar * pi + cphi + tilt_phi;
             std::array<scalar, 3> col_x = {std::cos(mphi), std::sin(mphi), 0.};
             std::array<scalar, 3> col_y = {0., 0., 1.};
             if (not t_) {
@@ -141,8 +143,8 @@ proto::volume<point3_container> generate_barrel(
                 // Create a backside module
                 if (b_s_) {
                     // The position of the module
-                    tr_x = (barrel_r + 2.) * std::cos(cphi);
-                    tr_y = (barrel_r + 2.) * std::sin(cphi);
+                    tr_x = (barrel_r + 2._scalar) * std::cos(cphi);
+                    tr_y = (barrel_r + 2._scalar) * std::sin(cphi);
                     tr = {tr_x, tr_y, tr_z};
 
                     ll = utils::add(tr, utils::add(utils::scale(col_y, -hy),

@@ -157,12 +157,12 @@ std::ostream &operator<<(std::ostream &os_, const file &f_) {
         }
     }
     // Enlarge the view box by 10 percent
-    viewBox[2] = 1.2 * (x_range[1] - x_range[0]);
-    viewBox[3] = 1.2 * (y_range[1] - y_range[0]);
+    viewBox[2] = 1.2_scalar * (x_range[1] - x_range[0]);
+    viewBox[3] = 1.2_scalar * (y_range[1] - y_range[0]);
 
     // Include a fixed size border
-    viewBox[0] = (x_range[0] - 0.1 * viewBox[2]) - f_._border;
-    viewBox[1] = (y_range[0] - 0.1 * viewBox[3]) - f_._border;
+    viewBox[0] = (x_range[0] - 0.1_scalar * viewBox[2]) - f_._border;
+    viewBox[1] = (y_range[0] - 0.1_scalar * viewBox[3]) - f_._border;
     viewBox[2] += f_._border;
     viewBox[3] += f_._border;
 

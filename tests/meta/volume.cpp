@@ -73,10 +73,10 @@ TEST(proto, cylindrical_volume) {
     v._portals = {nec, c, pec};
 
     // Set up the volume parameters
-    v._bound_values = {0., 40., 0., 400., M_PI, 0.};
+    v._bound_values = {0., 40., 0., 400., pi, 0.};
     v._type = decltype(v)::type::e_cylinder;
     v._fill._fc._rgb = {0, 0, 0};
-    v._fill._fc._opacity = 0.1;
+    v._fill._fc._opacity = 0.1_scalar;
 
     // Test the volume in x-y view
     svg::object v_xy = display::volume("cylinder_volume", v, views::x_y{});
@@ -100,7 +100,7 @@ TEST(proto, cylindrical_volume) {
     rstream.close();
 
     style::color red({{255, 0, 0}});
-    red._opacity = 0.1;
+    red._opacity = 0.1_scalar;
     std::vector<style::color> volumeColors = {red};
     v.colorize(volumeColors);
 
@@ -121,7 +121,7 @@ TEST(proto, cylindrical_volume) {
     proto::surface<point3_container> s_nec_sect;
     s_nec_sect._type = proto::surface<point3_container>::type::e_disc;
     s_nec_sect._radii = {10., 110.};
-    s_nec_sect._opening = {-0.25 * M_PI, 0.25 * M_PI};
+    s_nec_sect._opening = {-0.25 * pi, 0.25 * pi};
     s_nec_sect._zparameters = {-400., 0.};
     s_nec_sect._fill = __nn_fill;
 
@@ -136,7 +136,7 @@ TEST(proto, cylindrical_volume) {
     proto::surface<point3_container> s_pec_sect;
     s_pec_sect._type = proto::surface<point3_container>::type::e_disc;
     s_pec_sect._radii = {10., 110.};
-    s_pec_sect._opening = {-0.25 * M_PI, 0.25 * M_PI};
+    s_pec_sect._opening = {-0.25 * pi, 0.25 * pi};
     s_pec_sect._zparameters = {400., 0.};
     s_pec_sect._fill = __nn_fill;
 
@@ -152,7 +152,7 @@ TEST(proto, cylindrical_volume) {
     proto::surface<point3_container> s_ci_sect;
     s_ci_sect._type = proto::surface<point3_container>::type::e_cylinder;
     s_ci_sect._radii = {10.};
-    s_ci_sect._opening = {-0.25 * M_PI, 0.25 * M_PI};
+    s_ci_sect._opening = {-0.25 * pi, 0.25 * pi};
     s_ci_sect._zparameters = {0., 400.};
 
     // Assign the surface & link to self
@@ -166,7 +166,7 @@ TEST(proto, cylindrical_volume) {
     proto::surface<point3_container> s_co_sect;
     s_co_sect._type = proto::surface<point3_container>::type::e_cylinder;
     s_co_sect._radii = {110.};
-    s_co_sect._opening = {-0.25 * M_PI, 0.25 * M_PI};
+    s_co_sect._opening = {-0.25 * pi, 0.25 * pi};
     s_co_sect._zparameters = {0., 400.};
 
     // Assign the surface & link to self
@@ -221,10 +221,10 @@ TEST(proto, cylindrical_volume) {
                        co_sect,  neg_sect, pos_sect};
 
     // Set up the volume parameters
-    v_sect._bound_values = {10., 110., 0., 400., 0.25 * M_PI, 0.};
+    v_sect._bound_values = {10., 110., 0., 400., 0.25 * pi, 0.};
     v_sect._type = decltype(v_sect)::type::e_cylinder;
     v_sect._fill._fc._rgb = {0, 0, 255};
-    v_sect._fill._fc._opacity = 0.1;
+    v_sect._fill._fc._opacity = 0.1_scalar;
 
     // Test the volume in x-y view
     svg::object v_xy_sect =

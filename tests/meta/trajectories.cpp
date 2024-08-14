@@ -26,11 +26,11 @@ TEST(proto, helix_trajectory) {
     views::x_y xy_view;
 
     point3 origin = {0., 0., 0.};
-    scalar oot = 1. / std::sqrt(3.);
+    scalar oot = 1._scalar / std::sqrt(3._scalar);
     point3 direction = {oot, oot, oot};
     scalar radius = 100.;
     scalar o = 1.;
-    std::array<scalar, 2u> phi_range = {-0.1, 0.75 * M_PI};
+    std::array<scalar, 2u> phi_range = {-0._scalar, 0.75_scalar * pi};
     proto::trajectory<point3> trj_p = test::generate_helix<point3>(
         origin, direction, radius, o, phi_range, 100);
     trj_p._origin_size = 5.;
@@ -42,7 +42,7 @@ TEST(proto, helix_trajectory) {
         display::trajectory("helix_xy_polyline_p", trj_p, xy_view);
 
     proto::trajectory<point3> trj_n = test::generate_helix<point3>(
-        origin, direction, 1.5 * radius, -o, phi_range, 100);
+        origin, direction, 1._scalar * radius, -o, phi_range, 100);
     trj_n._origin_size = 5.;
     trj_n._origin_fill = defaults::__g_fill;
     trj_n._origin_stroke = style::stroke{style::color{{0, 0, 0}}, 1.5};

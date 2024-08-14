@@ -68,7 +68,7 @@ TEST(proto, cylindrical_detector) {
         style::color({{50, 50, 50}}), style::color({{255, 0, 0}}),
         style::color({{0, 255, 0}}), style::color({{0, 0, 255}})};
     for (auto& c : vColors) {
-        c._opacity = 0.1;
+        c._opacity = 0.1_scalar;
     }
 
     // The portals

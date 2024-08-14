@@ -73,7 +73,7 @@ TEST(proto, surface_material_r_phi) {
     grid._edges_0 = {10, 25, 50, 75, 100, 125, 150};
     grid._edges_1 = {};
     for (unsigned int i = 0; i < 41; ++i) {
-        grid._edges_1.push_back(-M_PI + i * M_PI / 20.);
+        grid._edges_1.push_back(-pi + i * pi / 20._scalar);
     }
 
     // Make a material matrix - with some sparice rows
