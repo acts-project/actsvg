@@ -43,6 +43,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       run: |
         cmake $GITHUB_WORKSPACE \
+        -DCOMPILE_WARNING_AS_ERROR=ON \
         -DACTSVG_BUILD_TESTING=ON \
         -DACTSVG_BUILD_META=ON \
         -DACTSVG_BUILD_WEB=ON \
