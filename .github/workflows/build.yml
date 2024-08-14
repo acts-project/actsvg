@@ -44,6 +44,8 @@ jobs:
       run: |
         cmake $GITHUB_WORKSPACE \
         -DACTSVG_BUILD_TESTING=ON \
+        -DACTSVG_BUILD_META=ON \
+        -DACTSVG_BUILD_WEB=ON \
         -DACTSVG_BUILD_EXAMPLES=ON
 
     - name: Build
