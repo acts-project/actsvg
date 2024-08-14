@@ -276,7 +276,7 @@ struct z_rphi {
             r = std::sqrt(point_[0] * point_[0] + point_[1] * point_[1]);
         }
         scalar phi = std::atan2(point_[1], point_[0]);
-        return point2{point_[2], r * phi};
+        return point2{static_cast<float>(point_[2]), r * phi};
     }
 
     /** A z-rphi view operator
