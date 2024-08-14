@@ -11,14 +11,26 @@ env:
   CTEST_OUTPUT_ON_FAILURE: 1
 
 jobs:
-  ubuntu:
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      matrix:
+        os:
+          - macos-14
+          - ubuntu-22.04
+          - ubuntu-24.04
+
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Install Dependencies
-      run: sudo apt-get install libboost-all-dev
+      run: |
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+          brew install boost
+        else
+          sudo apt-get install libboost-all-dev
+        fi 
 
     - name: Initialize Workspace
       run: cd $GITHUB_WORKSPACE
@@ -29,7 +41,10 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DACTSVG_USE_SYSTEM_BOOST=Off -DACTSVG_BUILD_TESTING=On -DACTSVG_BUILD_EXAMPLES=On
+      run: |
+        cmake $GITHUB_WORKSPACE \
+        -DACTSVG_BUILD_TESTING=ON \
+        -DACTSVG_BUILD_EXAMPLES=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
