@@ -116,7 +116,7 @@ views::contour range_contour(const surface_type& s_,
         scalar ro = s_._radii[1];
         scalar phi_low = s_._opening[0];
         scalar phi_high = s_._opening[1];
-        scalar phi = 0.5 * (phi_low + phi_high);
+        scalar phi = 0.5_scalar * (phi_low + phi_high);
         scalar cos_phi_low = std::cos(phi_low);
         scalar sin_phi_low = std::sin(phi_low);
         scalar cos_phi_high = std::cos(phi_high);

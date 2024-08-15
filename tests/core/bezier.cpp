@@ -52,7 +52,7 @@ TEST(core, bezier_spiral) {
     scalar r_start = 125.;
     scalar r_end = 75.;
     scalar phi_start = -0.25;
-    scalar phi_rot = 4.5 * M_PI;
+    scalar phi_rot = 4.5_scalar * pi;
 
     scalar r_step = (r_end - r_start) / nSegs;
     scalar phi_step = phi_rot / nSegs;

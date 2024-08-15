@@ -186,7 +186,7 @@ struct font {
 
     unsigned int _size = 12;
 
-    scalar _line_spacing = 1.4;
+    scalar _line_spacing = 1.4f;
 
     std::string _style = "";
 

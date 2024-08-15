@@ -136,7 +136,8 @@ std::pair<svg::object, svg::object> cluster(
 
             // Correlation between -1 (-45 deg)and 1 (45 deg)
             scalar corr = cluster_._correlation;
-            corr = corr < -1. ? -1. : (corr > 1. ? 1. : corr);
+            corr = corr < -1._scalar ? -1._scalar
+                                     : (corr > 1._scalar ? 1._scalar : corr);
             c_r = -corr * 45;
         }
     }
@@ -207,43 +208,49 @@ std::pair<svg::object, svg::object> cluster(
             t_r = cluster_._truth[DIM - 1];
 
             d_r = cluster_._variance[DIM - 1];
-            d_phi = std::abs(phi_range[1] - phi_range[0]) / std::sqrt(12.);
+            d_phi = std::abs(phi_range[1] - phi_range[0]) /
+                    static_cast<scalar>(std::sqrt(12.));
 
-            m_phi = 0.5 * (phi_range[0] + phi_range[1]);
+            m_phi = 0.5_scalar * (phi_range[0] + phi_range[1]);
             t_phi = m_phi;
         } else if (cluster_._coords[DIM - 1] == proto::cluster<DIM>::e_phi) {
             m_phi = cluster_._measurement[DIM - 1];
             t_phi = cluster_._truth[DIM - 1];
 
-            d_r = std::abs(r_range[1] - r_range[0]) / std::sqrt(12.);
+            d_r = std::abs(r_range[1] - r_range[0]) /
+                  static_cast<scalar>(std::sqrt(12.));
             d_phi = cluster_._variance[DIM - 1];
 
-            m_r = 0.5 * (r_range[0] + r_range[1]);
+            m_r = 0.5_scalar * (r_range[0] + r_range[1]);
             t_r = m_r;
         } else if (cluster_._coords[DIM - 1] == proto::cluster<DIM>::e_x) {
             m_x = cluster_._measurement[DIM - 1];
             t_x = cluster_._truth[DIM - 1];
             c_x = cluster_._variance[DIM - 1];
-            c_y = std::abs(y_range[1] - y_range[0]) / std::sqrt(12.);
-            m_y = 0.5 * (y_range[0] + y_range[1]);
+            c_y = std::abs(y_range[1] - y_range[0]) /
+                  static_cast<scalar>(std::sqrt(12.));
+            m_y = 0.5_scalar * (y_range[0] + y_range[1]);
             t_y = m_y;
 
             // Correlation between -1 (-45 deg)and 1 (45 deg)
             scalar corr = cluster_._correlation;
-            corr = corr < -1. ? -1. : (corr > 1. ? 1. : corr);
+            corr = corr < -1._scalar ? -1._scalar
+                                     : (corr > 1._scalar ? 1._scalar : corr);
             c_r = -corr * 45;
 
         } else {
             m_y = cluster_._measurement[DIM - 1];
             t_y = cluster_._truth[DIM - 1];
             c_y = cluster_._variance[DIM - 1];
-            c_x = std::abs(x_range[1] - x_range[0]) / std::sqrt(12.);
-            m_x = 0.5 * (x_range[0] + x_range[1]);
+            c_x = std::abs(x_range[1] - x_range[0]) /
+                  static_cast<scalar>(std::sqrt(12.));
+            m_x = 0.5_scalar * (x_range[0] + x_range[1]);
             t_x = m_x;
 
             // Correlation between -1 (-45 deg)and 1 (45 deg)
             scalar corr = cluster_._correlation;
-            corr = corr < -1. ? -1. : (corr > 1. ? 1. : corr);
+            corr = corr < -1._scalar ? -1._scalar
+                                     : (corr > 1._scalar ? 1._scalar : corr);
             c_r = corr * 45;
         }
     }
@@ -260,7 +267,7 @@ std::pair<svg::object, svg::object> cluster(
         c_x = std::abs(cos_phi * d_r - m_r * sin_phi * d_phi);
         c_y = std::abs(sin_phi * d_r + m_r * cos_phi * d_phi);
 
-        c_r = m_phi * 180 / M_PI;
+        c_r = m_phi * 180 / pi;
 
         t_x = t_r * std::cos(t_phi);
         t_y = t_r * std::sin(t_phi);

@@ -52,8 +52,6 @@ svg::object surface_sheet_xy(const std::string& id_,
     so._tag = "g";
     so._id = id_;
 
-    using point3 = typename point3_container::value_type;
-
     views::x_y x_y_view;
 
     std::vector<views::contour> contours = {range_contour(s_, fs_)};
@@ -61,7 +59,7 @@ svg::object surface_sheet_xy(const std::string& id_,
 
     // Stitch when disc - and make x and y axis similarly long
     bool full = (s_._type == proto::surface<point3_container>::type::e_disc and
-                 s_._opening == std::array<scalar, 2>({-M_PI, M_PI}));
+                 s_._opening == std::array<scalar, 2>({-pi, pi}));
 
     bool draw_axes = true;
     if (s_._type == proto::surface<point3_container>::type::e_disc or
@@ -119,7 +117,7 @@ svg::object surface_sheet_xy(const std::string& id_,
         scalar hlx_min = s_._measures[0] * s_x;
         scalar hlx_max = s_._measures[1] * s_x;
         scalar hly = s_._measures[2] * s_y;
-        scalar ms = 2. * m_marker._size;
+        scalar ms = 2._scalar * m_marker._size;
         // Measure names
         std::string h_x_min = "h_x_min";
         std::string h_x_max = "h_x_max";
@@ -153,7 +151,7 @@ svg::object surface_sheet_xy(const std::string& id_,
 
         scalar hlx = s_._measures[0] * s_x;
         scalar hly = s_._measures[1] * s_y;
-        scalar ms = 2. * m_marker._size;
+        scalar ms = 2._scalar * m_marker._size;
         // Measure names
         std::string h_x = "h_x";
         std::string h_y = "h_y";
@@ -178,7 +176,7 @@ svg::object surface_sheet_xy(const std::string& id_,
         scalar hlx_ymax = s_._measures[2] * s_x;
         scalar hly_xmin = s_._measures[3] * s_y;
         scalar hly_xmax = s_._measures[4] * s_y;
-        scalar ms = 2. * m_marker._size;
+        scalar ms = 2._scalar * m_marker._size;
 
         // Measure names
         std::string h_x_n = "h_x_ny";
@@ -264,8 +262,9 @@ svg::object surface_sheet_xy(const std::string& id_,
             label_v += utils::to_string(std::array<scalar, 2>{
                 s_._measures[2 * iv], s_._measures[2 * iv + 1]});
 
-            scalar offx = dx > 0 ? 2. * m_font._size * dx
-                                 : 0.5 * label_v.size() * m_font._size * dx;
+            scalar offx = dx > 0
+                              ? 2._scalar * m_font._size * dx
+                              : 0.5_scalar * label_v.size() * m_font._size * dx;
             scalar offy = 2 * m_font._size * dy;
 
             so.add_object(draw::text(id_ + "_label_v" + std::to_string(iv),
@@ -280,10 +279,10 @@ svg::object surface_sheet_xy(const std::string& id_,
 
         // Where to set the labels and how to label them
         std::vector<scalar> r_label;
-        scalar phi_span = 2 * M_PI;
+        scalar phi_span = 2 * pi;
 
         if (full) {
-            r_label = {M_PI * 0.25, -M_PI * 0.25};
+            r_label = {pi * 0.25, -pi * 0.25};
         } else {
             phi_span = s_._opening[1] - s_._opening[0];
             r_label = {static_cast<scalar>(s_._opening[0] - 0.1),
@@ -317,7 +316,8 @@ svg::object surface_sheet_xy(const std::string& id_,
                 r_min = r < r_min ? r : r_min;
                 std::string r_o = ir == 0 ? "r" : "R";
 
-                scalar rfs = (fs_ and not full) ? s_x * 0.85 * r_min : 0.;
+                scalar rfs =
+                    (fs_ and not full) ? s_x * 0.85_scalar * r_min : 0._scalar;
                 scalar rfs_phi = std::atan2(ys[ir], xs[ir]);
 
                 point2 rstart = {static_cast<scalar>(rfs * std::cos(rfs_phi)),
@@ -335,21 +335,22 @@ svg::object surface_sheet_xy(const std::string& id_,
             if (ir == 2 and not full) {
 
                 // Focal or not focal
-                scalar rfs = (fs_ and not full) ? s_x * 0.85 * r_min : 0.;
+                scalar rfs =
+                    (fs_ and not full) ? s_x * 0.85_scalar * r_min : 0._scalar;
 
                 // Place it outside
-                scalar lr = s_x * r_max + 2. * m_marker._size;
+                scalar lr = s_x * r_max + 2._scalar * m_marker._size;
 
                 point2 start = {
                     static_cast<scalar>(lr * std::cos(s_._opening[0])),
                     static_cast<scalar>(lr * std::sin(s_._opening[0]))};
 
                 // Medium phi arc and line
-                scalar mphi = 0.5 * (s_._opening[0] + s_._opening[1]);
+                scalar mphi = 0.5_scalar * (s_._opening[0] + s_._opening[1]);
                 point2 end = {static_cast<scalar>(lr * std::cos(mphi)),
                               static_cast<scalar>(lr * std::sin(mphi))};
 
-                scalar mmphi = 0.5 * (s_._opening[0] + mphi);
+                scalar mmphi = 0.5_scalar * (s_._opening[0] + mphi);
                 point2 mend = {
                     static_cast<scalar>(m_font._size + lr * std::cos(mmphi)),
                     static_cast<scalar>(m_font._size + lr * std::sin(mmphi))};
@@ -369,7 +370,7 @@ svg::object surface_sheet_xy(const std::string& id_,
                 so.add_object(medium_phi_line);
 
                 // Measure to the medium phi
-                scalar r_avg_phi = 0.2 * s_x * r_max;
+                scalar r_avg_phi = 0.2_scalar * s_x * r_max;
                 std::array<scalar, 2> r_avg_start = {r_avg_phi, 0.};
                 std::array<scalar, 2> r_avg_end = {
                     static_cast<scalar>(r_avg_phi * std::cos(mphi)),
@@ -434,9 +435,10 @@ svg::object surface_sheet_xy(const std::string& id_,
         for (unsigned int ic = 0; ic < 2; ++ic) {
 
             const auto& corner = corners[ic];
-            scalar in_phi = atan2(corner[1], corner[0]);
+            scalar in_phi = static_cast<scalar>(atan2(corner[1], corner[0]));
 
-            scalar in_r = (0.2 + ic * 0.2) * utils::perp(corners[ic]);
+            scalar in_r =
+                (0.2_scalar + ic * 0.2_scalar) * utils::perp(corners[ic]);
             std::array<scalar, 2> in_start = {in_r, 0.};
             std::array<scalar, 2> in_end = {
                 static_cast<scalar>(in_r * std::cos(in_phi)),
@@ -493,9 +495,13 @@ svg::object surface_sheet_xy(const std::string& id_,
             point2 cart_c1 = point2{c1[0] - origin_x, c1[1] - origin_y};
             scalar cart_r = utils::perp(cart_c0);
 
-            scalar cart_phi0 = atan2(cart_c0[1], cart_c0[0]) - 0.2;
-            scalar cart_phi1 = atan2(cart_c1[1], cart_c1[0]) + 0.25;
-            scalar cart_phir = cart_phi1 - (2 * idc + 1) * 0.05;
+            scalar cart_phi0 =
+                static_cast<scalar>(atan2(cart_c0[1], cart_c0[0])) - 0.2_scalar;
+            scalar cart_phi1 =
+                static_cast<scalar>(atan2(cart_c1[1], cart_c1[0])) +
+                0.25_scalar;
+            scalar cart_phir =
+                cart_phi1 - (2_scalar * idc + 1_scalar) * 0.05_scalar;
 
             point2 start_arc = {
                 static_cast<scalar>(origin_x + cart_r * std::cos(cart_phi0)),
@@ -646,7 +652,7 @@ svg::object sheet(const std::string& id_,
                 info_font);
             scalar offsx =
                 static_cast<scalar>((ib * (1 + sub_offset) + 0.7) * sh_[0]);
-            scalar offsy = std::abs(0.1 * y_axis[1]);
+            scalar offsy = std::abs(0.1_scalar * y_axis[1]);
             // Let's set them to the right side outside the view
             std::for_each(
                 c_objects.begin(), c_objects.end(), [&](svg::object& o_) {

@@ -106,7 +106,7 @@ struct surface {
     /// Dedicated regular disc/cylinder descriptions
     /// - if this is not applicable the _vertices view needs to be chosen
     std::array<scalar, 2> _radii = {0., 0.};
-    std::array<scalar, 2> _opening = {-M_PI, M_PI};
+    std::array<scalar, 2> _opening = {-pi, pi};
     std::array<scalar, 2> _zparameters = {0., 0.};
 
     /// Boolean surfaces
