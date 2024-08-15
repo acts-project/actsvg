@@ -17,6 +17,7 @@
 #include "actsvg/core.hpp"
 #include "actsvg/display/tools.hpp"
 #include "actsvg/proto/surface.hpp"
+#include "actsvg/styles/defaults.hpp"
 
 namespace actsvg {
 
@@ -26,14 +27,16 @@ namespace display {
 
 struct surface_options {
 
-    // @param b_ draw the boolean
+    /// @param _boolean_shape draw the boolean
     bool _boolean_shape = true;
-    // @param fs_ draw at focus
+    /// @param _focus draw at focus
     bool _focus = false;
-    // @param sc_ draw at scale
+    /// @param _draw_at_scale draw at scale
     bool _draw_at_scale = false;
-    // @param dt_ draw as template
+    /// @param _draw_as_template draw as template
     bool _draw_as_template = false;
+    /// @param _label_measures draw the labels
+    bool _label_measures = false;
 };
 
 /** Draw the surface with a dedicated view
@@ -95,33 +98,28 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             annulusCircleIx(origin_x, origin_y, max_r, min_phi_rel);
         auto out_left_s_xy =
             annulusCircleIx(origin_x, origin_y, max_r, max_phi_rel);
-
-        std::cout << "r_i_l = " << in_left_s_xy[0] << ", " << in_left_s_xy[1]
-                  << std::endl;
-        std::cout << "r_i_r = " << in_right_s_xy[0] << ", " << in_right_s_xy[1]
-                  << std::endl;
-        std::cout << "r_o_r  = " << out_right_s_xy[0] << ", "
-                  << out_right_s_xy[1] << std::endl;
-        std::cout << "r_o_l = " << out_left_s_xy[0] << ", " << out_left_s_xy[1]
-                  << std::endl;
-
+        // For drawing, this needs a shift
+        scalar irx = in_right_s_xy[0] - origin_x;
+        scalar iry = in_right_s_xy[1] - origin_y;
+        scalar ilx = in_left_s_xy[0] - origin_x;
+        scalar ily = in_left_s_xy[1] - origin_y;
+        scalar orx = out_right_s_xy[0] - origin_x;
+        scalar ory = out_right_s_xy[1] - origin_y;
+        scalar olx = out_left_s_xy[0] - origin_x;
+        scalar oly = out_left_s_xy[1] - origin_y;
         // Dedicated path drawing of the annulus bounds
         s._tag = "path";
         s._id = id_;
-        std::string path = "M " + std::to_string(in_right_s_xy[0]) + " " +
-                           std::to_string(-in_right_s_xy[1]);
+        std::string path =
+            "M " + std::to_string(irx) + " " + std::to_string(-iry);
         path += " A " + std::to_string(min_r) + " " + std::to_string(min_r);
         path += " 0 0 0 ";
-        path += std::to_string(in_left_s_xy[0]) + " " +
-                std::to_string(-in_left_s_xy[1]);
-        path += " L " + std::to_string(out_left_s_xy[0]) + " " +
-                std::to_string(-out_left_s_xy[1]);
+        path += std::to_string(ilx) + " " + std::to_string(-ily);
+        path += " L " + std::to_string(olx) + " " + std::to_string(-oly);
         path += " A " + std::to_string(max_r) + " " + std::to_string(max_r);
         path += " 0 0 1 ";
-        path += std::to_string(out_right_s_xy[0]) + " " +
-                std::to_string(-out_right_s_xy[1]);
-        path += " L " + std::to_string(in_right_s_xy[0]) + " " +
-                std::to_string(-in_right_s_xy[1]);
+        path += std::to_string(orx) + " " + std::to_string(-ory);
+        path += " L " + std::to_string(irx) + " " + std::to_string(-iry);
         s._attribute_map["d"] = path;
         s._fill = s_._fill;
         s._stroke = s_._stroke;
@@ -130,6 +128,56 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             s._x_range = {-max_r, max_r};
             s._y_range = {-max_r, max_r};
         }
+
+        if (o_._label_measures) {
+
+            // make a copy & a group out of the object
+            auto sc = s;
+            s = svg::object{};
+            s._tag = "g";
+            s._id = id_ + "_labeled_group";
+            s.add_object(sc);
+
+            // Draw min / max circles
+            s.add_object(draw::circle(id_ + "_inner_circle", {0., 0}, min_r,
+                                      style::fill{},
+                                      defaults::__bl_dotted_stroke));
+            s.add_object(draw::circle(id_ + "_outer_circle", {0., 0}, max_r,
+                                      style::fill{},
+                                      defaults::__bl_dotted_stroke));
+
+            // Define the origin of the strip system & draw the lines
+            point2 origin = {-origin_x, -origin_y};
+            auto el0 = point2{olx, oly};
+            auto el1 = point2{orx, ory};
+            std::array<point2, 2u> lines = {el0, el1};
+            for (const auto [il, lline] : utils::enumerate(lines)) {
+                point2 dline = utils::unit_direction<>(origin, lline);
+                point2 dneg = utils::scale<point2, 2u>(dline, -0.2 * min_r);
+                point2 dpos = utils::scale<point2, 2u>(dneg, -1.);
+
+                auto line = draw::line(id_ + "_line" + std::to_string(il),
+                                       utils::add<point2, 2u>(origin, dneg),
+                                       utils::add<point2, 2u>(lline, dpos),
+                                       defaults::__bl_dotted_stroke);
+                line._transform = draw_transform;
+                s.add_object(line);
+            }
+        }
+
+        // Package into a translated group if we have a surfade transform
+        if (s_._surface_transform.has_value()) {
+            const auto& sfg = s_._surface_transform.value();
+            if (sfg._translation[0] != 0. || sfg._translation[1] != 0.) {
+                auto tg = s;
+                s = svg::object{};
+                s._id = id_ + "_translated";
+                s._tag = "g";
+                s._transform._tr = {-sfg._translation[0], sfg._translation[1]};
+                s.add_object(tg);
+            }
+        }
+
     } else if (s_._type == surface_type::type::e_disc) {
 
         // x-y view for discs

@@ -38,6 +38,8 @@ style::fill __r_fill;
 style::stroke __r_stroke;
 style::fill __bl_fill;
 style::stroke __bl_stroke;
+style::stroke __bl_dashed_stroke;
+style::stroke __bl_dotted_stroke;
 style::fill __nn_fill;
 style::stroke __nn_stroke;
 style::gradient __rgb_gradient;
@@ -102,6 +104,14 @@ static bool create_defaults() {
     // Blacks
     __bl_fill._fc._rgb = {0, 0, 0};
     __bl_stroke._sc._rgb = {0, 0, 0};
+
+    // Black dashed 
+    __bl_dashed_stroke._sc._rgb = {0,0,0};
+    __bl_dashed_stroke._dasharray = { 3, 3 };
+
+    // Black dashed 
+    __bl_dotted_stroke._sc._rgb = {0,0,0};
+    __bl_dotted_stroke._dasharray = { 1, 1 };
 
     // Nulls
     __nn_fill = style::fill();
