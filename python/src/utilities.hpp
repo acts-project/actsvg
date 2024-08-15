@@ -42,7 +42,9 @@ struct to_int {
 
     using return_type = int;
 
-    return_type operator()(const std::string& s) const { return std::atoi(s.c_str()); }
+    return_type operator()(const std::string& s) const {
+        return std::atoi(s.c_str());
+    }
 };
 
 /// Translate to scalar
@@ -50,7 +52,9 @@ struct to_scalar {
 
     using return_type = scalar;
 
-    return_type operator()(const std::string& s) const { return std::atof(s.c_str()); }
+    return_type operator()(const std::string& s) const {
+        return std::atof(s.c_str());
+    }
 };
 
 /// Translate to string
@@ -72,7 +76,7 @@ template <typename translator_type>
 std::vector<typename translator_type::return_type> split_string(
     const std::string& source, char sc, std::vector<unsigned int> ignore = {}) {
 
-    // Temporary values  
+    // Temporary values
     std::string temp;
     std::stringstream stringstream{source};
     std::vector<typename translator_type::return_type> result;

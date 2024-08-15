@@ -111,7 +111,6 @@ void add_core_module(context& ctx) {
 
         /// Draw a gradient box
         d.def("gradient_box", &draw::gradient_box);
-
     }
 }
 }  // namespace python

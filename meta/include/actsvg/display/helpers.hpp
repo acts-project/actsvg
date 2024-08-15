@@ -1,6 +1,6 @@
 // This file is part of the actsvg packge.
 //
-// Copyright (C) 2022 CERN for the benefit of the ACTS project
+// Copyright (C) 2022-2024 CERN for the benefit of the ACTS project
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -236,8 +236,8 @@ process_modules(const volume_type& v_, const view_type& view_,
             }
 
             auto surface_module =
-                display::surface(draw_surface._name, draw_surface, view_, true,
-                                 false, true, false);
+                display::surface(draw_surface._name, draw_surface, view_,
+                                 {true, false, true, false});
             modules.push_back(surface_module);
         }
         all_modules.push_back(modules);

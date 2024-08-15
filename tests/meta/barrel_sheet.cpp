@@ -136,7 +136,7 @@ proto::volume<point3_container> generate_barrel(
 
                 barrel_module._template_object = display::surface(
                     barrel_module._name + "_template", barrel_module_template,
-                    x_y_view, true, true, true, true);
+                    x_y_view, {true, true, true, true});
 
                 regular.push_back(barrel_module);
 
@@ -180,8 +180,8 @@ proto::volume<point3_container> generate_barrel(
 
                     barrel_module_backside._template_object =
                         display::surface(barrel_module._name + "_template",
-                                         barrel_module_template, x_y_view, true,
-                                         true, true, true);
+                                         barrel_module_template, x_y_view,
+                                         {true, true, true, true});
 
                     backside.push_back(barrel_module_backside);
                 }
