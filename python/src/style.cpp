@@ -79,9 +79,9 @@ void add_style_module(context& ctx) {
                                const style::fill& f, const style::stroke& s) {
                      return style::marker{t, sz, f, s};
                  }),
-                 py::arg("type"), py::arg("size"), py::arg("fill") = style::fill{},
+                 py::arg("type"), py::arg("size"),
+                 py::arg("fill") = style::fill{},
                  py::arg("stroke") = style::stroke{});
-
     }
 
     {

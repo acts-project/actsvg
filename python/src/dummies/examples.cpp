@@ -12,7 +12,6 @@
 
 #include "../utilities.hpp"
 
-
 namespace py = pybind11;
 using namespace pybind11::literals;
 

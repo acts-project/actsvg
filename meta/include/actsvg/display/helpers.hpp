@@ -236,8 +236,8 @@ process_modules(const volume_type& v_, const view_type& view_,
             }
 
             auto surface_module =
-                display::surface(draw_surface._name, draw_surface, view_, {true,
-                                 false, true, false});
+                display::surface(draw_surface._name, draw_surface, view_,
+                                 {true, false, true, false});
             modules.push_back(surface_module);
         }
         all_modules.push_back(modules);

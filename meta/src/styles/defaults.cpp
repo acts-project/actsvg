@@ -105,13 +105,13 @@ static bool create_defaults() {
     __bl_fill._fc._rgb = {0, 0, 0};
     __bl_stroke._sc._rgb = {0, 0, 0};
 
-    // Black dashed 
-    __bl_dashed_stroke._sc._rgb = {0,0,0};
-    __bl_dashed_stroke._dasharray = { 3, 3 };
+    // Black dashed
+    __bl_dashed_stroke._sc._rgb = {0, 0, 0};
+    __bl_dashed_stroke._dasharray = {3, 3};
 
-    // Black dashed 
-    __bl_dotted_stroke._sc._rgb = {0,0,0};
-    __bl_dotted_stroke._dasharray = { 1, 1 };
+    // Black dashed
+    __bl_dotted_stroke._sc._rgb = {0, 0, 0};
+    __bl_dotted_stroke._dasharray = {1, 1};
 
     // Nulls
     __nn_fill = style::fill();

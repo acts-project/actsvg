@@ -103,7 +103,7 @@ void add_proto_module(context& ctx) {
                         sf._measures = bounds;
                         auto identity = surface::transform3::identity();
                         if (translation != identity._translation ||
-                            rotation != identity._rotation) {                            
+                            rotation != identity._rotation) {
                             // Set the predefined transform
                             sf._surface_transform =
                                 surface::transform3{translation, rotation};
@@ -112,10 +112,10 @@ void add_proto_module(context& ctx) {
                             // Force the translation of the transofrm to 0
                             sf._transform._tr = {0., 0.};
                             scalar alpha = std::acos(sfx[0]) / M_PI * 180;
-                            if (sfx[1] < 0.){
+                            if (sfx[1] < 0.) {
                                 alpha += 180.;
                             }
-                            sf._transform._rot = {alpha, 0.,0.};
+                            sf._transform._rot = {alpha, 0., 0.};
                         }
                         sf._fill = f;
                         sf._stroke = s;
