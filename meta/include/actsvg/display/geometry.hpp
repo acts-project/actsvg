@@ -80,7 +80,6 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
     // Surface directly
     if (s_._type == surface_type::type::e_annulus) {
-
         // Special annulus bounds code
         scalar min_r = s_._measures[0];
         scalar max_r = s_._measures[1];
@@ -98,28 +97,50 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             annulusCircleIx(origin_x, origin_y, max_r, min_phi_rel);
         auto out_left_s_xy =
             annulusCircleIx(origin_x, origin_y, max_r, max_phi_rel);
+
+        point2 translation = {0., 0.};
+        if (s_._surface_transform.has_value()) {
+            const auto& srot = s_._surface_transform.value()._rotation;
+            scalar alpha = std::acos(srot[0][0]);
+            if (srot[1][0] < 0) {
+                alpha = -alpha;
+            }
+            in_left_s_xy = utils::rotate(in_left_s_xy, alpha);
+            in_right_s_xy = utils::rotate(in_right_s_xy, alpha);
+            out_right_s_xy = utils::rotate(out_right_s_xy, alpha);
+            out_left_s_xy = utils::rotate(out_left_s_xy, alpha);
+
+            const auto& str = s_._surface_transform.value()._translation;
+            translation = {str[0], str[1]};
+            in_left_s_xy = utils::add<point2, 2u>(in_left_s_xy, translation);
+            in_right_s_xy = utils::add<point2, 2u>(in_right_s_xy, translation);
+            out_right_s_xy =
+                utils::add<point2, 2u>(out_right_s_xy, translation);
+            out_left_s_xy = utils::add<point2, 2u>(out_left_s_xy, translation);
+        }
+
         // For drawing, this needs a shift
-        scalar irx = in_right_s_xy[0] - origin_x;
-        scalar iry = in_right_s_xy[1] - origin_y;
-        scalar ilx = in_left_s_xy[0] - origin_x;
-        scalar ily = in_left_s_xy[1] - origin_y;
-        scalar orx = out_right_s_xy[0] - origin_x;
-        scalar ory = out_right_s_xy[1] - origin_y;
-        scalar olx = out_left_s_xy[0] - origin_x;
-        scalar oly = out_left_s_xy[1] - origin_y;
+        scalar irx = in_right_s_xy[0];
+        scalar iry = in_right_s_xy[1];
+        scalar ilx = in_left_s_xy[0];
+        scalar ily = in_left_s_xy[1];
+        scalar orx = out_right_s_xy[0];
+        scalar ory = out_right_s_xy[1];
+        scalar olx = out_left_s_xy[0];
+        scalar oly = out_left_s_xy[1];
         // Dedicated path drawing of the annulus bounds
         s._tag = "path";
         s._id = id_;
         std::string path =
-            "M " + std::to_string(irx) + " " + std::to_string(-iry);
+            "M " + std::to_string(irx) + " " + std::to_string(iry);
         path += " A " + std::to_string(min_r) + " " + std::to_string(min_r);
-        path += " 0 0 0 ";
-        path += std::to_string(ilx) + " " + std::to_string(-ily);
-        path += " L " + std::to_string(olx) + " " + std::to_string(-oly);
-        path += " A " + std::to_string(max_r) + " " + std::to_string(max_r);
         path += " 0 0 1 ";
-        path += std::to_string(orx) + " " + std::to_string(-ory);
-        path += " L " + std::to_string(irx) + " " + std::to_string(-iry);
+        path += std::to_string(ilx) + " " + std::to_string(ily);
+        path += " L " + std::to_string(olx) + " " + std::to_string(oly);
+        path += " A " + std::to_string(max_r) + " " + std::to_string(max_r);
+        path += " 0 0 0 ";
+        path += std::to_string(orx) + " " + std::to_string(ory);
+        path += " L " + std::to_string(irx) + " " + std::to_string(iry);
         s._attribute_map["d"] = path;
         s._fill = s_._fill;
         s._stroke = s_._stroke;
@@ -130,7 +151,6 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         }
 
         if (o_._label_measures) {
-
             // make a copy & a group out of the object
             auto sc = s;
             s = svg::object{};
@@ -164,20 +184,6 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                 s.add_object(line);
             }
         }
-
-        // Package into a translated group if we have a surfade transform
-        if (s_._surface_transform.has_value()) {
-            const auto& sfg = s_._surface_transform.value();
-            if (sfg._translation[0] != 0. || sfg._translation[1] != 0.) {
-                auto tg = s;
-                s = svg::object{};
-                s._id = id_ + "_translated";
-                s._tag = "g";
-                s._transform._tr = {-sfg._translation[0], sfg._translation[1]};
-                s.add_object(tg);
-            }
-        }
-
     } else if (s_._type == surface_type::type::e_disc) {
 
         // x-y view for discs
