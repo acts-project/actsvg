@@ -445,6 +445,26 @@ svg::object connected_text(const std::string &id_, const point2 &p_,
     return t;
 }
 
+svg::object image_box(const std::string &id_, const std::string &href_) {
+    svg::object i;
+
+    i._tag = "g";
+    i._id = id_;
+
+    svg::object imgb;
+    imgb._tag = "image";
+    imgb._attribute_map["href"] = href_;
+    imgb._attribute_map["height"] = "300";
+    imgb._attribute_map["width"] = "300";
+    imgb._attribute_map["x"] = "180";
+    imgb._attribute_map["y"] = "-26";
+    imgb._attribute_map["onerror"] = "this.onerror=null;this.href.baseVal='../../../../src/NoPull.png';";
+
+    i.add_object(imgb);
+
+    return i;
+}
+
 svg::object connected_info_box(
     const std::string &id_, const point2 &p_, const std::string &title_,
     const style::fill &title_fill_, const style::font &title_font_,
@@ -494,6 +514,10 @@ svg::object connected_info_box(
              text_, text_font_);
     ib.add_object(te);
 
+
+    auto img = image_box(id_ + "pull_distr", "../../../css/img/" + id_ + ".png");
+    ib.add_object(img);
+
     // Connect it
     if (object_.is_defined()) {
         ib._attribute_map["display"] = "none";
@@ -505,6 +529,7 @@ svg::object connected_info_box(
         on._attribute_map["from"] = "none";
         on._attribute_map["to"] = "block";
         on._attribute_map["begin"] = object_._id + __d + highlight_[1];
+        on._attribute_map["fill-opacity"] = 1;
 
         svg::object off;
 
