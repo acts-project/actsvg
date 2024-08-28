@@ -57,7 +57,8 @@ inline static proto::trajectory<point3_type> generate_helix(
     scalar phi_step = (phi_range_[1] - phi_range_[0]) / n_points_;
 
     for (std::size_t i = 0; i < n_points_; ++i) {
-        scalar phi = phi_range_[0] + std::copysign(i, o_) * phi_step;
+        scalar phi = phi_range_[0] +
+                     static_cast<scalar>(std::copysign(i, o_)) * phi_step;
         scalar x = center[0] + radius_ * std::cos(phi0 + phi);
         scalar y = center[1] + radius_ * std::sin(phi0 + phi);
         scalar z = center[2] + direction_[2] * phi;

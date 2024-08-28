@@ -19,10 +19,6 @@ namespace actsvg {
 /// depicts one Pixel endcap layer
 namespace data {
 
-extern std::vector<std::array<scalar, 3u>> odd_pixel_endcap;
-
-extern std::vector<std::vector<size_t>> odd_pixel_endcap_assoc;
-
 using trapezoid = std::vector<std::array<scalar, 3u>>;
 
 std::vector<trapezoid> generate_endcap_modules();

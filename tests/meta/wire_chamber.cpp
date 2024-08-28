@@ -41,9 +41,9 @@ std::vector<proto::surface<point3_container>> wire_chamber(
     std::vector<proto::surface<point3_container>> wires;
 
     // packing in r and offset in y & length in x
-    scalar r_pack = r_tube * std::sqrt(3.);
+    scalar r_pack = r_tube * static_cast<scalar>(std::sqrt(3.));
     scalar c_y = (n_layers % 2) ? -(n_layers - 1) / 2 * r_pack
-                                : -(n_layers / 2 - 0.5) * r_pack;
+                                : -(n_layers / 2 - 0.5_scalar) * r_pack;
     scalar m_lx = (2 * n_tubes + 1) * r_tube;
     for (unsigned int il = 0u; il < n_layers; ++il) {
         // positioningin y
@@ -51,7 +51,7 @@ std::vector<proto::surface<point3_container>> wire_chamber(
         scalar offset_x = (il % 2) * r_tube;
         for (unsigned it = 0u; it < n_tubes; ++it) {
             // The x position
-            scalar t_x = -0.5 * m_lx + (2 * it + 1) * r_tube + offset_x;
+            scalar t_x = -0.5_scalar * m_lx + (2 * it + 1) * r_tube + offset_x;
             // Creat a wire
             proto::surface<point3_container> wire;
             wire._radii = {1., r_tube};
@@ -137,7 +137,7 @@ TEST(proto, wire_chamber_with_track) {
 
     // Track start
     point2 start = {-200, -300};
-    scalar alpha = 1.3;
+    scalar alpha = 1.3_scalar;
 
     for (const auto& s : all_wires) {
         // Collect the wire positions

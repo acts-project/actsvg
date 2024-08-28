@@ -38,7 +38,8 @@ fill::fill(bool s_) : _sterile(s_) {
 }
 
 rgb gradient::rgb_from_scale(scalar s_) const {
-    scalar s_reg = s_ < 0. ? 0. : (s_ > 1. ? 1. : s_);
+    scalar s_reg =
+        s_ < 0._scalar ? 0._scalar : (s_ > 1._scalar ? 1._scalar : s_);
     // find our stops
     unsigned int is = 1u;
     for (; is <= _stops.size(); ++is) {
@@ -117,25 +118,26 @@ void label::place(const std::array<scalar, 2u> &lhc_,
 
     // First determine the y position
     if (_vertical == vertical::top) {
-        y = rhc_[1] + 0.6 * _font._size;
+        y = rhc_[1] + 0.6_scalar * _font._size;
     } else if (_vertical == vertical::bottom) {
-        y = lhc_[1] - 1.1 * _font._size;
+        y = lhc_[1] - 1.1_scalar * _font._size;
     } else if (_vertical == vertical::center) {
-        y = 0.5 * (lhc_[1] + rhc_[1] - _font._size);
+        y = 0.5_scalar * (lhc_[1] + rhc_[1] - _font._size);
     }
 
     if (_horizontal == horizontal::left) {
         x = lhc_[0];
         if (_vertical == vertical::center) {
-            x -= 0.64 * _font._size * _text.size();
+            x -= 0.64_scalar * _font._size * _text.size();
         }
     } else if (_horizontal == horizontal::right) {
-        x = rhc_[0] - 0.6 * _font._size * _text.size();
+        x = rhc_[0] - 0.6_scalar * _font._size * _text.size();
         if (_vertical == vertical::center) {
-            x += 0.64 * _font._size * _text.size();
+            x += 0.64_scalar * _font._size * _text.size();
         }
     } else if (_horizontal == horizontal::center) {
-        x = 0.5 * (lhc_[0] + rhc_[0] - 0.6 * _font._size * _text.size());
+        x = 0.5_scalar *
+            (lhc_[0] + rhc_[0] - 0.6_scalar * _font._size * _text.size());
     }
 
     _position = {x, y};

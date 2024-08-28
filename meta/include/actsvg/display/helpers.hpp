@@ -1,6 +1,6 @@
 // This file is part of the actsvg packge.
 //
-// Copyright (C) 2022 CERN for the benefit of the ACTS project
+// Copyright (C) 2022-2024 CERN for the benefit of the ACTS project
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -116,7 +116,7 @@ views::contour range_contour(const surface_type& s_,
         scalar ro = s_._radii[1];
         scalar phi_low = s_._opening[0];
         scalar phi_high = s_._opening[1];
-        scalar phi = 0.5 * (phi_low + phi_high);
+        scalar phi = 0.5_scalar * (phi_low + phi_high);
         scalar cos_phi_low = std::cos(phi_low);
         scalar sin_phi_low = std::sin(phi_low);
         scalar cos_phi_high = std::cos(phi_high);
@@ -236,8 +236,8 @@ process_modules(const volume_type& v_, const view_type& view_,
             }
 
             auto surface_module =
-                display::surface(draw_surface._name, draw_surface, view_, true,
-                                 false, true, false);
+                display::surface(draw_surface._name, draw_surface, view_,
+                                 {true, false, true, false});
             modules.push_back(surface_module);
         }
         all_modules.push_back(modules);

@@ -47,7 +47,13 @@ void add_style_module(context& ctx) {
         py::class_<style::fill, std::shared_ptr<style::fill>>(s, "fill")
             .def(py::init<>())
             .def(py::init<style::color>(), py::arg("color"))
-            .def(py::init<bool>(), py::arg("sterile"));
+            .def(py::init<bool>(), py::arg("sterile"))
+            .def(py::init([](const std::array<int, 3>& rgb, scalar opacity) {
+                     auto color = style::color{rgb};
+                     color._opacity = opacity;
+                     return style::fill{color};
+                 }),
+                 py::arg("rgb"), py::arg("opacity") = 1.);
     }
 
     {
@@ -56,7 +62,13 @@ void add_style_module(context& ctx) {
             .def(py::init<>())
             .def(py::init<style::color, scalar, std::vector<int>>(),
                  py::arg("color"), py::arg("width"), py::arg("dash"))
-            .def(py::init<bool>(), py::arg("sterile"));
+            .def(py::init<bool>(), py::arg("sterile"))
+            .def(py::init([](const std::array<int, 3>& rgb, scalar width,
+                             std::vector<int> dash) {
+                     return style::stroke{style::color{rgb}, width, dash};
+                 }),
+                 py::arg("rgb"), py::arg("width") = 1.,
+                 py::arg("dash") = std::vector<int>{});
     }
 
     {
@@ -67,8 +79,9 @@ void add_style_module(context& ctx) {
                                const style::fill& f, const style::stroke& s) {
                      return style::marker{t, sz, f, s};
                  }),
-                 py::arg("type"), py::arg("size"), py::arg("fill"),
-                 py::arg("stroke"));
+                 py::arg("type"), py::arg("size"),
+                 py::arg("fill") = style::fill{},
+                 py::arg("stroke") = style::stroke{});
     }
 
     {
@@ -82,7 +95,12 @@ void add_style_module(context& ctx) {
                      return style::font{c, f, s, l_s, st};
                  }),
                  py::arg("color"), py::arg("font_family"), py::arg("size"),
-                 py::arg("line_spacing"), py::arg("style"));
+                 py::arg("line_spacing"), py::arg("style"))
+            .def(py::init([](const std::array<int, 3>& rgb, unsigned int size) {
+                     return style::font{style::color{rgb}, "Andale Mono", size,
+                                        1.4, ""};
+                 }),
+                 py::arg("rgb"), py::arg("size"));
     }
 
     {
@@ -124,7 +142,9 @@ void add_style_module(context& ctx) {
         d.def("white_stroke", []() { return defaults::__w_stroke; });
 
         d.def("font", []() { return defaults::__t_font; });
-        }
+
+        d.def("axis_markers", []() { return defaults::__a_markers; });
+    }
 }
 }  // namespace python
 }  // namespace actsvg

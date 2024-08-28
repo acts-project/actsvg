@@ -44,8 +44,8 @@ void cluster_position(
             scalar high_p0 = boundaries_[BOUNDS - 2][c._cid[DIM - 2] + 1];
             scalar low_p1 = boundaries_[BOUNDS - 1][c._cid[DIM - 1]];
             scalar high_p1 = boundaries_[BOUNDS - 1][c._cid[DIM - 1] + 1];
-            channel_p0 = 0.5 * (low_p0 + high_p0);
-            channel_p1 = 0.5 * (low_p1 + high_p1);
+            channel_p0 = 0.5_scalar * (low_p0 + high_p0);
+            channel_p1 = 0.5_scalar * (low_p1 + high_p1);
             cluster_._measurement[DIM - 2] += data * channel_p0;
             cluster_._measurement[DIM - 1] += data * channel_p1;
         }
@@ -61,7 +61,7 @@ void cluster_position(
             scalar channel_p = 0.;
             scalar low_p = boundaries_[BOUNDS - 1][c._cid[DIM - 1]];
             scalar high_p = boundaries_[BOUNDS - 1][c._cid[DIM - 1] + 1];
-            channel_p = 0.5 * (low_p + high_p);
+            channel_p = 0.5_scalar * (low_p + high_p);
             cluster_._measurement[DIM - 1] += data * channel_p;
         }
     }
@@ -99,7 +99,7 @@ void cluster_position(
                 high_y = boundaries_[BOUNDS - 1][1];
             }
 
-            scalar y = 0.5 * (low_y + high_y);
+            scalar y = 0.5_scalar * (low_y + high_y);
 
             scalar low_x_base =
                 boundaries_[BOUNDS - 3][c._cid[DIM - 2 + dim_x_offset]];
@@ -112,7 +112,7 @@ void cluster_position(
                 high_x_base +
                 slopes[c._cid[DIM - 2 + dim_x_offset] + 1] * (y - y_min);
 
-            scalar x = 0.5 * (low_x + high_x);
+            scalar x = 0.5_scalar * (low_x + high_x);
 
             cluster_._measurement[DIM - 2 + dim_x_offset] += data * x;
 
@@ -121,13 +121,14 @@ void cluster_position(
                 cluster_._measurement[DIM - 1] += data * y;
             }
             cluster_._correlation +=
-                data * (0.5 * (slopes[c._cid[DIM - 2 + dim_x_offset]] +
+                data *
+                (0.5_scalar * (slopes[c._cid[DIM - 2 + dim_x_offset]] +
                                slopes[c._cid[DIM - 2 + dim_x_offset] + 1]));
         }
     }
 
     // Re-scale the entire thing
-    scalar weight = 1. / total_data;
+    scalar weight = 1._scalar / total_data;
 
     for (unsigned int id = 0; id < DIM; ++id) {
         cluster_._measurement[id] *= weight;
@@ -144,7 +145,7 @@ TEST(proto, cluster1D) {
 
     // Or decide to overwrite
     c1._cid = {4};
-    c1._data = 0.6;
+    c1._data = 0.6_scalar;
 
     proto::cluster<1> cl;
     cl._channels = {c1};
@@ -152,17 +153,17 @@ TEST(proto, cluster1D) {
 
 TEST(proto, cluster2D) {
 
-    proto::channel<2> c2a{{3, 1}, 0.5};
-    proto::channel<2> c2b{{3, 2}, 0.2};
+    proto::channel<2> c2a{{3, 1}, 0.5_scalar};
+    proto::channel<2> c2b{{3, 2}, 0.2_scalar};
     proto::cluster<2> cl;
     cl._channels = {c2a, c2b};
 }
 
 TEST(display, cluster1D_x_cart) {
 
-    proto::channel<1> c1a{{2}, 0.3};
-    proto::channel<1> c1b{{3}, 0.5};
-    proto::channel<1> c1c{{4}, 0.2};
+    proto::channel<1> c1a{{2}, 0.3_scalar};
+    proto::channel<1> c1b{{3}, 0.5_scalar};
+    proto::channel<1> c1c{{4}, 0.2_scalar};
     proto::cluster<1> cl;
 
     cl._channels = {c1a, c1b, c1c};
@@ -195,9 +196,9 @@ TEST(display, cluster1D_x_cart) {
 
 TEST(display, cluster1D_y_cart) {
 
-    proto::channel<1> c1a{{2}, 0.3};
-    proto::channel<1> c1b{{3}, 0.5};
-    proto::channel<1> c1c{{4}, 0.2};
+    proto::channel<1> c1a{{2}, 0.3_scalar};
+    proto::channel<1> c1b{{3}, 0.5_scalar};
+    proto::channel<1> c1c{{4}, 0.2_scalar};
     proto::cluster<1> cl;
 
     cl._channels = {c1a, c1b, c1c};
@@ -230,10 +231,10 @@ TEST(display, cluster1D_y_cart) {
 
 TEST(display, cluster2D_cart) {
 
-    proto::channel<2> c2a{{3, 1}, 0.3};
-    proto::channel<2> c2b{{3, 2}, 0.5};
-    proto::channel<2> c2c{{3, 3}, 0.2};
-    proto::channel<2> c2d{{4, 3}, 0.1};
+    proto::channel<2> c2a{{3, 1}, 0.3_scalar};
+    proto::channel<2> c2b{{3, 2}, 0.5_scalar};
+    proto::channel<2> c2c{{3, 3}, 0.2_scalar};
+    proto::channel<2> c2d{{4, 3}, 0.1_scalar};
     proto::cluster<2> cl;
 
     cl._channels = {c2a, c2b, c2c, c2d};
@@ -269,9 +270,9 @@ TEST(display, cluster2D_cart) {
 
 TEST(display, cluster1D_polar_r) {
 
-    proto::channel<1> ca{{1}, 0.3};
-    proto::channel<1> cb{{2}, 0.5};
-    proto::channel<1> cc{{3}, 0.2};
+    proto::channel<1> ca{{1}, 0.3_scalar};
+    proto::channel<1> cb{{2}, 0.5_scalar};
+    proto::channel<1> cc{{3}, 0.2_scalar};
 
     proto::cluster<1> cl;
 
@@ -305,9 +306,9 @@ TEST(display, cluster1D_polar_r) {
 
 TEST(display, cluster1D_polar_phi) {
 
-    proto::channel<1> ca{{4}, 0.3};
-    proto::channel<1> cb{{5}, 0.5};
-    proto::channel<1> cc{{6}, 0.2};
+    proto::channel<1> ca{{4}, 0.3_scalar};
+    proto::channel<1> cb{{5}, 0.5_scalar};
+    proto::channel<1> cc{{6}, 0.2_scalar};
 
     proto::cluster<1> cl;
 
@@ -315,8 +316,8 @@ TEST(display, cluster1D_polar_phi) {
 
     cl._type = proto::cluster<1>::e_polar;
     cl._coords = {proto::cluster<1>::e_phi};
-    cl._truth = {0.51};
-    cl._variance = {0.01};
+    cl._truth = {0.51_scalar};
+    cl._variance = {0.01_scalar};
 
     std::vector<scalar> r_boundaries = {100, 600};
     std::vector<scalar> phi_boundaries = {0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
@@ -342,9 +343,9 @@ TEST(display, cluster1D_polar_phi) {
 
 TEST(display, cluster2D_polar_r_phi) {
 
-    proto::channel<2> ca{{1, 2}, 0.3};
-    proto::channel<2> cb{{2, 2}, 0.5};
-    proto::channel<2> cc{{3, 3}, 0.2};
+    proto::channel<2> ca{{1, 2}, 0.3_scalar};
+    proto::channel<2> cb{{2, 2}, 0.5_scalar};
+    proto::channel<2> cc{{3, 3}, 0.2_scalar};
 
     proto::cluster<2> cl;
 
@@ -352,8 +353,8 @@ TEST(display, cluster2D_polar_r_phi) {
 
     cl._type = proto::cluster<2>::e_polar;
     cl._coords = {proto::cluster<2>::e_r, proto::cluster<2>::e_phi};
-    cl._truth = {375, 0.45};
-    cl._variance = {20., 0.01};
+    cl._truth = {375, 0.45_scalar};
+    cl._variance = {20., 0.01_scalar};
 
     std::vector<scalar> r_boundaries = {100, 200, 300, 400, 500, 600};
     std::vector<scalar> phi_boundaries = {0.25, 0.3, 0.35, 0.4, 0.45, 0.5,
@@ -378,9 +379,9 @@ TEST(display, cluster2D_polar_r_phi) {
 
 TEST(display, cluster1D_fan_x) {
 
-    proto::channel<1> ca{{1}, 0.3};
-    proto::channel<1> cb{{2}, 0.5};
-    proto::channel<1> cc{{3}, 0.2};
+    proto::channel<1> ca{{1}, 0.3_scalar};
+    proto::channel<1> cb{{2}, 0.5_scalar};
+    proto::channel<1> cc{{3}, 0.2_scalar};
 
     proto::cluster<1> cl;
 
@@ -419,9 +420,9 @@ TEST(display, cluster1D_fan_x) {
 
 TEST(display, cluster1D_fan_y) {
 
-    proto::channel<1> ca{{1}, 0.3};
-    proto::channel<1> cb{{2}, 0.5};
-    proto::channel<1> cc{{3}, 0.2};
+    proto::channel<1> ca{{1}, 0.3_scalar};
+    proto::channel<1> cb{{2}, 0.5_scalar};
+    proto::channel<1> cc{{3}, 0.2_scalar};
 
     proto::cluster<1> cl;
 
@@ -457,9 +458,9 @@ TEST(display, cluster1D_fan_y) {
 
 TEST(display, cluster2D_fan_x_y) {
 
-    proto::channel<2> ca{{1, 2}, 0.3};
-    proto::channel<2> cb{{2, 2}, 0.5};
-    proto::channel<2> cc{{3, 3}, 0.2};
+    proto::channel<2> ca{{1, 2}, 0.3_scalar};
+    proto::channel<2> cb{{2, 2}, 0.5_scalar};
+    proto::channel<2> cc{{3, 3}, 0.2_scalar};
 
     proto::cluster<2> cl;
 
@@ -498,9 +499,9 @@ TEST(display, cluster2D_fan_x_y) {
 
 TEST(display, cluster2D_fan_focus) {
 
-    proto::channel<2> ca{{40, 22}, 0.3};
-    proto::channel<2> cb{{41, 22}, 0.5};
-    proto::channel<2> cc{{42, 23}, 0.2};
+    proto::channel<2> ca{{40, 22}, 0.3_scalar};
+    proto::channel<2> cb{{41, 22}, 0.5_scalar};
+    proto::channel<2> cc{{42, 23}, 0.2_scalar};
 
     proto::cluster<2> cl;
 
@@ -508,8 +509,8 @@ TEST(display, cluster2D_fan_focus) {
 
     cl._type = proto::cluster<2>::e_polar;
     cl._coords = {proto::cluster<2>::e_x, proto::cluster<2>::e_y};
-    cl._truth = {375, 0.22};
-    cl._variance = {0.05, 0.25};
+    cl._truth = {375, 0.22_scalar};
+    cl._variance = {0.05_scalar, 0.25_scalar};
 
     std::vector<scalar> x_low_boundaries = {0.};
     x_low_boundaries.reserve(100);
@@ -527,7 +528,7 @@ TEST(display, cluster2D_fan_focus) {
     std::vector<scalar> y_boundaries;
     y_boundaries.reserve(50);
     for (int iy = 0; iy < 51; ++iy) {
-        y_boundaries.push_back(-250. + iy * 10.);
+        y_boundaries.push_back(-250._scalar + iy * 10._scalar);
     }
 
     cluster_position<2, 3>(cl,

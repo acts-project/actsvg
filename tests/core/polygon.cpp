@@ -156,7 +156,7 @@ TEST(draw, disc_sector) {
     blue_fill._fc._opacity = 0.5;
 
     auto blue_sector_vertices =
-        generators::sector_contour(120., 230., -0.15, 0.15);
+        generators::sector_contour(120., 230., -0.15_scalar, 0.15_scalar);
     auto blue_sector =
         draw::polygon("blue_sector", blue_sector_vertices, blue_fill);
 

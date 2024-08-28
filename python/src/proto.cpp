@@ -107,15 +107,6 @@ void add_proto_module(context& ctx) {
                             // Set the predefined transform
                             sf._surface_transform =
                                 surface::transform3{translation, rotation};
-                            // Only x, y view will be transformed correctly
-                            point3 sfx = rotation[0];
-                            scalar tr_y = (sfx[1] > 0.) ? -translation[1]
-                                                        : translation[1];
-                            // Calculate the rotation angle
-                            sf._transform._tr = {translation[0], tr_y};
-                            scalar alpha = std::acos(sfx[0]) / M_PI * 180;
-                            alpha += (sfx[1] > 0.) ? 180 : 0;
-                            sf._transform._rot = {alpha, 0., 0.};
                         }
                         sf._fill = f;
                         sf._stroke = s;

@@ -65,6 +65,11 @@ extern style::stroke __r_stroke;
 extern style::fill __bl_fill;
 extern style::stroke __bl_stroke;
 
+// Black, dashed stroke
+extern style::stroke __bl_dashed_stroke;
+// Black, dashed stroke
+extern style::stroke __bl_dotted_stroke;
+
 // No fill, no stroke
 extern style::fill __nn_fill;
 extern style::stroke __nn_stroke;
