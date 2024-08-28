@@ -445,12 +445,15 @@ svg::object connected_text(const std::string &id_, const point2 &p_,
     return t;
 }
 
-svg::object image_box(const std::string &id_, const std::string &href_) {
+svg::object image_box(
+    const std::string &id_, const std::string &href_, const svg::object &object_,
+    const std::vector<std::string> &highlight_, const std::string &onerror_) {
     svg::object i;
 
     i._tag = "g";
     i._id = id_;
 
+    // Image box object
     svg::object imgb;
     imgb._tag = "image";
     imgb._attribute_map["href"] = href_;
@@ -458,9 +461,35 @@ svg::object image_box(const std::string &id_, const std::string &href_) {
     imgb._attribute_map["width"] = "300";
     imgb._attribute_map["x"] = "180";
     imgb._attribute_map["y"] = "-26";
-    imgb._attribute_map["onerror"] = "this.onerror=null;this.href.baseVal='../../../../src/NoPull.png';";
+    imgb._attribute_map["onerror"] = onerror_;
 
     i.add_object(imgb);
+    // Connect it
+    if (object_.is_defined()) {
+        i._attribute_map["display"] = "none";
+
+        svg::object on;
+        on._tag = "animate";
+        on._attribute_map["fill"] = "freeze";
+        on._attribute_map["attributeName"] = "display";
+        on._attribute_map["from"] = "none";
+        on._attribute_map["to"] = "block";
+        on._attribute_map["begin"] = object_._id + __d + highlight_[1];
+        on._attribute_map["fill-opacity"] = 1;
+
+        svg::object off;
+
+        off._tag = "animate";
+        off._attribute_map["fill"] = "freeze";
+        off._attribute_map["attributeName"] = "display";
+        off._attribute_map["to"] = "none";
+        off._attribute_map["from"] = "block";
+        off._attribute_map["begin"] = object_._id + __d + highlight_[0];
+
+        // Store the animation
+        i._sub_objects.push_back(on);
+        i._sub_objects.push_back(off);
+    }
 
     return i;
 }
@@ -513,10 +542,6 @@ svg::object connected_info_box(
              {p_[0] + title_font_._size, static_cast<scalar>(p_[1] - tih)},
              text_, text_font_);
     ib.add_object(te);
-
-
-    auto img = image_box(id_ + "pull_distr", "../../../css/img/" + id_ + ".png");
-    ib.add_object(img);
 
     // Connect it
     if (object_.is_defined()) {

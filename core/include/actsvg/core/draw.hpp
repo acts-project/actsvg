@@ -231,6 +231,22 @@ svg::object connected_text(
     const style::transform &transform_, const svg::object &object_,
     const std::vector<std::string> &highlight_ = {"mouseover", "mouseout"});
 
+/** Draw a image object - connected
+ *
+ * @param id_ is the image object id
+ * @param href_ is the image object href field
+ * @param object_ is the connected object
+ * @param highlight_ are the hightlighting options
+ * @param onerror_ is the image object onerror field
+ *
+ * @return an svg object with highlight connection
+ *
+ **/
+svg::object image_box(
+    const std::string &id_, const std::string &href_, const svg::object &object_,
+    const std::vector<std::string> &highlight_, const std::string &onerror_);
+
+
 /** Draw a text object - connected
  *
  * @param id_ is the text object id
