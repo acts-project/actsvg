@@ -10,10 +10,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "utilities.hpp"
-
 #include "actsvg/data/odd_pixel_barrel.hpp"
 #include "actsvg/data/odd_pixel_endcap.hpp"
+#include "utilities.hpp"
 
 namespace py = pybind11;
 using namespace pybind11::literals;
@@ -30,13 +29,11 @@ void add_examples_module(context& ctx) {
 
     // Generate modules ressembling a barrel or endcap
     {
-    e.def("generate_barrel_modules", []() {
-        return data::generate_barrel_modules();
-    });
+        e.def("generate_barrel_modules",
+              []() { return data::generate_barrel_modules(); });
 
-    e.def("generate_endcap_modules", []() {
-        return data::generate_endcap_modules();
-    });
+        e.def("generate_endcap_modules",
+              []() { return data::generate_endcap_modules(); });
     }
 }
 }  // namespace python

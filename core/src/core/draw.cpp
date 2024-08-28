@@ -537,9 +537,11 @@ svg::object connected_info_box(
 
     auto tebox = polygon(id_ + "_text_box", tec, text_fill_, stroke_);
     ib.add_object(tebox);
+
+    scalar toffset = text_.size() == 1u ? tih + title_font_._size : tih;
     auto te =
         text(id_ + "_text",
-             {p_[0] + title_font_._size, static_cast<scalar>(p_[1] - tih)},
+             {p_[0] + title_font_._size, static_cast<scalar>(p_[1] - toffset)},
              text_, text_font_);
     ib.add_object(te);
 
@@ -859,12 +861,12 @@ svg::object marker(const std::string &id_, const point2 &at_,
     } else if (marker_._type.find("o") != std::string::npos) {
         // A dot marker
         svg::object dot =
-            circle(id_, at_, 0.5 * size, marker_._fill, marker_._stroke);
+            circle(id_, at_, 0.5_scalar * size, marker_._fill, marker_._stroke);
         marker_group.add_object(dot);
     } else if (marker_._type.find("x") != std::string::npos) {
         scalar a_x = at_[0];
         scalar a_y = at_[1];
-        scalar h_s = 0.5 * size;
+        scalar h_s = 0.5_scalar * size;
         marker_group.add_object(line(id_ + "_ml0", {a_x - h_s, a_y - h_s},
                                      {a_x + h_s, a_y + h_s}, marker_._stroke));
         marker_group.add_object(line(id_ + "_ml1", {a_x - h_s, a_y + h_s},
@@ -905,12 +907,11 @@ svg::object measure(const std::string &id_, const point2 &start_,
     scalar theta = std::atan2(end_[1] - start_[1], end_[0] - start_[0]);
     if (std::abs(end_[1] - start_[1]) <
         std::numeric_limits<scalar>::epsilon()) {
-        theta = (end_[0] > start_[0]) ? 0. : M_PI;
+        theta = (end_[0] > start_[0]) ? 0.0_scalar : pi;
     }
 
     measure_group.add_object(marker(id_ + "_start_tag", {start_[0], start_[1]},
-                                    start_marker_,
-                                    M_PI + static_cast<scalar>(theta)));
+                                    start_marker_, pi + theta));
     measure_group.add_object(marker(id_ + "_end_tag", {end_[0], end_[1]},
                                     end_marker_, static_cast<scalar>(theta)));
 
@@ -938,16 +939,16 @@ svg::object arc_measure(const std::string &id_, scalar r_, const point2 &start_,
     // Arrow is at end point
     if (not start_marker_._type.empty() and
         start_marker_._type != std::string("none")) {
-        scalar theta_start = atan2(start_[1], start_[0]);
+        scalar theta_start = static_cast<scalar>(atan2(start_[1], start_[0]));
         measure_group.add_object(
             marker(id_ + "_start_tag", {start_[0], start_[1]}, start_marker_,
                    static_cast<scalar>(theta_start - 0.5 * M_PI)));
     }
 
-    scalar theta_end = atan2(end_[1], end_[0]);
+    scalar theta_end = static_cast<scalar>(atan2(end_[1], end_[0]));
     measure_group.add_object(
         marker(id_ + "_end_tag", {end_[0], end_[1]}, end_marker_,
-               static_cast<scalar>(theta_end + 0.5 * M_PI)));
+               static_cast<scalar>(theta_end + 0.5_scalar * pi)));
 
     if (not label_.empty()) {
         auto ltext = text(id_ + "_label", label_pos_, {label_}, font_);
@@ -1000,10 +1001,10 @@ svg::object x_y_axes(const std::string &id_,
     };
 
     // Add the markers to the arrows
-    add_marker({x_range_[0], 0.}, 0, 0, M_PI, id_ + "_neg_x_head");
+    add_marker({x_range_[0], 0.}, 0, 0, pi, id_ + "_neg_x_head");
     add_marker({x_range_[1], 0.}, 0, 1, 0., id_ + "pos_x_head");
-    add_marker({0., y_range_[0]}, 1, 0, -0.5 * M_PI, id_ + "neg_y_head");
-    add_marker({0., y_range_[1]}, 1, 1, 0.5 * M_PI, id_ + "pos_y_head");
+    add_marker({0., y_range_[0]}, 1, 0, -0.5_scalar * pi, id_ + "neg_y_head");
+    add_marker({0., y_range_[1]}, 1, 1, 0.5_scalar * pi, id_ + "pos_y_head");
 
     // Add the labels: x
     if (not x_label_.empty()) {
@@ -1076,10 +1077,9 @@ svg::object gradient_box(
     bool label_on = not label_._text.empty();
 
     // Create the box - by hand this time
-    svg::object gbox = draw::rectangle(id_ + "_box",
-                                       {static_cast<scalar>(p_[0u] + 0.5 * w_),
-                                        static_cast<scalar>(p_[1u] + 0.5 * h_)},
-                                       0.5 * w_, 0.5 * h_);
+    svg::object gbox = draw::rectangle(
+        id_ + "_box", {p_[0u] + 0.5_scalar * w_, p_[1u] + 0.5_scalar * h_},
+        0.5_scalar * w_, 0.5_scalar * h_);
     gbox._sterile = true;
     gbox._attribute_map["fill"] = "url(#" + gradient._id + ")";
     gbox._transform = t_;

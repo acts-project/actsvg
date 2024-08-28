@@ -9,6 +9,7 @@
 #pragma once
 
 #include <array>
+#include <cmath>
 #include <string>
 
 namespace actsvg {
@@ -25,6 +26,15 @@ const std::string __d = ".";
 
 /// @todo make configurable via compile time
 using scalar = float;
+
+scalar constexpr operator""_scalar(long double v) {
+    return static_cast<scalar>(v);
+}
+scalar constexpr operator""_scalar(unsigned long long v) {
+    return static_cast<scalar>(v);
+}
+
+static constexpr scalar pi = static_cast<scalar>(M_PI);
 
 using point2 = std::array<scalar, 2>;
 

@@ -117,8 +117,8 @@ TEST(proto, grid_r_phi_full) {
     std::vector<svg::object> tile_ids;
     for (size_t i1 = 0; i1 + 1u < g._edges_1.size(); ++i1) {
         for (size_t i0 = 0; i0 + 1u < g._edges_0.size(); ++i0) {
-            scalar r = 0.5 * (g._edges_0[i0] + g._edges_0[i0 + 1u]);
-            scalar phi = 0.5 * (g._edges_1[i1] + g._edges_1[i1 + 1u]);
+            scalar r = 0.5_scalar * (g._edges_0[i0] + g._edges_0[i0 + 1u]);
+            scalar phi = 0.5_scalar * (g._edges_1[i1] + g._edges_1[i1 + 1u]);
             std::string global_id = "g = [";
             global_id += std::to_string(ig++) + std::string("]");
             std::string local_id = "l = [";

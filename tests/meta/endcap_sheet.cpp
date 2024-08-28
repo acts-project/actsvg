@@ -176,7 +176,7 @@ proto::volume<point3_container> generate_endcap(
         for (unsigned int isc = 0; isc < sectors; ++isc) {
 
             // Current phi-value
-            scalar phi = -M_PI + isc * 2 * half_opening;
+            scalar phi = -pi + isc * 2_scalar * half_opening;
 
             // Create the surface
             proto::surface<point3_container> s;

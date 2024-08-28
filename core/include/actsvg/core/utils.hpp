@@ -195,33 +195,65 @@ point2_type rotate(const point2_type &p_, scalar a_) {
     return p_rot;
 }
 
-/** Helper method toscala a point3 object
+/** Helper method to scale object
  *
- * @param p0_ the point3 object and @param s_ the scale
+ * @param p0_ the point object and @param s_ the scale
  *
- * @return a new point3
+ * @return a new point_type object
  **/
-template <typename point3_type>
-point3_type scale(const point3_type &p0_, scalar s_) {
-    point3_type scaled;
+template <typename point_type, std::size_t kDIM = 3u>
+point_type scale(const point_type &p0_, scalar s_) {
+    point_type scaled;
     scaled[0] = s_ * p0_[0];
     scaled[1] = s_ * p0_[1];
-    scaled[2] = s_ * p0_[2];
+    if constexpr (kDIM == 3u) {
+        scaled[2] = s_ * p0_[2];
+    }
     return scaled;
+}
+
+/** Helper method for making a unit vector
+ *
+ * @param x0_ the starting point
+ * @param x1_ the ending point
+ *
+ * @return the distance
+ **/
+template <typename point_type, std::size_t kDIM = 2u>
+point_type unit_direction(const point_type &x0_, const point_type &x1_) {
+    // 2 dimensional case
+    if constexpr (kDIM == 2u) {
+        scalar length = std::sqrt(std::pow(x1_[0] - x0_[0], 2) +
+                                  std::pow(x1_[1] - x0_[1], 2));
+        scalar norml = 1. / length;
+        return point_type{norml * (x1_[0] - x0_[0]), norml * (x1_[1] - x0_[1])};
+    }
+    // 3 dimensional case
+    if constexpr (kDIM == 3u) {
+        scalar length = std::sqrt(std::pow(x1_[0] - x0_[0], 2) +
+                                  std::pow(x1_[1] - x0_[1], 2) +
+                                  std::pow(x1_[2] - x0_[2], 2));
+        scalar norml = 1. / length;
+        return point_type{norml * (x1_[0] - x0_[0]), norml * (x1_[1] - x0_[1]),
+                          norml * (x1_[2] - x0_[2])};
+    }
+    return point_type{};
 }
 
 /** Helper method to add two point3 objects
  *
- * @param p0_ and @param p1_ the 3D points
+ * @param p0_ and @param p1_ the  points
  *
- * @return a new point3
+ * @return a new point_type object
  **/
-template <typename point3_type>
-point3_type add(const point3_type &p0_, const point3_type &p1_) {
-    point3_type added;
+template <typename point_type, std::size_t kDIM = 3u>
+point_type add(const point_type &p0_, const point_type &p1_) {
+    point_type added;
     added[0] = p0_[0] + p1_[0];
     added[1] = p0_[1] + p1_[1];
-    added[2] = p0_[2] + p1_[2];
+    if constexpr (kDIM == 3u) {
+        added[2] = p0_[2] + p1_[2];
+    }
     return added;
 }
 

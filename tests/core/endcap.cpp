@@ -146,9 +146,9 @@ TEST(endcap, x_y_view_grid) {
     std::vector<scalar> phi_values;
     unsigned int n_sectors = 48;
     phi_values.reserve(n_sectors);
-    scalar phi_step = 2 * M_PI / n_sectors;
+    scalar phi_step = 2_scalar * pi / n_sectors;
     for (unsigned int is = 0; is <= n_sectors; ++is) {
-        scalar c_phi = -M_PI + is * phi_step;
+        scalar c_phi = -pi + is * phi_step;
         phi_values.push_back(c_phi);
     }
     auto grid_sectors = draw::tiled_polar_grid("r_phi_", r_values, phi_values,

@@ -17,6 +17,7 @@
 #include "actsvg/core.hpp"
 #include "actsvg/display/tools.hpp"
 #include "actsvg/proto/surface.hpp"
+#include "actsvg/styles/defaults.hpp"
 
 namespace actsvg {
 
@@ -24,22 +25,32 @@ using namespace defaults;
 
 namespace display {
 
+struct surface_options {
+
+    /// @param _boolean_shape draw the boolean
+    bool _boolean_shape = true;
+    /// @param _focus draw at focus
+    bool _focus = false;
+    /// @param _draw_at_scale draw at scale
+    bool _draw_at_scale = false;
+    /// @param _draw_as_template draw as template
+    bool _draw_as_template = false;
+    /// @param _label_measures draw the labels
+    bool _label_measures = false;
+};
+
 /** Draw the surface with a dedicated view
  *
  * @param id_ the identification of this surface
  * @param s_ the surface type
- * @param v_ the view type
- * @param b_ draw the boolean
- * @param fs_ draw at focus
- * @param sc_ draw at scale
- * @param dt_ draw as template
+ * @param o_ the options struct
  *
  * @note template surfaces ignore the view_type::scene range restriction
  */
 template <typename surface_type, typename view_type>
 svg::object surface(const std::string& id_, const surface_type& s_,
-                    const view_type& v_, bool _b = true, bool fs_ = false,
-                    bool sc_ = false, bool dt_ = false) {
+                    const view_type& v_,
+                    const surface_options& o_ = surface_options{}) {
 
     svg::object s;
 
@@ -48,12 +59,12 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
         style::transform draw_transform = s_._transform;
         // No rotation nor shift as template
-        if (dt_) {
+        if (o_._draw_as_template) {
             draw_transform._tr = {0., 0.};
             draw_transform._rot = {0., 0., 0.};
         }
         // Apply scale or not
-        if (not sc_) {
+        if (!o_._draw_at_scale) {
             draw_transform._scale = {1., 1.};
         }
 
@@ -63,12 +74,12 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         return s;
     }
 
-    style::transform draw_transform = fs_ ? style::transform{} : s_._transform;
+    style::transform draw_transform =
+        o_._focus ? style::transform{} : s_._transform;
     draw_transform._scale = s_._transform._scale;
 
     // Surface directly
     if (s_._type == surface_type::type::e_annulus) {
-
         // Special annulus bounds code
         scalar min_r = s_._measures[0];
         scalar max_r = s_._measures[1];
@@ -87,30 +98,91 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         auto out_left_s_xy =
             annulusCircleIx(origin_x, origin_y, max_r, max_phi_rel);
 
+        point2 translation = {0., 0.};
+        if (s_._surface_transform.has_value()) {
+            const auto& srot = s_._surface_transform.value()._rotation;
+            scalar alpha = std::acos(srot[0][0]);
+            if (srot[1][0] < 0) {
+                alpha = -alpha;
+            }
+            in_left_s_xy = utils::rotate(in_left_s_xy, alpha);
+            in_right_s_xy = utils::rotate(in_right_s_xy, alpha);
+            out_right_s_xy = utils::rotate(out_right_s_xy, alpha);
+            out_left_s_xy = utils::rotate(out_left_s_xy, alpha);
+
+            const auto& str = s_._surface_transform.value()._translation;
+            translation = {str[0], str[1]};
+            in_left_s_xy = utils::add<point2, 2u>(in_left_s_xy, translation);
+            in_right_s_xy = utils::add<point2, 2u>(in_right_s_xy, translation);
+            out_right_s_xy =
+                utils::add<point2, 2u>(out_right_s_xy, translation);
+            out_left_s_xy = utils::add<point2, 2u>(out_left_s_xy, translation);
+        }
+
+        // For drawing, this needs a shift
+        scalar irx = in_right_s_xy[0];
+        scalar iry = in_right_s_xy[1];
+        scalar ilx = in_left_s_xy[0];
+        scalar ily = in_left_s_xy[1];
+        scalar orx = out_right_s_xy[0];
+        scalar ory = out_right_s_xy[1];
+        scalar olx = out_left_s_xy[0];
+        scalar oly = out_left_s_xy[1];
         // Dedicated path drawing of the annulus bounds
         s._tag = "path";
         s._id = id_;
-        std::string path = "M " + std::to_string(in_right_s_xy[0]) + " " +
-                           std::to_string(-in_right_s_xy[1]);
+        std::string path =
+            "M " + std::to_string(irx) + " " + std::to_string(iry);
         path += " A " + std::to_string(min_r) + " " + std::to_string(min_r);
-        path += " 0 0 0 ";
-        path += std::to_string(in_left_s_xy[0]) + " " +
-                std::to_string(-in_left_s_xy[1]);
-        path += " L " + std::to_string(out_left_s_xy[0]) + " " +
-                std::to_string(-out_left_s_xy[1]);
-        path += " A " + std::to_string(max_r) + " " + std::to_string(max_r);
         path += " 0 0 1 ";
-        path += std::to_string(out_right_s_xy[0]) + " " +
-                std::to_string(-out_right_s_xy[1]);
-        path += " L " + std::to_string(in_right_s_xy[0]) + " " +
-                std::to_string(-in_right_s_xy[1]);
+        path += std::to_string(ilx) + " " + std::to_string(ily);
+        path += " L " + std::to_string(olx) + " " + std::to_string(oly);
+        path += " A " + std::to_string(max_r) + " " + std::to_string(max_r);
+        path += " 0 0 0 ";
+        path += std::to_string(orx) + " " + std::to_string(ory);
+        path += " L " + std::to_string(irx) + " " + std::to_string(iry);
         s._attribute_map["d"] = path;
         s._fill = s_._fill;
         s._stroke = s_._stroke;
         s._transform = draw_transform;
-        if (not fs_) {
+        if (!o_._focus) {
             s._x_range = {-max_r, max_r};
             s._y_range = {-max_r, max_r};
+        }
+
+        if (o_._label_measures) {
+            // make a copy & a group out of the object
+            auto sc = s;
+            s = svg::object{};
+            s._tag = "g";
+            s._id = id_ + "_labeled_group";
+            s.add_object(sc);
+
+            // Draw min / max circles
+            s.add_object(draw::circle(id_ + "_inner_circle", {0., 0}, min_r,
+                                      style::fill{},
+                                      defaults::__bl_dotted_stroke));
+            s.add_object(draw::circle(id_ + "_outer_circle", {0., 0}, max_r,
+                                      style::fill{},
+                                      defaults::__bl_dotted_stroke));
+
+            // Define the origin of the strip system & draw the lines
+            point2 origin = {-origin_x, -origin_y};
+            auto el0 = point2{olx, oly};
+            auto el1 = point2{orx, ory};
+            std::array<point2, 2u> lines = {el0, el1};
+            for (const auto [il, lline] : utils::enumerate(lines)) {
+                point2 dline = utils::unit_direction<>(origin, lline);
+                point2 dneg = utils::scale<point2, 2u>(dline, -0.2 * min_r);
+                point2 dpos = utils::scale<point2, 2u>(dneg, -1.);
+
+                auto line = draw::line(id_ + "_line" + std::to_string(il),
+                                       utils::add<point2, 2u>(origin, dneg),
+                                       utils::add<point2, 2u>(lline, dpos),
+                                       defaults::__bl_dotted_stroke);
+                line._transform = draw_transform;
+                s.add_object(line);
+            }
         }
     } else if (s_._type == surface_type::type::e_disc) {
 
@@ -145,14 +217,14 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     s_c_._radii = {0., s_._radii[1u]};
 
                     svg::object outer_mask =
-                        surface(id_ + "_mask_surface_outer", s_c_, v_, false);
+                        surface(id_ + "_mask_surface_outer", s_c_, v_, {false});
                     outer_mask._fill = style::fill{true};
                     outer_mask._stroke = style::stroke{true};
                     outer_mask._attribute_map["fill"] = "white";
 
                     s_c_._radii = {0., s_._radii[0u]};
                     svg::object inner_mask =
-                        surface(id_ + "_mask_surface_inner", s_c_, v_, false);
+                        surface(id_ + "_mask_surface_inner", s_c_, v_, {false});
                     inner_mask._fill = style::fill{true};
                     inner_mask._stroke = style::stroke{true};
                     inner_mask._attribute_map["fill"] = "black";
@@ -216,7 +288,6 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         }
 
     } else if (s_._type == surface_type::type::e_straw) {
-
         // xy view
         if constexpr (std::is_same_v<view_type, views::x_y>) {
             // Skin of the straw
@@ -395,7 +466,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                           draw_transform);
     }
 
-    if (_b) {
+    if (o_._boolean_shape) {
         /// Boolean surfaces only supported for x-y view so far
         if constexpr (std::is_same_v<view_type, views::x_y>) {
             if (s_._boolean_surface.size() == 1u and
@@ -403,7 +474,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                 std::string mask_id = id_ + "_mask";
                 // make a new boolean surface
                 svg::object outer_mask =
-                    surface(id_ + "_mask_surface_outer", s_, v_, false);
+                    surface(id_ + "_mask_surface_outer", s_, v_, {false});
                 outer_mask._fill = style::fill{true};
                 outer_mask._stroke = style::stroke{true};
                 outer_mask._attribute_map["fill"] = "white";
@@ -535,12 +606,12 @@ svg::object portal_link(const std::string& id_,
                 draw::circle(id_ + "_arrow_top_tip",
                              {static_cast<scalar>(link_._start[0u]),
                               static_cast<scalar>(link_._start[1u])},
-                             link_._end_marker._size * 0.1, __w_fill));
+                             link_._end_marker._size * 0.1_scalar, __w_fill));
         } else {
-            scalar d_l_x =
-                link_._end_marker._size * 0.9 * std::cos(0.25 * M_PI);
-            scalar d_l_y =
-                link_._end_marker._size * 0.9 * std::sin(0.25 * M_PI);
+            scalar d_l_x = link_._end_marker._size * 0.9_scalar *
+                           std::cos(0.25_scalar * pi);
+            scalar d_l_y = link_._end_marker._size * 0.9_scalar *
+                           std::sin(0.25_scalar * pi);
             arr_xy.add_object(
                 draw::line(id_ + "_arrow_top_cl0",
                            {static_cast<scalar>(link_._start[0u] - d_l_x),
