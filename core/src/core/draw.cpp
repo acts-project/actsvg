@@ -445,6 +445,58 @@ svg::object connected_text(const std::string &id_, const point2 &p_,
     return t;
 }
 
+svg::object image_box(const std::string &id_, const std::string &href_,
+                      const std::string &height_, const std::string &width_,
+                      const std::string &x_, const std::string &y_,
+                      const svg::object &object_,
+                      const std::vector<std::string> &highlight_,
+                      const std::string &onerror_) {
+    svg::object i;
+
+    i._tag = "g";
+    i._id = id_;
+
+    // Image box object
+    svg::object imgb;
+    imgb._tag = "image";
+    imgb._attribute_map["href"] = href_;
+    imgb._attribute_map["height"] = height_;
+    imgb._attribute_map["width"] = width_;
+    imgb._attribute_map["x"] = x_;
+    imgb._attribute_map["y"] = y_;
+    imgb._attribute_map["onerror"] = onerror_;
+
+    i.add_object(imgb);
+    // Connect it
+    if (object_.is_defined()) {
+        i._attribute_map["display"] = "none";
+
+        svg::object on;
+        on._tag = "animate";
+        on._attribute_map["fill"] = "freeze";
+        on._attribute_map["attributeName"] = "display";
+        on._attribute_map["from"] = "none";
+        on._attribute_map["to"] = "block";
+        on._attribute_map["begin"] = object_._id + __d + highlight_[1];
+        on._attribute_map["fill-opacity"] = 1;
+
+        svg::object off;
+
+        off._tag = "animate";
+        off._attribute_map["fill"] = "freeze";
+        off._attribute_map["attributeName"] = "display";
+        off._attribute_map["to"] = "none";
+        off._attribute_map["from"] = "block";
+        off._attribute_map["begin"] = object_._id + __d + highlight_[0];
+
+        // Store the animation
+        i._sub_objects.push_back(on);
+        i._sub_objects.push_back(off);
+    }
+
+    return i;
+}
+
 svg::object connected_info_box(
     const std::string &id_, const point2 &p_, const std::string &title_,
     const style::fill &title_fill_, const style::font &title_font_,
@@ -507,6 +559,7 @@ svg::object connected_info_box(
         on._attribute_map["from"] = "none";
         on._attribute_map["to"] = "block";
         on._attribute_map["begin"] = object_._id + __d + highlight_[1];
+        on._attribute_map["fill-opacity"] = 1;
 
         svg::object off;
 

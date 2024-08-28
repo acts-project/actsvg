@@ -76,6 +76,8 @@ void add_core_module(context& ctx) {
         /// Draw a connected info box
         d.def("connected_info_box", &draw::connected_info_box);
 
+        d.def("image_box", &draw::image_box);
+
         /// Draw a cartesian grid
         d.def("cartesian_grid", &draw::cartesian_grid);
 

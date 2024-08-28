@@ -91,7 +91,7 @@ if(ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
     endif()
 endif()
 
-option(ACTSVG_BUILD_PYTHON_BINDINGS "Build the python bindings of ACTSVG" OFF)
+option(ACTSVG_BUILD_PYTHON_BINDINGS "Build the python bindings of ACTSVG" ON)
 if(ACTSVG_BUILD_PYTHON_BINDINGS)
     find_package(Python 3.8 REQUIRED COMPONENTS Interpreter Development)
     option(
