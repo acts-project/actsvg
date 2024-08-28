@@ -235,6 +235,10 @@ svg::object connected_text(
  *
  * @param id_ is the image object id
  * @param href_ is the image object href field
+ * @param height_ is the image object height field
+ * @param width_ is the image object width field
+ * @param x_ is the image object x field
+ * @param y_ is the image object y field
  * @param object_ is the connected object
  * @param highlight_ are the hightlighting options
  * @param onerror_ is the image object onerror field
@@ -242,10 +246,12 @@ svg::object connected_text(
  * @return an svg object with highlight connection
  *
  **/
-svg::object image_box(
-    const std::string &id_, const std::string &href_, const svg::object &object_,
-    const std::vector<std::string> &highlight_, const std::string &onerror_);
-
+svg::object image_box(const std::string &id_, const std::string &href_,
+                      const std::string &height_, const std::string &width_,
+                      const std::string &x_, const std::string &y_,
+                      const svg::object &object_,
+                      const std::vector<std::string> &highlight_,
+                      const std::string &onerror_);
 
 /** Draw a text object - connected
  *

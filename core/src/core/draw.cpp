@@ -445,9 +445,12 @@ svg::object connected_text(const std::string &id_, const point2 &p_,
     return t;
 }
 
-svg::object image_box(
-    const std::string &id_, const std::string &href_, const svg::object &object_,
-    const std::vector<std::string> &highlight_, const std::string &onerror_) {
+svg::object image_box(const std::string &id_, const std::string &href_,
+                      const std::string &height_, const std::string &width_,
+                      const std::string &x_, const std::string &y_,
+                      const svg::object &object_,
+                      const std::vector<std::string> &highlight_,
+                      const std::string &onerror_) {
     svg::object i;
 
     i._tag = "g";
@@ -457,10 +460,10 @@ svg::object image_box(
     svg::object imgb;
     imgb._tag = "image";
     imgb._attribute_map["href"] = href_;
-    imgb._attribute_map["height"] = "300";
-    imgb._attribute_map["width"] = "300";
-    imgb._attribute_map["x"] = "180";
-    imgb._attribute_map["y"] = "-26";
+    imgb._attribute_map["height"] = height_;
+    imgb._attribute_map["width"] = width_;
+    imgb._attribute_map["x"] = x_;
+    imgb._attribute_map["y"] = y_;
     imgb._attribute_map["onerror"] = onerror_;
 
     i.add_object(imgb);
