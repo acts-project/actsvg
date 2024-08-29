@@ -446,8 +446,8 @@ svg::object connected_text(const std::string &id_, const point2 &p_,
 }
 
 svg::object image_box(const std::string &id_, const std::string &href_,
-                      const std::string &height_, const std::string &width_,
-                      const std::string &x_, const std::string &y_,
+                      const scalar &height_, const scalar &width_,
+                      const scalar &x_, const scalar &y_,
                       const svg::object &object_,
                       const std::vector<std::string> &highlight_,
                       const std::string &onerror_) {
@@ -460,10 +460,10 @@ svg::object image_box(const std::string &id_, const std::string &href_,
     svg::object imgb;
     imgb._tag = "image";
     imgb._attribute_map["href"] = href_;
-    imgb._attribute_map["height"] = height_;
-    imgb._attribute_map["width"] = width_;
-    imgb._attribute_map["x"] = x_;
-    imgb._attribute_map["y"] = y_;
+    imgb._attribute_map["height"] = utils::to_string(height_);
+    imgb._attribute_map["width"] = utils::to_string(width_);
+    imgb._attribute_map["x"] = utils::to_string(x_);
+    imgb._attribute_map["y"] = utils::to_string(y_);
     imgb._attribute_map["onerror"] = onerror_;
 
     i.add_object(imgb);
@@ -493,6 +493,8 @@ svg::object image_box(const std::string &id_, const std::string &href_,
         i._sub_objects.push_back(on);
         i._sub_objects.push_back(off);
     }
+
+    detail::adapt_range(i, {{x_, y_}, {x_ + width_, y_ + height_}});
 
     return i;
 }
