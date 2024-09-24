@@ -111,7 +111,8 @@ svg::object surface(const std::string& id_, const surface_type& s_,
             out_left_s_xy = utils::rotate(out_left_s_xy, alpha);
 
             const auto& str = s_._surface_transform.value()._translation;
-            translation = {str[0], str[1]};
+            translation = {static_cast<scalar>(str[0]),
+                           static_cast<scalar>(str[1])};
             in_left_s_xy = utils::add<point2, 2u>(in_left_s_xy, translation);
             in_right_s_xy = utils::add<point2, 2u>(in_right_s_xy, translation);
             out_right_s_xy =
