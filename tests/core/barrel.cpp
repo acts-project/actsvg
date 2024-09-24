@@ -43,8 +43,7 @@ TEST(barrel, x_y_view) {
     }
 
     // Add the surfaces
-    barrel_file._objects.insert(barrel_file._objects.end(), modules.begin(),
-                                modules.end());
+    barrel_file.add_objects(modules);
 
     // File output
     std::ofstream barrel_stream;
@@ -80,8 +79,7 @@ TEST(barrel, z_phi_view) {
     }
 
     // Add the surfaces
-    barrel_file._objects.insert(barrel_file._objects.end(), modules.begin(),
-                                modules.end());
+    barrel_file.add_objects(modules);
 
     // File output
     std::ofstream barrel_stream;
@@ -160,12 +158,9 @@ TEST(barrel, z_phi_view_grid) {
                                            grid_color, grid_stroke, scale);
 
     // Add the surfaces
-    barrel_file._objects.insert(barrel_file._objects.end(), modules.begin(),
-                                modules.end());
+    barrel_file.add_objects(modules);
     // Add the grid tiles
-    barrel_file._objects.insert(barrel_file._objects.end(),
-                                grid._sub_objects.begin(),
-                                grid._sub_objects.end());
+    barrel_file.add_objects(grid._sub_objects);
 
     // File output
     std::ofstream barrel_stream;

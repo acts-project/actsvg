@@ -122,57 +122,64 @@ std::ostream &operator<<(std::ostream &os_, const object &o_) {
 }
 
 void file::add_object(const svg::object &o_) {
-    // Add the object
-    if (o_._active) {
-        _objects.push_back(o_);
-    }
+    add_objects({o_});
 }
 
 void file::add_objects(const std::vector<svg::object> &os_) {
     // Add the objects one by one
-    for (const auto &o_ : os_)
-        if (o_._active) {
-            _objects.push_back(o_);
+    for (const auto &o : os_) {
+        if (o._active) {
+            _objects.push_back(o);
+            // Adjust range
+            _x_range[0] = std::min(_x_range[0], o._x_range[0]);
+            _x_range[1] = std::max(_x_range[1], o._x_range[1]);
+            _y_range[0] = std::min(_y_range[0], o._y_range[0]);
+            _y_range[1] = std::max(_y_range[1], o._y_range[1]);
         }
+    }
+}
+
+std::array<scalar, 4> file::view_box() const {
+
+    std::array<scalar, 4> vbox = {-800, -800, 1600, 1600};
+
+    // Enlarge the view box by 10 percent
+    vbox[2] = 1.2_scalar * (_x_range[1] - _x_range[0]);
+    vbox[3] = 1.2_scalar * (_y_range[1] - _y_range[0]);
+
+    // Include a fixed size border
+    vbox[0] = (_x_range[0] - 0.1_scalar * vbox[2]) - _border;
+    vbox[1] = (_y_range[0] - 0.1_scalar * vbox[3]) - _border;
+    vbox[2] += _border;
+    vbox[3] += _border;
+
+    return vbox;
+}
+
+void file::set_view_box(const std::array<scalar, 4> &vbox_) {
+    _view_box = vbox_;
 }
 
 std::ostream &operator<<(std::ostream &os_, const file &f_) {
-    // Do the viewBox adjustment
-    std::array<scalar, 2> x_range = {std::numeric_limits<scalar>::max(),
-                                     std::numeric_limits<scalar>::min()};
-    std::array<scalar, 2> y_range = {std::numeric_limits<scalar>::max(),
-                                     std::numeric_limits<scalar>::min()};
-
-    std::array<scalar, 4> viewBox = {-800, -800, 1600, 1600};
 
     std::map<std::string, svg::object> definitions;
-
     for (const auto &o : f_._objects) {
-        x_range[0] = std::min(x_range[0], o._x_range[0]);
-        x_range[1] = std::max(x_range[1], o._x_range[1]);
-        y_range[0] = std::min(y_range[0], o._y_range[0]);
-        y_range[1] = std::max(y_range[1], o._y_range[1]);
-        for (const auto &d : o._definitions) {
-            definitions[d._id] = d;
+        if (o._active) {
+            for (const auto &d : o._definitions) {
+                definitions[d._id] = d;
+            }
         }
     }
-    // Enlarge the view box by 10 percent
-    viewBox[2] = 1.2_scalar * (x_range[1] - x_range[0]);
-    viewBox[3] = 1.2_scalar * (y_range[1] - y_range[0]);
 
-    // Include a fixed size border
-    viewBox[0] = (x_range[0] - 0.1_scalar * viewBox[2]) - f_._border;
-    viewBox[1] = (y_range[0] - 0.1_scalar * viewBox[3]) - f_._border;
-    viewBox[2] += f_._border;
-    viewBox[3] += f_._border;
+    std::array<scalar, 4> vbox = f_._view_box.value_or(f_.view_box());
 
     if (f_._add_html) {
         os_ << f_._html_head;
     }
     os_ << f_._svg_head;
     os_ << " width=\"" << f_._width << "\" height=\"" << f_._height << "\"";
-    os_ << " viewBox=\"" << viewBox[0] << " " << viewBox[1] << " " << viewBox[2]
-        << " " << viewBox[3] << "\"";
+    os_ << " viewBox=\"" << vbox[0] << " " << vbox[1] << " " << vbox[2] << " "
+        << vbox[3] << "\"";
     os_ << f_._svg_def_end;
     // Write the definitions first
     if (not definitions.empty()) {

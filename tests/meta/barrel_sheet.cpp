@@ -231,12 +231,11 @@ TEST(display, barrel_x_y_view) {
         }
     }
     // Add the surfaces
-    barrel_file._objects.insert(barrel_file._objects.end(), modules.begin(),
-                                modules.end());
+    barrel_file.add_objects(modules);
 
     // Write out the file
     std::ofstream eout;
-    eout.open("barrel_xy_view.svg");
+    eout.open("sheet_barrel_xy_view.svg");
     eout << barrel_file;
     eout.close();
 }

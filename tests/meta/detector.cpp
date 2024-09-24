@@ -251,4 +251,15 @@ TEST(proto, cylindrical_detector) {
     rstream.open("test_meta_cylinder_detector_zr.svg");
     rstream << rfile_zr;
     rstream.close();
+
+    // Let's adjust the view box as a test
+    std::array<scalar, 4u> view_box = rfile_zr.view_box();
+    view_box[0] = -10;
+    view_box[2] *= 0.5;
+    view_box[2] += 100.;
+    rfile_zr.set_view_box(view_box);
+
+    rstream.open("test_meta_cylinder_detector_zr_half.svg");
+    rstream << rfile_zr;
+    rstream.close();
 }

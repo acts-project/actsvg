@@ -44,8 +44,7 @@ TEST(endcap, z_r_view) {
     }
 
     // Add the surfaces
-    ec_file._objects.insert(ec_file._objects.end(), modules.begin(),
-                            modules.end());
+    ec_file.add_objects(modules);
 
     // File output
     std::ofstream ec_stream;
@@ -93,10 +92,8 @@ TEST(endcap, x_y_view) {
     }
 
     // Add the surfaces
-    ec_file._objects.insert(ec_file._objects.end(), modules.begin(),
-                            modules.end());
-    ec_file._objects.insert(ec_file._objects.end(), labels.begin(),
-                            labels.end());
+    ec_file.add_objects(modules);
+    ec_file.add_objects(labels);
 
     // File output
     std::ofstream ec_stream;
@@ -176,16 +173,12 @@ TEST(endcap, x_y_view_grid) {
     // Build the connectors
     auto c_objects = connectors::connect_action(grid_sectors._sub_objects,
                                                 modules, associations);
-    ec_file._objects.insert(ec_file._objects.end(), c_objects.begin(),
-                            c_objects.end());
+    ec_file.add_objects(c_objects);
 
     // Add the surfaces
-    ec_file._objects.insert(ec_file._objects.end(), modules.begin(),
-                            modules.end());
+    ec_file.add_objects(modules);
     // Add the grid sectors
-    ec_file._objects.insert(ec_file._objects.end(),
-                            grid_sectors._sub_objects.begin(),
-                            grid_sectors._sub_objects.end());
+    ec_file.add_objects(grid_sectors._sub_objects);
 
     // File output
     std::ofstream ec_stream;
