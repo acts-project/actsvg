@@ -182,6 +182,13 @@ struct file {
     scalar _height = 800;
     scalar _border = 10;
 
+    std::array<scalar, 2> _x_range = {std::numeric_limits<scalar>::max(),
+                                      std::numeric_limits<scalar>::min()};
+    std::array<scalar, 2> _y_range = {std::numeric_limits<scalar>::max(),
+                                      std::numeric_limits<scalar>::min()};
+
+    std::optional<std::array<scalar, 4>> _view_box = std::nullopt;
+
     std::vector<object> _objects = {};
 
     /** Add an object and respect the min/max range
@@ -196,6 +203,13 @@ struct file {
      **/
     void add_objects(const std::vector<svg::object> &os_);
 
+    /** Get the view box from the x-y range */
+    std::array<scalar, 4> view_box() const;
+
+    /** Set a view box, this will overwrite the auto-determined one */
+    void set_view_box(const std::array<scalar, 4> &vb_);
+
+    /** Write to ostream */
     friend std::ostream &operator<<(std::ostream &os_, const file &f_);
 };
 

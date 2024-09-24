@@ -21,3 +21,12 @@ TEST(svg, empty_object) {
     svg::object empty{"empty"};
     std::stringstream ss;
 }
+
+TEST(svg, file_set_view_box) {
+    svg::file file;
+    file.set_view_box({0, 0, 100, 100});
+    std::stringstream ss;
+    ss << file;
+    std::string svg = ss.str();
+    ASSERT_TRUE(svg.find("viewBox=\"0 0 100 100\"") != std::string::npos);
+}
