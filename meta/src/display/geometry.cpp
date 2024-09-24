@@ -48,6 +48,8 @@ svg::object eta_lines(
             std::array<scalar, 2> end;
             if (theta < theta_cut) {
                 end = {zr_, static_cast<scalar>(zr_ * std::tan(theta))};
+            } else if (theta > M_PI - theta_cut) {
+                end = {-zr_, static_cast<scalar>(-zr_ * std::tan(theta))};
             } else {
                 end = {static_cast<scalar>(rr_ * 1 / std::tan(theta)), rr_};
             }
