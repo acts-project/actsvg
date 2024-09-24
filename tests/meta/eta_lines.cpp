@@ -60,7 +60,7 @@ TEST(meta, eta_lines_full_detector) {
     scalar r = 120;
     scalar z = 300;
 
-    std::vector<scalar> eta_main = { -3, -2, -1, 0, 1, 2, 3};
+    std::vector<scalar> eta_main = {-3, -2, -1, 0, 1, 2, 3};
     style::stroke stroke_main;
     bool label_main = true;
     style::font font_main;
