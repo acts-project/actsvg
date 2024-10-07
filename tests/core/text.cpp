@@ -87,3 +87,34 @@ TEST(text, multiline_text) {
     fo << ftemplate._html_tail;
     fo.close();
 }
+
+TEST(text, multiline_text_outside_playground) {
+
+    svg::file ftemplate;
+
+    svg::object pgo = svg::object::create_group("playground");
+
+    // Set a playground
+    auto pg = test::playground({-400, -400}, {400, 400});
+    pgo.add_object(pg);
+
+    style::color red{{255, 0, 0}};
+    style::font fs;
+    fs._family = "Arial";
+    fs._fc = red;
+
+    // Write out the file, it should adapt the range for the outside text
+    std::ofstream fo;
+    fo.open("test_core_text_multiline_range.svg");
+
+    // Add the text
+    auto t0 = draw::text("t0", {500, 500}, {"line 0", "line 1", "line 2"}, fs);
+    auto t1 = draw::text("t1", {-500, -500},
+                         {"other line 0", "other line 1", "other line 2"}, fs);
+    pgo.add_object(t0);
+    pgo.add_object(t1);
+
+    // Add to the file anf write out
+    ftemplate.add_object(pgo);
+    fo << ftemplate;
+}

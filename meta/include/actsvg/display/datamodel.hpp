@@ -45,9 +45,7 @@ std::pair<svg::object, svg::object> cluster(
     const style::fill& fill_m_ = style::fill{style::color{{0, 0, 255}}},
     const std::array<unsigned int, 2>& expand_ = {2, 2}) {
 
-    svg::object cluster_group;
-    cluster_group._tag = "g";
-    cluster_group._id = id_;
+    svg::object cluster_group = svg::object::create_group(id_);
 
     // Grid indices
     unsigned int i_min = std::numeric_limits<unsigned int>::max();
@@ -293,9 +291,7 @@ std::pair<svg::object, svg::object> cluster(
     }
 
     // Get the focussed grid
-    svg::object grid_area;
-    grid_area._tag = "g";
-    grid_area._id = id_ + std::string("_focussed_grid");
+    svg::object grid_area = svg::object::create_group(id_ + "_focussed_grid");
 
     // Expand
     i_min = (i_min >= expand_[0]) ? i_min - expand_[0] : 0;
@@ -331,9 +327,7 @@ template <typename trajectory_type, typename view_type>
 svg::object trajectory(const std::string& id,
                        const trajectory_type& trajectory_,
                        const view_type& view_, bool bezier_ = false) {
-    svg::object trajectory_group;
-    trajectory_group._tag = "g";
-    trajectory_group._id = id;
+    svg::object trajectory_group = svg::object::create_group(id);
 
     std::vector<point2> points;
     points.reserve(trajectory_._path.size());
@@ -393,9 +387,7 @@ svg::object trajectory(const std::string& id,
 template <typename seed_type, typename view_type>
 svg::object seed(const std::string& id_, const seed_type& seed_,
                  const view_type& view_) {
-    svg::object seed_group;
-    seed_group._tag = "g";
-    seed_group._id = id_;
+    svg::object seed_group = svg::object::create_group(id_);
 
     // Draw the tranjectory if it exist
     if (seed_._trajectory.has_value()) {

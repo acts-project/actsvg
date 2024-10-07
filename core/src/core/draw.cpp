@@ -169,9 +169,7 @@ svg::object bezier(const std::string &id_,
                    const style::stroke &stroke_,
                    const style::transform &transform_) {
 
-    svg::object c;
-    c._tag = "g";
-    c._id = id_;
+    svg::object c = svg::object::create_group(id_);
 
     point2 lx = {0, 0};
     point2 ld = {0, 0};
@@ -396,6 +394,7 @@ svg::object text(const std::string &id_, const point2 &p_,
     t._attribute_map["font-size"] = std::to_string(font_._size);
     t._field_span = font_._size * font_._line_spacing;
 
+    // Get the longest text line
     size_t l = 0;
     for (const auto &tl : text_) {
         l = l > tl.size() ? l : tl.size();
@@ -403,8 +402,8 @@ svg::object text(const std::string &id_, const point2 &p_,
 
     scalar fs = font_._size;
 
-    detail::adapt_range(
-        t, {{x, y - l}, {static_cast<scalar>(x + 0.7 * fs * l), y + l}});
+    detail::adapt_range(t, {{x, y - fs * text_.size()},
+                            {static_cast<scalar>(x + 0.7 * fs * l), y + l}});
 
     t._barycenter = utils::barycenter<std::array<scalar, 2>>(
         {{x, y - l}, {static_cast<scalar>(x + 0.7 * fs * l), y + l}});
@@ -451,10 +450,7 @@ svg::object image_box(const std::string &id_, const std::string &href_,
                       const svg::object &object_,
                       const std::vector<std::string> &highlight_,
                       const std::string &onerror_) {
-    svg::object i;
-
-    i._tag = "g";
-    i._id = id_;
+    svg::object i = svg::object::create_group(id_);
 
     // Image box object
     svg::object imgb;
@@ -506,9 +502,7 @@ svg::object connected_info_box(
     const style::font &text_font_, const style::stroke &stroke_,
     const svg::object &object_, const std::vector<std::string> &highlight_) {
 
-    svg::object ib;
-    ib._tag = "g";
-    ib._id = id_;
+    svg::object ib = svg::object::create_group(id_);
 
     size_t tew = 0;
     for (const auto &t : text_) {
@@ -585,9 +579,7 @@ svg::object cartesian_grid(const std::string &id_,
                            const style::stroke &stroke_,
                            const style::transform &transform_) {
     // The grid group object
-    svg::object grid;
-    grid._tag = "g";
-    grid._id = id_;
+    svg::object grid = svg::object::create_group(id_);
 
     scalar l0_min = l0_edges_[0];
     scalar l0_max = l0_edges_[l0_edges_.size() - 1];
@@ -615,9 +607,7 @@ svg::object tiled_cartesian_grid(const std::string &id_,
                                  const style::stroke &stroke_,
                                  const style::transform &transform_) {
     // The grid group object
-    svg::object grid;
-    grid._tag = "g";
-    grid._id = id_;
+    svg::object grid = svg::object::create_group(id_);
 
     // The list of grid sectors
     for (size_t il0 = 1; il0 < l0_edges_.size(); ++il0) {
@@ -652,9 +642,7 @@ svg::object fan_grid(const std::string &id_,
                      const style::stroke &stroke_,
                      const style::transform &transform_) noexcept(false) {
     // The list of grid sectors
-    svg::object grid;
-    grid._tag = "g";
-    grid._id = id_;
+    svg::object grid = svg::object::create_group(id_);
 
     if (x_low_edges_.size() != x_high_edges_.size()) {
         throw std::invalid_argument(
@@ -698,9 +686,7 @@ svg::object tiled_fan_grid(const std::string &id_,
                            const style::fill &fill_,
                            const style::stroke &stroke_,
                            const style::transform &transform_) noexcept(false) {
-    svg::object grid;
-    grid._tag = "g";
-    grid._id = id_;
+    svg::object grid = svg::object::create_group(id_);
 
     // The list of grid sectors
     std::vector<svg::object> grid_tiles;
@@ -761,9 +747,7 @@ svg::object polar_grid(const std::string &id_,
                        const style::stroke &stroke_,
                        const style::transform &transform_) {
     // The list of grid sectors
-    svg::object grid;
-    grid._tag = "g";
-    grid._id = id_;
+    svg::object grid = svg::object::create_group(id_);
 
     scalar r_min = r_edges_[0];
     scalar r_max = r_edges_[r_edges_.size() - 1];
@@ -802,9 +786,7 @@ svg::object tiled_polar_grid(const std::string &id_,
                              const style::fill &fill_,
                              const style::stroke &stroke_,
                              const style::transform &transform_) {
-    svg::object grid;
-    grid._tag = "g";
-    grid._id = id_;
+    svg::object grid = svg::object::create_group(id_);
 
     for (size_t ir = 1; ir < r_edges_.size(); ++ir) {
         // Grid svg object
@@ -830,8 +812,7 @@ svg::object tiled_polar_grid(const std::string &id_,
 
 svg::object marker(const std::string &id_, const point2 &at_,
                    const style::marker &marker_, scalar rot_) {
-    svg::object marker_group;
-    marker_group._tag = "g";
+    svg::object marker_group = svg::object::create_group(id_);
 
     std::vector<point2> arrow_head;
     auto size = marker_._size;
@@ -901,9 +882,7 @@ svg::object measure(const std::string &id_, const point2 &start_,
                     const style::marker &end_marker_, const style::font &font_,
                     const std::string &label_, const point2 &label_pos_) {
     // Measure group here we go
-    svg::object measure_group;
-    measure_group._tag = "g";
-    measure_group._id = id_;
+    svg::object measure_group = svg::object::create_group(id_);
 
     auto mline = line(id_ + "_line", start_, end_, stroke_);
     measure_group.add_object(mline);
@@ -934,9 +913,7 @@ svg::object arc_measure(const std::string &id_, scalar r_, const point2 &start_,
                         const style::font &font_, const std::string &label_,
                         const point2 &label_pos_) {
     // Measure group here we go
-    svg::object measure_group;
-    measure_group._tag = "g";
-    measure_group._id = id_;
+    svg::object measure_group = svg::object::create_group(id_);
 
     measure_group.add_object(
         arc((id_ + "_arc"), r_, start_, end_, style::fill(), stroke_));
@@ -977,9 +954,7 @@ svg::object x_y_axes(const std::string &id_,
                      const style::stroke &stroke_, const std::string &x_label_,
                      const std::string &y_label_, const style::font &font_,
                      const style::axis_markers<2u> &markers_) {
-    svg::object axes;
-    axes._tag = "g";
-    axes._id = id_;
+    svg::object axes = svg::object::create_group(id_);
 
     auto x =
         line(id_ + "_x_axis", {x_range_[0], 0.}, {x_range_[1], 0.}, stroke_);
@@ -1055,8 +1030,7 @@ svg::object gradient_box(
     const style::label &label_, const style::stroke &stroke_,
     const style::font &font_, const style::transform t_) {
 
-    svg::object g;
-    g._tag = "g";
+    svg::object g = svg::object::create_group(id_);
     g._sterile = true;
 
     auto [w_, h_] = w_h_;
@@ -1141,10 +1115,8 @@ svg::object from_template(const std::string &id_, const svg::object &ro_,
                           const style::fill &f_, const style::stroke &s_,
                           const style::transform t_) {
     // Create new svg object
-    svg::object nsvg;
+    svg::object nsvg = svg::object::create_group(id_);
     nsvg._sterile = true;
-    nsvg._id = id_;
-    nsvg._tag = "g";
 
     // Refer to as the linker object
     svg::object use_obj;

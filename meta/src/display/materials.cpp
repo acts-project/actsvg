@@ -22,9 +22,7 @@ namespace display {
 svg::object surface_material(const std::string& id_,
                              const proto::surface_material& m_) {
 
-    svg::object m;
-    m._tag = "g";
-    m._id = id_;
+    svg::object m = svg::object::create_group(id_);
     m._sterile = true;
 
     // Create the grid object

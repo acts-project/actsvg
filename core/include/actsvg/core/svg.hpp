@@ -101,6 +101,14 @@ struct object {
     /// Summary object
     summary _summary = summary{};
 
+    /// Static constructor for a group
+    static object create_group(const std::string &id_) {
+        object g;
+        g._tag = "g";
+        g._id = id_;
+        return g;
+    }
+
     /// An object is defined if a tag is set
     bool is_defined() const;
 

@@ -29,11 +29,9 @@ static inline svg::object playground(
     const std::vector<scalar>& ticks_x_ = {50., 100.},
     const std::vector<scalar>& ticks_y_ = {50., 100.}) {
 
-    svg::object pg;
+    svg::object pg = svg::object::create_group("playground");
     pg._x_range = {llc_[0], ruc_[0]};
     pg._y_range = {-ruc_[1], -llc_[1]};
-
-    pg._tag = "g";
 
     /// Add a playground
     scalar half = 0.5;
