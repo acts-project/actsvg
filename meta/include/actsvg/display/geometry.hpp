@@ -154,9 +154,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         if (o_._label_measures) {
             // make a copy & a group out of the object
             auto sc = s;
-            s = svg::object{};
-            s._tag = "g";
-            s._id = id_ + "_labeled_group";
+            s = svg::object::create_group(id_ + "_labeled_group");
             s.add_object(sc);
 
             // Draw min / max circles
@@ -515,9 +513,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 template <typename surface_type, typename view_type>
 svg::object oriented_polygon(const std::string& id_, const surface_type& s_,
                              const view_type& v_) {
-    svg::object s;
-    s._tag = "g";
-    s._id = id_;
+    svg::object s = svg::object::create_group(id_);
     s._fill._sterile = true;
     s._stroke._sterile = true;
 
@@ -574,9 +570,7 @@ svg::object portal_link(const std::string& id_,
                         [[maybe_unused]] const portal_type& p_,
                         const typename portal_type::link& link_,
                         const view_type& v_) {
-    svg::object l;
-    l._tag = "g";
-    l._id = id_;
+    svg::object l = svg::object::create_group(id_);
 
     scalar d_z = static_cast<scalar>(link_._end[2u] - link_._start[2u]);
     // View activation / deactivation
@@ -593,9 +587,7 @@ svg::object portal_link(const std::string& id_,
 
     if (std::is_same_v<view_type, views::x_y> and
         d_r <= std::numeric_limits<scalar>::epsilon()) {
-        svg::object arr_xy;
-        arr_xy._tag = "g";
-        arr_xy._id = id_ + "_arrow";
+        svg::object arr_xy = svg::object::create_group(id_ + "_arrow");
         arr_xy.add_object(draw::circle(id_ + "_arrow_top",
                                        {static_cast<scalar>(link_._start[0u]),
                                         static_cast<scalar>(link_._start[1u])},
@@ -653,9 +645,7 @@ svg::object portal_link(const std::string& id_,
 template <typename portal_type, typename view_type>
 svg::object portal(const std::string& id_, const portal_type& p_,
                    const view_type& v_) {
-    svg::object p;
-    p._tag = "g";
-    p._id = id_;
+    svg::object p = svg::object::create_group(id_);
     p._fill._sterile = true;
     p._stroke._sterile = true;
 
@@ -681,9 +671,7 @@ svg::object portal(const std::string& id_, const portal_type& p_,
 template <typename volume_type, typename view_type>
 svg::object volume(const std::string& id_, const volume_type& dv_,
                    const view_type& v_, bool p_ = true, bool s_ = true) {
-    svg::object v;
-    v._tag = "g";
-    v._id = id_;
+    svg::object v = svg::object::create_group(id_);
     v._fill._sterile = true;
     v._stroke._sterile = true;
 
@@ -751,9 +739,7 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
 template <typename detector_type, typename view_type>
 svg::object detector(const std::string& id_, const detector_type& d_,
                      const view_type& v_) {
-    svg::object d;
-    d._tag = "g";
-    d._id = id_;
+    svg::object d = svg::object::create_group(id_);
     d._fill._sterile = true;
     d._stroke._sterile = true;
 

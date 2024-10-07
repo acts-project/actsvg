@@ -28,9 +28,7 @@ svg::object eta_lines(
                                  style::font>>& els_,
     const style::transform& tr_) {
 
-    svg::object e;
-    e._tag = "g";
-    e._id = id_;
+    svg::object e = svg::object::create_group(id_);
     e._transform = tr_;
 
     auto theta_from_eta = [](scalar eta) -> scalar {

@@ -25,9 +25,7 @@ namespace display {
 svg::object grid(const std::string& id_, const proto::grid& g_) {
 
     // The grid object
-    svg::object g;
-    g._id = id_;
-    g._tag = "g";
+    svg::object g = svg::object::create_group(id_);
 
     // Get the tiles
     std::vector<svg::object> grid_tiles;

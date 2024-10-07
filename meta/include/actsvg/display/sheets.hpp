@@ -48,9 +48,7 @@ svg::object surface_sheet_xy(const std::string& id_,
                              const proto::surface<point3_container>& s_,
                              const std::array<scalar, 2>& sh_ = {400., 400.},
                              bool fs_ = false) noexcept(false) {
-    svg::object so;
-    so._tag = "g";
-    so._id = id_;
+    svg::object so = svg::object::create_group(id_);
 
     views::x_y x_y_view;
 
@@ -550,9 +548,7 @@ svg::object sheet(const std::string& id_,
                   sheet_type t_ = e_module_info,
                   const std::array<scalar, 2>& s_sh_ = {600., 600.}) {
 
-    svg::object o_sheet;
-    o_sheet._tag = "g";
-    o_sheet._id = id_;
+    svg::object o_sheet = svg::object::create_group(id_);
 
     view_type view;
 
@@ -598,9 +594,8 @@ svg::object sheet(const std::string& id_,
                 s_fill._fc._opacity = s._fill._fc._opacity;
                 s._fill = s_fill;
                 // The template sheet
-                svg::object s_sheet;
-                s_sheet._id = s._name + "_surface_sheet";
-                s_sheet._tag = "g";
+                svg::object s_sheet =
+                    svg::object::create_group(s._name + "_surface_sheet");
                 // Background panel
                 auto bg_panel =
                     draw::rectangle(s._name + "_surface_sheet_bg", {0, 0},
@@ -667,9 +662,8 @@ svg::object sheet(const std::string& id_,
     // Add the modules & eventual extra objects
     for (auto [ib, module_batch] : utils::enumerate(modules)) {
 
-        svg::object sub_sheet;
-        sub_sheet._tag = "g";
-        sub_sheet._id = id_ + "_sub_sheet_" + std::to_string(ib);
+        svg::object sub_sheet =
+            svg::object::create_group(id_ + "_sub_sheet" + std::to_string(ib));
         sub_sheet.add_objects(module_batch);
         // Add the axes on top @todo add autmated font size adaption
         auto axis_font = __a_font;
