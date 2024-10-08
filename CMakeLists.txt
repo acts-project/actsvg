@@ -53,14 +53,14 @@ if(ACTSVG_BUILD_META)
     add_subdirectory(meta)
 endif()
 
-option(ACTSVG_BUILD_WEB "Build the webpage builder interface of ACTSVG" ON)
+option(  "Build the webpage builder interface of ACTSVG" ON)
 if(ACTSVG_BUILD_WEB)
     add_subdirectory(web)
 endif()
 
 option(ACTSVG_BUILD_TESTING "Build the (unit) tests of ACTSVG" OFF)
 
-if(ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
+if(ACTSVG_BUILD_TESTING)
     add_subdirectory(data)
 endif()
 
@@ -70,7 +70,7 @@ if(ACTSVG_BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
-if(ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
+if(ACTSVG_BUILD_TESTING)
     # Set up GoogleTest.
     option(
         ACTSVG_SETUP_GOOGLETEST
@@ -91,7 +91,7 @@ if(ACTSVG_BUILD_TESTING OR ACTSVG_BUILD_EXAMPLES)
     endif()
 endif()
 
-option(ACTSVG_BUILD_PYTHON_BINDINGS "Build the python bindings of ACTSVG" ON)
+option(ACTSVG_BUILD_PYTHON_BINDINGS "Build the python bindings of ACTSVG" OFF)
 if(ACTSVG_BUILD_PYTHON_BINDINGS)
     find_package(Python 3.8 REQUIRED COMPONENTS Interpreter Development)
     option(
