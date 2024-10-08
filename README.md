@@ -50,8 +50,10 @@ To build `actsvg` using CMake execute the following
 cmake --build $bdir -j $cthreads --target install
 ```
 
-CMake Build options are (and their defaults)
+CMake Build options are:
 
+| CMake build flag | Description | Default |
+| --------- | --------| ----- |
 | ACTSVG_BUILD_META | Build the meta module of the project | ON |
 | ACTSVG_BUILD_WEB | Build the web module of the project | ON |
 | ACTSVG_BUILD_TESTING | Building the testing suite | OFF |
