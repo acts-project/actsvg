@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(actsvg VERSION 0.4.41 LANGUAGES CXX)
+project(actsvg VERSION 0.4.51 LANGUAGES CXX)
 
 # Set up the used C++ standard(s).
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "The C++ standard to use")
