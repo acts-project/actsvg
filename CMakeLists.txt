@@ -60,7 +60,7 @@ endif()
 
 option(ACTSVG_BUILD_TESTING "Build the (unit) tests of ACTSVG" OFF)
 
-if(ACTSVG_BUILD_TESTING)
+if(ACTSVG_BUILD_EXAMPLES OR ACTSVG_BUILD_TESTING)
     add_subdirectory(data)
 endif()
 
