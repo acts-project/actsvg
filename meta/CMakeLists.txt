@@ -27,4 +27,4 @@ actsvg_add_library( actsvg_meta meta
    "src/styles/defaults.cpp"
 )
 
-target_link_libraries( actsvg_meta PUBLIC actsvg::core)
+target_link_libraries(actsvg_meta PUBLIC actsvg::core)

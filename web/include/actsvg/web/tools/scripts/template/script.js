@@ -88,7 +88,7 @@ async function applyChanges() {
             selectedValues.push(checkboxes[i].value);
         }
     }
-    
+
     paths = selectedValues.reverse();
     SVGResult.innerHTML = await SVGContentMerge(paths);
 }
