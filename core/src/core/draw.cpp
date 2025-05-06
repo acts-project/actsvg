@@ -314,7 +314,7 @@ svg::object polygon(const std::string &id_, const std::vector<point2> &polygon_,
             v[0] += sx * tx;
             v[1] += sy * ty;
         }
-        // range is always adaped
+        // range is always adapted
         vr[0] += sx * tx;
         vr[1] += sy * ty;
 

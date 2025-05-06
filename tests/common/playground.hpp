@@ -17,7 +17,7 @@ namespace test {
 
 /** This method constructs a playground without using
  * the helper classes in the core module
- * in oder to check consistency of the objects and
+ * in order to check consistency of the objects and
  * transforms.
  *
  * @param llc_ the left lower corner
