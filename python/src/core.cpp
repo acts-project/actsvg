@@ -44,25 +44,6 @@ void add_core_module(context& ctx) {
             .def("add_object", &svg::object::add_object);
     }
 
-    {
-
-        py::class_<actsvg::svg::file>(c, "file")
-            .def(py::init<>())
-            .def("add_object", &actsvg::svg::file::add_object)
-            .def("add_objects", &actsvg::svg::file::add_objects)
-            .def(
-                "clip",
-                [](actsvg::svg::file& self, std::array<actsvg::scalar, 4> box) {
-                    self.set_view_box(box);
-                })
-            .def("write",
-                 [](actsvg::svg::file& self, const std::string& filename) {
-                     std::ofstream file(filename);
-                     file << self;
-                     file.close();
-                 });
-    }
-
     auto d = m.def_submodule("draw");
 
     {
