@@ -15,6 +15,10 @@ This module acts as a translation layer between the caller libraries (etc. `ACTS
 It allows to create `proto` objects for detectors that can then be used for plotting using the `core` module.
 This module does also contain a dedicated `display` area that prepares some standard sheets, a view examples can be placed below.
 
+# Python bindings
+
+`actsvg` allows to build python bindings using the `pybind11` library.
+
 ## Sample SVGs that can be produced
 
 A view stand-alone files that are produced by the `googletest` based unit testing.
@@ -50,7 +54,7 @@ To build `actsvg` using CMake execute the following
 cmake --build $bdir -j $cthreads --target install
 ```
 
-CMake Build options are:
+### CMake Build options are:
 
 | CMake build flag | Description | Default |
 | --------- | --------| ----- |
