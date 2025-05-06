@@ -5,7 +5,7 @@ message( STATUS "Building GoogleTest as part of the ACTSVG project" )
 
 # Declare where to get GoogleTest from.
 set( ACTSVG_GOOGLETEST_SOURCE
-   "URL;https://github.com/google/googletest/archive/release-1.11.0.tar.gz;URL_MD5;e8a8df240b6938bb6384155d4c37d937"
+   "URL;https://gitlab.cern.ch/google/googletest/-/archive/v1.17.0/googletest-v1.17.0.tar.gz;URL_MD5;1fc26f132bc4b595113d0290c99fec4a"
    CACHE STRING "Source for GoogleTest, when built as part of this project" )
 mark_as_advanced( ACTSVG_GOOGLETEST_SOURCE )
 FetchContent_Declare( GoogleTest "${ACTSVG_GOOGLETEST_SOURCE};EXCLUDE_FROM_ALL" )
