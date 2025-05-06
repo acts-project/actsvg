@@ -30,7 +30,7 @@ jobs:
           brew install boost
         else
           sudo apt-get install libboost-all-dev
-        fi 
+        fi
 
     - name: Initialize Workspace
       run: cd $GITHUB_WORKSPACE
