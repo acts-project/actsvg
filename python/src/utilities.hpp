@@ -68,7 +68,7 @@ struct to_string {
 /// @brief split an input string
 ///
 /// @param source the source string
-/// @param sc the split caracter
+/// @param sc the split character
 /// @param ignore indices e.g. to split indicator off
 ///
 /// @return a vector of valut_type

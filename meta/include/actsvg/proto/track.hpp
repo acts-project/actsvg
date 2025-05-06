@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -47,7 +47,7 @@ struct trajectory {
 template <typename point3_type>
 struct seed {
 
-    /// The space pionts
+    /// The space points
     std::vector<point3_type> _space_points;
 
     /// The trajectory

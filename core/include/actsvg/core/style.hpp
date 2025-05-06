@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -105,7 +105,7 @@ struct gradient {
     rgb rgb_from_scale(scalar s_) const;
 };
 
-/// Stroke type speficiation
+/// Stroke type specification
 struct stroke {
 
     /// The stroke color
@@ -119,7 +119,7 @@ struct stroke {
     /// Nothing is written out
     bool _sterile = false;
 
-    /// @brief Contructor for stroke
+    /// @brief Constructor for stroke
     /// @param c_ the color of the stroke
     /// @param w_ the with of the stroke
     /// @param d_ the dashed harray of the stroke
@@ -177,7 +177,7 @@ struct stroke {
     }
 };
 
-/// Font sytle specification
+/// Font style specification
 struct font {
     /// The font color
     color _fc{{0, 0, 0}};
@@ -277,7 +277,7 @@ struct transform {
         return p;
     }
 
-    /** Attrribute conversion
+    /** Attribute conversion
      *
      * @note that the scale is directly applied on the objects,
      * in order to control the viewBox boundaries

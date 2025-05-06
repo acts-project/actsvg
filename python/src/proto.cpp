@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -120,7 +120,7 @@ void add_proto_module(context& ctx) {
 
                     return sf;
                 },
-                py::arg("name"), py::arg("boounds"), py::arg("translation"),
+                py::arg("name"), py::arg("bounds"), py::arg("translation"),
                 py::arg("rotation"), py::arg("fill"), py::arg("stroke"));
     }
 
