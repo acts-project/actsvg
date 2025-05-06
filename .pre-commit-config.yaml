@@ -1,0 +1,40 @@
+repos:
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: 'v18.1.8'
+    hooks:
+      - id: clang-format
+        types_or: [file]
+        files: \.(cpp|hpp|ipp|cu|cuh)$
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    - id: trailing-whitespace
+      exclude: \.(diff|patch)$
+    - id: end-of-file-fixer
+      exclude: \.(diff|patch)$
+    - id: check-yaml
+      exclude: \.gitlab-ci.yml$
+    - id: check-added-large-files
+
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 24.4.2
+    hooks:
+    - id: black-jupyter
+
+  - repo: https://github.com/BlankSpruce/gersemi
+    rev: 0.15.0
+    hooks:
+    - id: gersemi
+      args: ["-i", "--no-warn-about-unknown-commands"]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.4
+    hooks:
+    - id: codespell
+      args: [
+        "-S", "*.ipynb,*.onnx,_build,*.svg",
+        "-I", ".github/workflows/.codespell_ignore",
+        "-w"
+      ]
+      exclude: ^CI/.*$

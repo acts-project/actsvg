@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -49,7 +49,7 @@ svg::object line(const std::string &id_, const point2 &start_,
     l._id = id_;
 
     // Apply the transform & scale
-    // - the line needs the scale direcly applied
+    // - the line needs the scale directly applied
     scalar tx = transform_._tr[0];
     scalar ty = transform_._tr[1];
     scalar sx = transform_._scale[0];
@@ -180,7 +180,7 @@ svg::object bezier(const std::string &id_,
             lx = x;
             continue;
         }
-        // Buid the Bezier segments
+        // Build the Bezier segments
         // intesect the two lines, apply transform to draw frame
         point2 intersect = transform_.apply(utils::intersect(lx, ld, x, d));
         point2 dlx = transform_.apply(lx);
@@ -314,7 +314,7 @@ svg::object polygon(const std::string &id_, const std::vector<point2> &polygon_,
             v[0] += sx * tx;
             v[1] += sy * ty;
         }
-        // range is always adaped
+        // range is always adapted
         vr[0] += sx * tx;
         vr[1] += sy * ty;
 
@@ -366,7 +366,7 @@ svg::object rectangle(const std::string &id_, const point2 &c_, scalar half_x,
     detail::adapt_range(r, {{c_[0] - half_x, -c_[1] - half_y},
                             {c_[0] + half_x, -c_[1] + half_y}});
 
-    // Return the rectangle objec t
+    // Return the rectangle object t
     return r;
 }
 
@@ -513,7 +513,7 @@ svg::object connected_info_box(
     scalar ws = std::max(tews, tiws);
 
     scalar tih = 2 * title_font_._size;
-    scalar teh =
+    scalar the =
         static_cast<scalar>(1.5 * text_.size() + 0.5) * text_font_._size;
 
     std::vector<std::array<scalar, 2>> tic = {p_,
@@ -531,8 +531,8 @@ svg::object connected_info_box(
 
     std::vector<std::array<scalar, 2>> tec = {{p_[0], p_[1] - tih},
                                               {p_[0] + ws, p_[1] - tih},
-                                              {p_[0] + ws, p_[1] - tih - teh},
-                                              {p_[0], p_[1] - tih - teh}};
+                                              {p_[0] + ws, p_[1] - tih - the},
+                                              {p_[0], p_[1] - tih - the}};
 
     auto tebox = polygon(id_ + "_text_box", tec, text_fill_, stroke_);
     ib.add_object(tebox);

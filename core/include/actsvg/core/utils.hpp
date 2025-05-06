@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -258,7 +258,7 @@ point_type add(const point_type &p0_, const point_type &p1_) {
 }
 
 /** Helper method to rotate a 3D point @param p_ under
- * roatation @param rt_
+ * rotation @param rt_
  *
  * @return new rotated point3
  **/

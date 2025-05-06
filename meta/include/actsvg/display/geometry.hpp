@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -128,7 +128,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         scalar orx = out_right_s_xy[0];
         scalar ory = out_right_s_xy[1];
         scalar olx = out_left_s_xy[0];
-        scalar oly = out_left_s_xy[1];
+        scalar only = out_left_s_xy[1];
         // Dedicated path drawing of the annulus bounds
         s._tag = "path";
         s._id = id_;
@@ -137,7 +137,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
         path += " A " + std::to_string(min_r) + " " + std::to_string(min_r);
         path += " 0 0 1 ";
         path += std::to_string(ilx) + " " + std::to_string(ily);
-        path += " L " + std::to_string(olx) + " " + std::to_string(oly);
+        path += " L " + std::to_string(olx) + " " + std::to_string(only);
         path += " A " + std::to_string(max_r) + " " + std::to_string(max_r);
         path += " 0 0 0 ";
         path += std::to_string(orx) + " " + std::to_string(ory);
@@ -167,7 +167,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
 
             // Define the origin of the strip system & draw the lines
             point2 origin = {-origin_x, -origin_y};
-            auto el0 = point2{olx, oly};
+            auto el0 = point2{olx, only};
             auto el1 = point2{orx, ory};
             std::array<point2, 2u> lines = {el0, el1};
             for (const auto [il, lline] : utils::enumerate(lines)) {
@@ -357,7 +357,7 @@ svg::object surface(const std::string& id_, const surface_type& s_,
                     // negative vertex. It may happen if you have
                     // tilted surfaces. Handle with care and
                     // re-evaluate the intersections with
-                    // the grid to show split surfaces correcly
+                    // the grid to show split surfaces correctly
                     if (n_vertices.size() < p_vertices.size()) {
                         std::vector<typename surface_type::point3_type>
                             bottom_vertices = {p_vertices[2u], p_vertices[0u]};
@@ -558,7 +558,7 @@ svg::object oriented_polygon(const std::string& id_, const surface_type& s_,
 
 /** Draw a portal link
  *
- * @param id_ the indentification of this portal link
+ * @param id_ the identification of this portal link
  * @param p_ the portal for understanding the span
  * @param link_ the link itself
  * @param v_ the view type
@@ -660,7 +660,7 @@ svg::object portal(const std::string& id_, const portal_type& p_,
 
 /** Draw a volume
  *
- * @param id_ the indentification of this portal link
+ * @param id_ the identification of this portal link
  * @param dv_ the detector volume
  * @param v_ the view type
  * @param p_ draw the portals
@@ -730,7 +730,7 @@ svg::object volume(const std::string& id_, const volume_type& dv_,
 
 /** Draw a detector
  *
- * @param id_ the indentification of this portal link
+ * @param id_ the identification of this portal link
  * @param d_ the detector
  * @param v_ the view type
  *

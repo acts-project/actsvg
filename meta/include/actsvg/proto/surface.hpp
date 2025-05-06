@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -71,7 +71,7 @@ struct surface {
             return ret;
         }
 
-        // The identity tranform
+        // The identity transform
         static transform3 identity() { return transform3{}; }
     };
 
@@ -136,9 +136,9 @@ struct surface {
 
     using point3_type = typename point3_container::value_type;
 
-    /** Static constructor from a templat
+    /** Static constructor from a template
      * @param t_ the template
-     * @param o_ the tempalte object
+     * @param o_ the template object
      * @param name_ the new name
      **/
     static surface<point3_container> from_template(

@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -36,7 +36,7 @@ void adapt_range(svg::object &_o_, const std::vector<point2> &vertices_);
  * left handed x-y system from the AWKWARD SVG draw system, and applies
  * the transform to it if necessary
  *
- * That is its main purpose (togehter with given allowing to
+ * That is its main purpose (together with given allowing to
  * give an identifier an connect objects.
  *
  * */
@@ -193,7 +193,7 @@ svg::object rectangle(const std::string &id_, const point2 &c_, scalar half_x,
  * @param id_ is the text object id
  * @param p_ is the text position
  * @param text_ is the actual text to be drawn
- * @param font_ is the font sytle specification
+ * @param font_ is the font style specification
  * @param transform_ defines the text transform
  *
  * @return an svg object for the text
@@ -217,10 +217,10 @@ svg::object label(const std::string &id_, const style::label &l_);
  * @param id_ is the text object id
  * @param p_ is the text position
  * @param text_ is the actual text to be drawn
- * @param font_ is the font sytle specification
+ * @param font_ is the font style specification
  * @param transform_ defines the text transform
  * @param object_ is the connected object
- * @param highlight_ are the hightlighting options
+ * @param highlight_ are the highlighting options
  *
  * @return an svg object with highlight connection
  *
@@ -240,7 +240,7 @@ svg::object connected_text(
  * @param x_ is the image object x field
  * @param y_ is the image object y field
  * @param object_ is the connected object
- * @param highlight_ are the hightlighting options
+ * @param highlight_ are the highlighting options
  * @param onerror_ is the image object onerror field
  *
  * @return an svg object with highlight connection
@@ -265,7 +265,7 @@ svg::object image_box(const std::string &id_, const std::string &href_,
  * @param text_font_ is the font style of the text box
  * @param stroke_ is the stroke
  * @param object_ is the connected object
- * @param highlight_ are the hightlighting options
+ * @param highlight_ are the highlighting options
  *
  * @return an svg object with highlight connection
  *
@@ -401,7 +401,7 @@ svg::object tiled_polar_grid(
  *
  *  Arrorws types are: <, <<, <|, |<, |<<, |<|, o, x, *
  * @param id_ is the marker identification
- * @param at_ is the poistion of the marker
+ * @param at_ is the position of the marker
  * @param marker_ is the marker style
  * @param rot_ is the rotation in [pi,phi)]
  *
@@ -416,8 +416,8 @@ svg::object marker(const std::string &id_, const point2 &at_,
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
- * @param start_marker_ are the marker parmeters at start
- * @param end_marker_ are the marker parmeters at start
+ * @param start_marker_ are the marker parameters at start
+ * @param end_marker_ are the marker parameters at start
  * @param font_ are the font parameters
  * @param label_ is the label associated
  * @param label_pos_ is the label position
@@ -441,8 +441,8 @@ svg::object measure(const std::string &id_, const point2 &start_,
  * with smaller phi
  * @param end_ is the end point of the line, defines the marker
  * @param stroke_ are the stroke parameters
- * @param start_marker_ are the marker parmeters
- * @param end_marker_ are the marker parmeters
+ * @param start_marker_ are the marker parameters
+ * @param end_marker_ are the marker parameters
  * @param font_ are the font parameters
  * @param label_ is the label associated
  * @param label_pos_ is the label position
@@ -463,8 +463,8 @@ svg::object arc_measure(
  * @param start_ is the start point of the line
  * @param end_ is the end point of the line
  * @param stroke_ are the stroke parameters
- * @param start_marker_ are the marker parmeters at start
- * @param end_marker_ are the marker parmeters at start
+ * @param start_marker_ are the marker parameters at start
+ * @param end_marker_ are the marker parameters at start
  *
  * @return an svg object for the arrow
  */

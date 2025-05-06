@@ -58,4 +58,3 @@ CMake Build options are:
 | ACTSVG_BUILD_WEB | Build the web module of the project | ON |
 | ACTSVG_BUILD_TESTING | Building the testing suite | OFF |
 | ACTSVG_BUILD_PYTHON_BINDINGS | Build python bindings for the project | OFF |
-

@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -134,7 +134,7 @@ void add_display_module(context& ctx) {
         /// @param f_opac the fill opacity
         /// @param str_rgb the stroke color
         /// @param str_opac the stroke opacity
-        /// @param str_w the stroke witdth
+        /// @param str_w the stroke width
         d.def("create_custom_style",
               [](const std::array<int, 3u>& f_rgb, scalar f_opac,
                  const std::array<int, 3u>& str_rgb, scalar str_opac,
@@ -315,7 +315,7 @@ void add_display_module(context& ctx) {
                   return polygons;
               });
 
-        /// View surfaces -  with style appied
+        /// View surfaces -  with style applied
         ///
         /// @param ss the surfaces
         /// @param f the fill style
@@ -361,7 +361,7 @@ void add_display_module(context& ctx) {
     });
 
     {
-        /// View step_tracks -  with style appied
+        /// View step_tracks -  with style applied
         ///
         /// @param sts the surfaces
         /// @param rsize is the radius size

@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -54,7 +54,7 @@ struct x_y {
     /// Make it screen obvious
     std::array<std::string, 2> _axis_names = {"x", "y"};
 
-    /** A planar view operator, asuming a contour in x/y plane
+    /** A planar view operator, assuming a contour in x/y plane
      *
      * @tparam point3 is a 3D-point type assuming [] operators exit
      *
@@ -68,7 +68,7 @@ struct x_y {
                       static_cast<scalar>(point_[1])};
     }
 
-    /** A planar view operator, asuming a contour in x/y plane
+    /** A planar view operator, assuming a contour in x/y plane
      *
      * @tparam point3_container is a 3D-point container, where elements
      * of a single p3 object can be accessed via [] operators
@@ -89,7 +89,7 @@ struct x_y {
         return c;
     }
 
-    /** A planar view operator, asuming a contour in x/y plane
+    /** A planar view operator, assuming a contour in x/y plane
      *
      * @tparam point3_container is a 3D-point container, where elements
      * of a single p3 object can be accessed via [] operators

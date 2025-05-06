@@ -29,16 +29,16 @@ std::string index_text = R"(<!DOCTYPE html>
 
         <div id="result-div" class="result-div" onmouseover="document.body.style.overflow='hidden';"  onmouseout="document.body.style.overflow='auto';">
             <svg id="result-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-500 -500 1000 1000">
-            
+
             </svg>
         </div>
         <br>
         <div class="tooltip">&#9432;
             <span>Click and drag to move around. Use the mouse wheel to zoom.</span>
         </div>
-        
+
     </div>
-  
+
 
 
     <script src="script.js"></script>
@@ -138,7 +138,7 @@ async function applyChanges() {
             selectedValues.push(checkboxes[i].value);
         }
     }
-    
+
     paths = selectedValues.reverse();
     SVGResult.innerHTML = await SVGContentMerge(paths);
 }
@@ -146,7 +146,7 @@ async function applyChanges() {
 
 // For navigation on the svg:
 
-//--- Adjustable paramters:
+//--- Adjustable parameters:
 // Speed of zoom on scroll.
 const zoomFactor = 1.1;
 // To calculate the maximum width and height of the viewbox.
@@ -326,12 +326,12 @@ if os.path.exists(svg_directory) and os.path.isdir(svg_directory):
     # Get the file names.
     file_names = os.listdir(svg_directory)
     print("Found SVG directory with " + str(len(file_names)) + " files")
-    
+
     # Sort the file names alphanumerically.
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
     file_names.sort(key=alphanum_key)
-    
+
     # Write the json file used by the webpage.
     outputFile = os.path.join(current_directory,"config.json")
     with open(outputFile, "w") as file:
