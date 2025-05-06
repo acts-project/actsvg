@@ -40,6 +40,11 @@ void add_io_module(context& ctx) {
             .def(py::init<>())
             .def("add_object", &svg::file::add_object)
             .def("add_objects", &svg::file::add_objects)
+            .def(
+                "clip",
+                [](actsvg::svg::file& self, std::array<actsvg::scalar, 4> box) {
+                    self.set_view_box(box);
+                })
             .def("write", [](svg::file& self, const std::string& fn) {
                 std::ofstream fout;
                 fout.open(fn);
