@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -311,7 +311,7 @@ proto::volume<point3_container> generate_endcap(
         support_disk._fill = __ss_fill;
         // Auxiliary info
         support_disk._aux_info["module_info"] = {"support disk"};
-        support_disk._aux_info["grid_info"] = {"* suport disk"};
+        support_disk._aux_info["grid_info"] = {"* support disk"};
         // Store them
         support.push_back(support_disk);
         endcap._surfaces.push_back(support);

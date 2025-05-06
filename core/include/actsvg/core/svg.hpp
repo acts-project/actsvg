@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -45,7 +45,7 @@ struct object {
 
     using bounding_box = std::array<std::array<scalar, 2u>, 2u>;
 
-    /// SVG tag of the objec
+    /// SVG tag of the object
     std::string _tag = "";
 
     /// Identification string

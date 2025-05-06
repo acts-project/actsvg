@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -27,8 +27,8 @@ TEST(views, xy) {
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {{1., 2.}, {3., 4.}, {7., 8.}};
-    ASSERT_TRUE(exptected == c);
+    views::contour expected = {{1., 2.}, {3., 4.}, {7., 8.}};
+    ASSERT_TRUE(expected == c);
 }
 
 TEST(views, zr) {
@@ -39,9 +39,9 @@ TEST(views, zr) {
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {
+    views::contour expected = {
         {3., 1.}, {0., 4.}, {2., static_cast<scalar>(std::sqrt(8.))}};
-    ASSERT_TRUE(exptected == c);
+    ASSERT_TRUE(expected == c);
 }
 
 TEST(views, zphi) {
@@ -52,8 +52,8 @@ TEST(views, zphi) {
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {{3., 0.}, {0., 0.5 * pi}, {2., 0.25 * pi}};
-    ASSERT_TRUE(exptected == c);
+    views::contour expected = {{3., 0.}, {0., 0.5 * pi}, {2., 0.25 * pi}};
+    ASSERT_TRUE(expected == c);
 }
 
 TEST(views, zrphi) {
@@ -65,6 +65,6 @@ TEST(views, zrphi) {
 
     ASSERT_TRUE(c.size() == 3u);
 
-    views::contour exptected = {{3., 0.}, {0., 1. * pi}, {2., 0.5 * pi}};
-    ASSERT_TRUE(exptected == c);
+    views::contour expected = {{3., 0.}, {0., 1. * pi}, {2., 0.5 * pi}};
+    ASSERT_TRUE(expected == c);
 }

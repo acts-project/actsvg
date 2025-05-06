@@ -34,7 +34,7 @@ repos:
     - id: codespell
       args: [
         "-S", "*.ipynb,*.onnx,_build,*.svg",
-        "-I", "./CI/codespell_ignore.txt",
+        "-I", ".github/workflows/.codespell_ignore",
         "-w"
       ]
       exclude: ^CI/.*$

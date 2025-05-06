@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -22,7 +22,7 @@ namespace generators {
  *
  * @param start_phi is the start for the arc generation
  * @param end_phi is the end of the arc generation
- * @param lseg is the number of segments used to gnerate the arc
+ * @param lseg is the number of segments used to generate the arc
  *
  * @return a vector of phi values for the arc
  */

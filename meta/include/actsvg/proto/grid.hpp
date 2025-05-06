@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -26,7 +26,7 @@ namespace proto {
  */
 struct grid {
 
-    /** Type of grid, enum defintion */
+    /** Type of grid, enum definition */
     enum type { e_x_y = 0, e_r_phi = 1, e_z_phi = 2 };
 
     /// Grid name

@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -29,7 +29,7 @@ namespace display {
  * @param id_ is the identification tag
  * @param cluster_ is the cluster to be drawn
  * @param fill_low_ is the low color band
- * @param fill_high is hte high color band
+ * @param fill_high is the high color band
  * @param fill_m_ is the measurement fill color
  * @param expand_ is the focus expansion
  *

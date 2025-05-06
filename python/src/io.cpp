@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -137,7 +137,7 @@ void add_io_module(context& ctx) {
                     // one offset at obj counts from 1
                     vertices.push_back({0, 0, 0});
 
-                    // The poligons to be contructed - proxies first
+                    // The polygons to be constructed - proxies first
                     std::vector<std::vector<int>> polygon_proxies;
                     polygon_proxies.reserve(fCounter);
                     polygons.reserve(fCounter);

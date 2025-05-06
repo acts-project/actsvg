@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -97,7 +97,7 @@ std::vector<svg::object> connect_action(
                     }
                 }
             }
-            // Assocate as text
+            // Associate as text
             if (std::find(ct_.begin(), ct_.end(), e_associate_id) !=
                 ct_.end()) {
                 // Associate id connection

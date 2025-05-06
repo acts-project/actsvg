@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -26,7 +26,7 @@ bool alphanumeric(const actsvg::svg::object& svg1,
 }  // namespace compare
 
 /// @brief Class for generating a web page to view and merge svgs.
-/// @note When used a debugging tool and rebuilding mutliple times,
+/// @note When used a debugging tool and rebuilding multiple times,
 /// if the webpage does not refresh as expected it is likely caused by browser
 /// caching.
 class web_builder {
@@ -36,10 +36,10 @@ class web_builder {
 
     /// @brief Generates a webpage configured with the given svgs.
     /// @param output_directory the root of the web page.
-    /// @param svgs the svgs avaible for selection on the web page.
+    /// @param svgs the svgs available for selection on the web page.
     /// @param order_comparator a compartor function to determine
     /// the display order of the svgs.
-    /// @note When used a debugging tool and rebuilding mutliple times,
+    /// @note When used a debugging tool and rebuilding multiple times,
     /// if the webpage does not refresh as expected it is likely caused by
     /// browser caching.
     template <typename iterator_t>
@@ -51,8 +51,8 @@ class web_builder {
 
     /// @brief Generates a webpage configured with the given svgs.
     /// @param output_directory the root of the web page.
-    /// @param svgs the svgs avaible for selection on the web page.
-    /// @note When used a debugging tool and rebuilding mutliple times,
+    /// @param svgs the svgs available for selection on the web page.
+    /// @note When used a debugging tool and rebuilding multiple times,
     /// if the webpage does not refresh as expected it is likely caused by
     /// browser caching.
     template <typename iterator_t>
