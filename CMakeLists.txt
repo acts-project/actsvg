@@ -109,3 +109,6 @@ endif()
 
 # Set up the packaging of the project.
 include(actsvg-packaging)
+
+# Set up the setup script.
+include(actsvg-setup)
