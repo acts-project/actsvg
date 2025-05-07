@@ -45,12 +45,15 @@ void add_io_module(context& ctx) {
                 [](actsvg::svg::file& self, std::array<actsvg::scalar, 4> box) {
                     self.set_view_box(box);
                 })
-            .def("write", [](svg::file& self, const std::string& fn) {
-                std::ofstream fout;
-                fout.open(fn);
-                fout << self;
-                fout.close();
-            });
+            .def("write",
+                 [](svg::file& self, const std::string& fn) {
+                     std::ofstream fout;
+                     fout.open(fn);
+                     fout << self;
+                     fout.close();
+                 })
+            .def_readwrite("width", &svg::file::_width)
+            .def_readwrite("height", &svg::file::_height);
     }
 
     // The obj submodule: actsvg.io.obj

@@ -214,8 +214,12 @@ struct file {
     /** Get the view box from the x-y range */
     std::array<scalar, 4> view_box() const;
 
-    /** Set a view box, this will overwrite the auto-determined one */
-    void set_view_box(const std::array<scalar, 4> &vb_);
+    /** Set a view box, this will overwrite the auto-determined one
+     *
+     * @param vb_ the view box to be set
+     * @param adjust_ if true, the width and height are adjusted
+     */
+    void set_view_box(const std::array<scalar, 4> &vb_, bool adjust_ = true);
 
     /** Write to ostream */
     friend std::ostream &operator<<(std::ostream &os_, const file &f_);
