@@ -7,7 +7,6 @@ actsvg_add_library( actsvg_meta meta
    "include/actsvg/display/grids.hpp"
    "include/actsvg/display/helpers.hpp"
    "include/actsvg/display/materials.hpp"
-   "include/actsvg/display/sheets.hpp"
    "include/actsvg/proto/cluster.hpp"
    "include/actsvg/proto/detector.hpp"
    "include/actsvg/proto/grid.hpp"

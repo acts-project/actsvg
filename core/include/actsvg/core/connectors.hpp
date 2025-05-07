@@ -29,7 +29,7 @@ enum type { e_highlight, e_associate_id, e_associate_info };
  * @param sources_ are the source objects
  * @param targests_ are the target objects
  * @param s_t_connections_ are the connections from source to target
- * @param ls_ label the source or not (in case of multiple connection sheets)
+ * @param ls_ label the source or not (in case of multiple connections)
  * @param on_off_ are the connection effects
  *
  * In case of e.g. a grid surface connection:
