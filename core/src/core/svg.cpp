@@ -156,8 +156,14 @@ std::array<scalar, 4> file::view_box() const {
     return vbox;
 }
 
-void file::set_view_box(const std::array<scalar, 4> &vbox_) {
+void file::set_view_box(const std::array<scalar, 4> &vbox_, bool adjust_) {
+    // Set the view box
     _view_box = vbox_;
+    if (adjust_) {
+        // Adjust the width and height
+        _width = vbox_[2];
+        _height = vbox_[3];
+    }
 }
 
 std::ostream &operator<<(std::ostream &os_, const file &f_) {
