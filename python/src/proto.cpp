@@ -54,11 +54,11 @@ void add_proto_module(context& ctx) {
         // The python surface class
         py::class_<surface, std::shared_ptr<surface>>(p, "surface")
             .def(py::init<>())
-            .def_readwrite("name", &surface::_name)
-            .def_readwrite("type", &surface::_type)
-            .def_readwrite("vertices", &surface::_vertices)
-            .def_readwrite("fill", &surface::_fill)
-            .def_readwrite("stroke", &surface::_stroke)
+            .def_readwrite("_name", &surface::_name)
+            .def_readwrite("_type", &surface::_type)
+            .def_readwrite("_vertices", &surface::_vertices)
+            .def_readwrite("_fill", &surface::_fill)
+            .def_readwrite("_stroke", &surface::_stroke)
             .def_static(
                 "polygon_from_vertices",
                 [](const std::string& name, const point3_collection& pcs,
@@ -128,34 +128,34 @@ void add_proto_module(context& ctx) {
         // The python portal definition
         py::class_<portal, std::shared_ptr<portal>>(p, "portal")
             .def(py::init<>())
-            .def_readwrite("name", &portal::_name)
-            .def_readwrite("surface", &portal::_surface);
+            .def_readwrite("_name", &portal::_name)
+            .def_readwrite("_surface", &portal::_surface);
     }
 
     {
         // The pythond volume definition
         py::class_<volume, std::shared_ptr<volume>>(p, "volume")
             .def(py::init<>())
-            .def_readwrite("name", &volume::_name);
+            .def_readwrite("_name", &volume::_name);
     }
 
     {
         /// The grid class
         auto g = py::class_<proto::grid>(p, "grid")
                      .def(py::init<>())
-                     .def_readwrite("name", &proto::grid::_name)
-                     .def_readwrite("type", &proto::grid::_type)
-                     .def_readwrite("edges_0", &proto::grid::_edges_0)
-                     .def_readwrite("edges_1", &proto::grid::_edges_1)
-                     .def_readwrite("reference_r", &proto::grid::_reference_r)
-                     .def_readwrite("bin_ids", &proto::grid::_bin_ids)
-                     .def_readwrite("connections", &proto::grid::_connections)
-                     .def_readwrite("connection_types",
+                     .def_readwrite("_name", &proto::grid::_name)
+                     .def_readwrite("_type", &proto::grid::_type)
+                     .def_readwrite("_edges_0", &proto::grid::_edges_0)
+                     .def_readwrite("_edges_1", &proto::grid::_edges_1)
+                     .def_readwrite("_reference_r", &proto::grid::_reference_r)
+                     .def_readwrite("_bin_ids", &proto::grid::_bin_ids)
+                     .def_readwrite("_connections", &proto::grid::_connections)
+                     .def_readwrite("_connection_types",
                                     &proto::grid::_connection_types)
-                     .def_readwrite("connection_associations",
+                     .def_readwrite("_connection_associations",
                                     &proto::grid::_connection_associations)
-                     .def_readwrite("fill", &proto::grid::_fill)
-                     .def_readwrite("stroke", &proto::grid::_stroke);
+                     .def_readwrite("_fill", &proto::grid::_fill)
+                     .def_readwrite("_stroke", &proto::grid::_stroke);
 
         /// The grid type enum
         py::enum_<proto::grid::type>(g, "grid_type")
@@ -185,7 +185,7 @@ void add_proto_module(context& ctx) {
                     slab._properties[5] = thickness;
                     return slab;
                 }))
-            .def_readwrite("properties", &proto::material_slab::_properties);
+            .def_readwrite("_properties", &proto::material_slab::_properties);
 
         // The material class
         auto sm =
@@ -193,22 +193,22 @@ void add_proto_module(context& ctx) {
                 .def(py::init<>())
                 .def("evaluate_material_ranges",
                      &proto::surface_material::evaluate_material_ranges)
-                .def_readwrite("material_matrix",
+                .def_readwrite("_material_matrix",
                                &proto::surface_material::_material_matrix)
-                .def_readwrite("material_ranges",
+                .def_readwrite("_material_ranges",
                                &proto::surface_material::_material_ranges)
-                .def_readwrite("grid", &proto::surface_material::_grid)
-                .def_readwrite("gradient", &proto::surface_material::_gradient)
-                .def_readwrite("gradient_pos",
+                .def_readwrite("_grid", &proto::surface_material::_grid)
+                .def_readwrite("_gradient", &proto::surface_material::_gradient)
+                .def_readwrite("_gradient_pos",
                                &proto::surface_material::_gradient_pos)
-                .def_readwrite("gradient_box",
+                .def_readwrite("_gradient_box",
                                &proto::surface_material::_gradient_box)
-                .def_readwrite("gradient_stroke",
+                .def_readwrite("_gradient_stroke",
                                &proto::surface_material::_gradient_stroke)
-                .def_readwrite("gradient_font",
+                .def_readwrite("_gradient_font",
                                &proto::surface_material::_gradient_font)
-                .def_readwrite("info_pos", &proto::surface_material::_info_pos)
-                .def_readwrite("info_font",
+                .def_readwrite("_info_pos", &proto::surface_material::_info_pos)
+                .def_readwrite("_info_font",
                                &proto::surface_material::_info_font);
 
         using grid_index = std::pair<unsigned int, unsigned int>;
