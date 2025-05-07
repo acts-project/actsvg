@@ -76,8 +76,8 @@ void add_style_module(context& ctx) {
         py::class_<style::marker, std::shared_ptr<style::marker>>(s, "marker")
             .def(py::init<>())
             .def(py::init<>([](const std::string& t, scalar sz,
-                               const style::fill& f, const style::stroke& s) {
-                     return style::marker{t, sz, f, s};
+                               const style::fill& f, const style::stroke& st) {
+                     return style::marker{t, sz, f, st};
                  }),
                  py::arg("type"), py::arg("size"),
                  py::arg("fill") = style::fill{},
@@ -90,9 +90,9 @@ void add_style_module(context& ctx) {
         py::class_<style::font, std::shared_ptr<style::font>>(s, "font")
             .def(py::init<>())
             .def(py::init<>([](const style::color& c, const std::string& f,
-                               unsigned int s, scalar l_s,
+                               unsigned int s_z, scalar l_s,
                                const std::string st) {
-                     return style::font{c, f, s, l_s, st};
+                     return style::font{c, f, s_z, l_s, st};
                  }),
                  py::arg("color"), py::arg("font_family"), py::arg("size"),
                  py::arg("line_spacing"), py::arg("style"))
