@@ -9,4 +9,4 @@ actsvg_add_library( actsvg_web web
    "src/web/webpage_text.cpp"
 )
 
-target_link_libraries( actsvg_web PUBLIC actsvg::core)
+target_link_libraries(actsvg_web PUBLIC actsvg::core)

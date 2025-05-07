@@ -53,7 +53,7 @@ if(ACTSVG_BUILD_META)
     add_subdirectory(meta)
 endif()
 
-option(  "Build the webpage builder interface of ACTSVG" ON)
+option("Build the webpage builder interface of ACTSVG" ON)
 if(ACTSVG_BUILD_WEB)
     add_subdirectory(web)
 endif()
@@ -109,3 +109,6 @@ endif()
 
 # Set up the packaging of the project.
 include(actsvg-packaging)
+
+# Set up the setup script.
+include(actsvg-setup)

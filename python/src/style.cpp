@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -30,7 +30,6 @@ void add_style_module(context& ctx) {
 
     {
         // The color python class
-        /// @TODO add set_highlight() with self setting
         py::class_<style::color, std::shared_ptr<style::color>>(s, "color")
             .def(py::init<>())
             .def(py::init(
@@ -39,7 +38,11 @@ void add_style_module(context& ctx) {
                     c._rgb = rgb;
                     c._opacity = opacity;
                     return c;
-                }));
+                }))
+            .def_readwrite("_rgb", &style::color::_rgb)
+            .def_readwrite("_opacity", &style::color::_opacity)
+            .def_readwrite("_hl_rgb", &style::color::_hl_rgb)
+            .def_readwrite("_highlight", &style::color::_highlight);
     }
 
     {
@@ -53,7 +56,9 @@ void add_style_module(context& ctx) {
                      color._opacity = opacity;
                      return style::fill{color};
                  }),
-                 py::arg("rgb"), py::arg("opacity") = 1.);
+                 py::arg("rgb"), py::arg("opacity") = 1.)
+            .def_readwrite("_color", &style::fill::_fc)
+            .def_readwrite("_sterile", &style::fill::_sterile);
     }
 
     {
@@ -68,7 +73,12 @@ void add_style_module(context& ctx) {
                      return style::stroke{style::color{rgb}, width, dash};
                  }),
                  py::arg("rgb"), py::arg("width") = 1.,
-                 py::arg("dash") = std::vector<int>{});
+                 py::arg("dash") = std::vector<int>{})
+            .def_readwrite("_color", &style::stroke::_sc)
+            .def_readwrite("_width", &style::stroke::_width)
+            .def_readwrite("_hl_width", &style::stroke::_hl_width)
+            .def_readwrite("_dasharray", &style::stroke::_dasharray)
+            .def_readwrite("_sterile", &style::stroke::_sterile);
     }
 
     {
@@ -76,12 +86,16 @@ void add_style_module(context& ctx) {
         py::class_<style::marker, std::shared_ptr<style::marker>>(s, "marker")
             .def(py::init<>())
             .def(py::init<>([](const std::string& t, scalar sz,
-                               const style::fill& f, const style::stroke& s) {
-                     return style::marker{t, sz, f, s};
+                               const style::fill& f, const style::stroke& st) {
+                     return style::marker{t, sz, f, st};
                  }),
                  py::arg("type"), py::arg("size"),
                  py::arg("fill") = style::fill{},
-                 py::arg("stroke") = style::stroke{});
+                 py::arg("stroke") = style::stroke{})
+            .def_readwrite("_type", &style::marker::_type)
+            .def_readwrite("_size", &style::marker::_size)
+            .def_readwrite("_fill", &style::marker::_fill)
+            .def_readwrite("_stroke", &style::marker::_stroke);
     }
 
     {
@@ -90,9 +104,9 @@ void add_style_module(context& ctx) {
         py::class_<style::font, std::shared_ptr<style::font>>(s, "font")
             .def(py::init<>())
             .def(py::init<>([](const style::color& c, const std::string& f,
-                               unsigned int s, scalar l_s,
+                               unsigned int s_z, scalar l_s,
                                const std::string st) {
-                     return style::font{c, f, s, l_s, st};
+                     return style::font{c, f, s_z, l_s, st};
                  }),
                  py::arg("color"), py::arg("font_family"), py::arg("size"),
                  py::arg("line_spacing"), py::arg("style"))
@@ -100,7 +114,11 @@ void add_style_module(context& ctx) {
                      return style::font{style::color{rgb}, "Andale Mono", size,
                                         1.4, ""};
                  }),
-                 py::arg("rgb"), py::arg("size"));
+                 py::arg("rgb"), py::arg("size"))
+            .def_readwrite("_fc", &style::font::_fc)
+            .def_readwrite("_family", &style::font::_family)
+            .def_readwrite("_size", &style::font::_size)
+            .def_readwrite("_line_spacing", &style::font::_line_spacing);
     }
 
     {
@@ -108,10 +126,10 @@ void add_style_module(context& ctx) {
         py::class_<style::gradient, std::shared_ptr<style::gradient>>(
             s, "gradient")
             .def(py::init<>())
-            .def_readwrite("id", &style::gradient::_id)
-            .def_readwrite("direction", &style::gradient::_direction)
-            .def_readwrite("type", &style::gradient::_type)
-            .def_readwrite("stops", &style::gradient::_stops);
+            .def_readwrite("_id", &style::gradient::_id)
+            .def_readwrite("_direction", &style::gradient::_direction)
+            .def_readwrite("_type", &style::gradient::_type)
+            .def_readwrite("_stops", &style::gradient::_stops);
     }
 
     {
@@ -119,10 +137,10 @@ void add_style_module(context& ctx) {
         py::class_<style::transform, std::shared_ptr<style::transform>>(
             s, "transform")
             .def(py::init<>())
-            .def_readwrite("translate", &style::transform::_tr)
-            .def_readwrite("rotate", &style::transform::_rot)
-            .def_readwrite("scale", &style::transform::_scale)
-            .def_readwrite("skew", &style::transform::_skew);
+            .def_readwrite("_translate", &style::transform::_tr)
+            .def_readwrite("_rotate", &style::transform::_rot)
+            .def_readwrite("_scale", &style::transform::_scale)
+            .def_readwrite("_skew", &style::transform::_skew);
     }
     {
         // The style defaults

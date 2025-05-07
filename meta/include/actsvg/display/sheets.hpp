@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2022 CERN for the benefit of the ACTS project
 //
@@ -36,7 +36,7 @@ enum sheet_type { e_module_info = 0, e_grid_info = 1 };
  *
  * @tparam volume3_container is the type of the 3D point container
  *
- * @param id_ is the identifcation tag
+ * @param id_ is the identification tag
  * @param s_ is the surface to be displayed
  * @param sh_ is the sheet size for displaying
  * @param fs_ is a directive to focus on the object (instead of axis)

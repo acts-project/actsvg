@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -23,6 +23,16 @@ namespace python {
 
 using surface = proto::surface<point3_collection>;
 
+using volume = proto::volume<point3_collection>;
+
+using portal = proto::portal<point3_collection>;
+
+using trajectory = proto::trajectory<point3>;
+
+using seed = proto::seed<point3>;
+
+using track_state = proto::track_state<surface>;
+
 using channel1 = proto::channel<1u>;
 
 using channel2 = proto::channel<2u>;
@@ -42,98 +52,110 @@ void add_proto_module(context& ctx) {
 
     {
         // The python surface class
-        auto s =
-            py::class_<surface, std::shared_ptr<surface>>(p, "surface")
-                .def(py::init<>())
-                .def_readwrite("name", &surface::_name)
-                .def_readwrite("type", &surface::_type)
-                .def_readwrite("vertices", &surface::_vertices)
-                .def_readwrite("fill", &surface::_fill)
-                .def_readwrite("stroke", &surface::_stroke)
-                .def_static(
-                    "polygon_from_vertices",
-                    [](const std::string& name, const point3_collection& pcs,
-                       const style::fill& f, const style::stroke& s) {
-                        // Create the surface
-                        surface sf{};
-                        sf._name = name;
-                        sf._type = surface::type::e_polygon;
-                        sf._vertices = pcs;
-                        sf._fill = f;
-                        sf._stroke = s;
-                        return sf;
-                    },
-                    py::arg("name"), py::arg("vertices"), py::arg("fill"),
-                    py::arg("stroke"))
-                .def_static(
-                    "polygon_from_vertices_and_transform",
-                    [](const std::string& name, const point3_collection& pcs,
-                       const point3& translation,
-                       const std::array<point3, 3u>& rotation,
-                       const style::fill& f, const style::stroke& s) {
-                        // Create the surface
-                        surface sf{};
-                        sf._name = name;
-                        auto identity = surface::transform3::identity();
-                        if (translation != identity._translation ||
-                            rotation != identity._rotation) {
-                            // Set the predefined transform
-                            sf._surface_transform =
-                                surface::transform3{translation, rotation};
-                        }
-                        sf._vertices = pcs;
-                        sf._fill = f;
-                        sf._stroke = s;
-                        return sf;
-                    },
-                    py::arg("name"), py::arg("vertices"),
-                    py::arg("translation"), py::arg("rotation"),
-                    py::arg("fill"), py::arg("stroke"))
-                .def_static(
-                    "annulus_from_bounds_and_transform",
-                    [](const std::string& name,
-                       const std::vector<scalar>& bounds,
-                       const point3& translation,
-                       const std::array<point3, 3u>& rotation,
-                       const style::fill& f, const style::stroke& s) {
-                        // Create the surface
-                        surface sf{};
-                        sf._name = name;
-                        sf._type = surface::type::e_annulus;
-                        sf._measures = bounds;
-                        auto identity = surface::transform3::identity();
-                        if (translation != identity._translation ||
-                            rotation != identity._rotation) {
-                            // Set the predefined transform
-                            sf._surface_transform =
-                                surface::transform3{translation, rotation};
-                        }
-                        sf._fill = f;
-                        sf._stroke = s;
+        py::class_<surface, std::shared_ptr<surface>>(p, "surface")
+            .def(py::init<>())
+            .def_readwrite("_name", &surface::_name)
+            .def_readwrite("_type", &surface::_type)
+            .def_readwrite("_vertices", &surface::_vertices)
+            .def_readwrite("_fill", &surface::_fill)
+            .def_readwrite("_stroke", &surface::_stroke)
+            .def_static(
+                "polygon_from_vertices",
+                [](const std::string& name, const point3_collection& pcs,
+                   const style::fill& f, const style::stroke& s) {
+                    // Create the surface
+                    surface sf{};
+                    sf._name = name;
+                    sf._type = surface::type::e_polygon;
+                    sf._vertices = pcs;
+                    sf._fill = f;
+                    sf._stroke = s;
+                    return sf;
+                },
+                py::arg("name"), py::arg("vertices"), py::arg("fill"),
+                py::arg("stroke"))
+            .def_static(
+                "polygon_from_vertices_and_transform",
+                [](const std::string& name, const point3_collection& pcs,
+                   const point3& translation,
+                   const std::array<point3, 3u>& rotation, const style::fill& f,
+                   const style::stroke& s) {
+                    // Create the surface
+                    surface sf{};
+                    sf._name = name;
+                    auto identity = surface::transform3::identity();
+                    if (translation != identity._translation ||
+                        rotation != identity._rotation) {
+                        // Set the predefined transform
+                        sf._surface_transform =
+                            surface::transform3{translation, rotation};
+                    }
+                    sf._vertices = pcs;
+                    sf._fill = f;
+                    sf._stroke = s;
+                    return sf;
+                },
+                py::arg("name"), py::arg("vertices"), py::arg("translation"),
+                py::arg("rotation"), py::arg("fill"), py::arg("stroke"))
+            .def_static(
+                "annulus_from_bounds_and_transform",
+                [](const std::string& name, const std::vector<scalar>& bounds,
+                   const point3& translation,
+                   const std::array<point3, 3u>& rotation, const style::fill& f,
+                   const style::stroke& s) {
+                    // Create the surface
+                    surface sf{};
+                    sf._name = name;
+                    sf._type = surface::type::e_annulus;
+                    sf._measures = bounds;
+                    auto identity = surface::transform3::identity();
+                    if (translation != identity._translation ||
+                        rotation != identity._rotation) {
+                        // Set the predefined transform
+                        sf._surface_transform =
+                            surface::transform3{translation, rotation};
+                    }
+                    sf._fill = f;
+                    sf._stroke = s;
 
-                        return sf;
-                    },
-                    py::arg("name"), py::arg("boounds"), py::arg("translation"),
-                    py::arg("rotation"), py::arg("fill"), py::arg("stroke"));
+                    return sf;
+                },
+                py::arg("name"), py::arg("bounds"), py::arg("translation"),
+                py::arg("rotation"), py::arg("fill"), py::arg("stroke"));
+    }
+
+    {
+        // The python portal definition
+        py::class_<portal, std::shared_ptr<portal>>(p, "portal")
+            .def(py::init<>())
+            .def_readwrite("_name", &portal::_name)
+            .def_readwrite("_surface", &portal::_surface);
+    }
+
+    {
+        // The pythond volume definition
+        py::class_<volume, std::shared_ptr<volume>>(p, "volume")
+            .def(py::init<>())
+            .def_readwrite("_name", &volume::_name);
     }
 
     {
         /// The grid class
         auto g = py::class_<proto::grid>(p, "grid")
                      .def(py::init<>())
-                     .def_readwrite("name", &proto::grid::_name)
-                     .def_readwrite("type", &proto::grid::_type)
-                     .def_readwrite("edges_0", &proto::grid::_edges_0)
-                     .def_readwrite("edges_1", &proto::grid::_edges_1)
-                     .def_readwrite("reference_r", &proto::grid::_reference_r)
-                     .def_readwrite("bin_ids", &proto::grid::_bin_ids)
-                     .def_readwrite("connections", &proto::grid::_connections)
-                     .def_readwrite("connection_types",
+                     .def_readwrite("_name", &proto::grid::_name)
+                     .def_readwrite("_type", &proto::grid::_type)
+                     .def_readwrite("_edges_0", &proto::grid::_edges_0)
+                     .def_readwrite("_edges_1", &proto::grid::_edges_1)
+                     .def_readwrite("_reference_r", &proto::grid::_reference_r)
+                     .def_readwrite("_bin_ids", &proto::grid::_bin_ids)
+                     .def_readwrite("_connections", &proto::grid::_connections)
+                     .def_readwrite("_connection_types",
                                     &proto::grid::_connection_types)
-                     .def_readwrite("connection_associations",
+                     .def_readwrite("_connection_associations",
                                     &proto::grid::_connection_associations)
-                     .def_readwrite("fill", &proto::grid::_fill)
-                     .def_readwrite("stroke", &proto::grid::_stroke);
+                     .def_readwrite("_fill", &proto::grid::_fill)
+                     .def_readwrite("_stroke", &proto::grid::_stroke);
 
         /// The grid type enum
         py::enum_<proto::grid::type>(g, "grid_type")
@@ -163,7 +185,7 @@ void add_proto_module(context& ctx) {
                     slab._properties[5] = thickness;
                     return slab;
                 }))
-            .def_readwrite("properties", &proto::material_slab::_properties);
+            .def_readwrite("_properties", &proto::material_slab::_properties);
 
         // The material class
         auto sm =
@@ -171,22 +193,22 @@ void add_proto_module(context& ctx) {
                 .def(py::init<>())
                 .def("evaluate_material_ranges",
                      &proto::surface_material::evaluate_material_ranges)
-                .def_readwrite("material_matrix",
+                .def_readwrite("_material_matrix",
                                &proto::surface_material::_material_matrix)
-                .def_readwrite("material_ranges",
+                .def_readwrite("_material_ranges",
                                &proto::surface_material::_material_ranges)
-                .def_readwrite("grid", &proto::surface_material::_grid)
-                .def_readwrite("gradient", &proto::surface_material::_gradient)
-                .def_readwrite("gradient_pos",
+                .def_readwrite("_grid", &proto::surface_material::_grid)
+                .def_readwrite("_gradient", &proto::surface_material::_gradient)
+                .def_readwrite("_gradient_pos",
                                &proto::surface_material::_gradient_pos)
-                .def_readwrite("gradient_box",
+                .def_readwrite("_gradient_box",
                                &proto::surface_material::_gradient_box)
-                .def_readwrite("gradient_stroke",
+                .def_readwrite("_gradient_stroke",
                                &proto::surface_material::_gradient_stroke)
-                .def_readwrite("gradient_font",
+                .def_readwrite("_gradient_font",
                                &proto::surface_material::_gradient_font)
-                .def_readwrite("info_pos", &proto::surface_material::_info_pos)
-                .def_readwrite("info_font",
+                .def_readwrite("_info_pos", &proto::surface_material::_info_pos)
+                .def_readwrite("_info_font",
                                &proto::surface_material::_info_font);
 
         using grid_index = std::pair<unsigned int, unsigned int>;
@@ -242,6 +264,31 @@ void add_proto_module(context& ctx) {
             .def_readwrite("_correlation", &cluster2::_correlation)
             .def_readwrite("_truth", &cluster2::_truth)
             .def_readwrite("_mc", &cluster2::_mc);
+    }
+
+    {
+        // The trajectory class
+        py::class_<trajectory, std::shared_ptr<trajectory>>(p, "trajectory")
+            .def(py::init<>())
+            .def_readwrite("_origin", &trajectory::_origin)
+            .def_readwrite("_direction", &trajectory::_direction)
+            .def_readwrite("_path", &trajectory::_path)
+            .def_readwrite("_origin_size", &trajectory::_origin_size)
+            .def_readwrite("_origin_stroke", &trajectory::_origin_stroke)
+            .def_readwrite("_origin_fill", &trajectory::_origin_fill)
+            .def_readwrite("_path_arrow", &trajectory::_path_arrow)
+            .def_readwrite("_path_stroke", &trajectory::_path_stroke);
+    }
+
+    {
+        // The seed class
+        py::class_<seed, std::shared_ptr<seed>>(p, "seed")
+            .def(py::init<>())
+            .def_readwrite("_space_points", &seed::_space_points)
+            .def_readwrite("_trajectory", &seed::_trajectory)
+            .def_readwrite("_space_point_size", &seed::_space_point_size)
+            .def_readwrite("_space_point_fill", &seed::_space_point_fill)
+            .def_readwrite("_space_point_stroke", &seed::_space_point_stroke);
     }
 }
 

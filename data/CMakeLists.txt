@@ -9,4 +9,4 @@ actsvg_add_library( actsvg_data data
    "src/data/odd_pixel_endcap.cpp"
 )
 
-target_link_libraries( actsvg_data PUBLIC actsvg::core)
+target_link_libraries(actsvg_data PUBLIC actsvg::core)

@@ -14,4 +14,5 @@ actsvg_add_test( meta
   "surfaces.cpp"
   "trajectories.cpp"
   "volume.cpp"
-LINK_LIBRARIES GTest::gtest_main actsvg::core actsvg::meta actsvg::data)
+LINK_LIBRARIES GTest::gtest_main actsvg::core actsvg::meta actsvg::data
+)

@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -40,6 +40,11 @@ void add_io_module(context& ctx) {
             .def(py::init<>())
             .def("add_object", &svg::file::add_object)
             .def("add_objects", &svg::file::add_objects)
+            .def(
+                "clip",
+                [](actsvg::svg::file& self, std::array<actsvg::scalar, 4> box) {
+                    self.set_view_box(box);
+                })
             .def("write", [](svg::file& self, const std::string& fn) {
                 std::ofstream fout;
                 fout.open(fn);
@@ -132,7 +137,7 @@ void add_io_module(context& ctx) {
                     // one offset at obj counts from 1
                     vertices.push_back({0, 0, 0});
 
-                    // The poligons to be contructed - proxies first
+                    // The polygons to be constructed - proxies first
                     std::vector<std::vector<int>> polygon_proxies;
                     polygon_proxies.reserve(fCounter);
                     polygons.reserve(fCounter);

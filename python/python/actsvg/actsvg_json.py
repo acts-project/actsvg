@@ -33,7 +33,7 @@ def read_grid(json_grid):
     return grid, index_data
 
 
-""" read surface mateiral from a json file"""
+""" read surface material from a json file"""
 
 
 def read_surface_material(json_surface_material):

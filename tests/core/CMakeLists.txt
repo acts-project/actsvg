@@ -2,7 +2,7 @@
 actsvg_add_test( core
   "arc.cpp"
   "arrows.cpp"
-  "barrel.cpp" 
+  "barrel.cpp"
   "bezier.cpp"
   "circle.cpp"
   "copy.cpp"
@@ -21,4 +21,5 @@ actsvg_add_test( core
   "svg.cpp"
   "text.cpp"
   "views.cpp"
-LINK_LIBRARIES GTest::gtest_main actsvg::core actsvg::data)
+LINK_LIBRARIES GTest::gtest_main actsvg::core actsvg::data
+)

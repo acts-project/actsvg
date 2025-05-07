@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -14,6 +14,7 @@
 
 #include <fstream>
 #include <memory>
+#include <string>
 
 #include "utilities.hpp"
 
@@ -93,7 +94,7 @@ void add_core_module(context& ctx) {
         /// Draw a polar grid
         d.def("polar_grid", &draw::polar_grid);
 
-        /// Draw a tiled polar gird
+        /// Draw a tiled polar grid
         d.def("tiled_polar_grid", &draw::tiled_polar_grid);
 
         /// Draw a marker

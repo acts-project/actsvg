@@ -1,4 +1,4 @@
-// This file is part of the actsvg packge.
+// This file is part of the actsvg package.
 //
 // Copyright (C) 2023 CERN for the benefit of the ACTS project
 //
@@ -27,7 +27,7 @@ void add_examples_module(context& ctx) {
     auto& m = ctx.get("main");
     auto e = m.def_submodule("examples");
 
-    // Generate modules ressembling a barrel or endcap
+    // Generate modules resembling a barrel or endcap
     {
         e.def("generate_barrel_modules",
               []() { return data::generate_barrel_modules(); });

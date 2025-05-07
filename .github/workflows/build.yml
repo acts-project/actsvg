@@ -30,7 +30,7 @@ jobs:
           brew install boost
         else
           sudo apt-get install libboost-all-dev
-        fi 
+        fi
 
     - name: Initialize Workspace
       run: cd $GITHUB_WORKSPACE
@@ -47,7 +47,8 @@ jobs:
         -DACTSVG_BUILD_TESTING=ON \
         -DACTSVG_BUILD_META=ON \
         -DACTSVG_BUILD_WEB=ON \
-        -DACTSVG_BUILD_EXAMPLES=ON
+        -DACTSVG_BUILD_EXAMPLES=ON \
+        -DACTSVG_BUILD_PYTHON_BINDINGS=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

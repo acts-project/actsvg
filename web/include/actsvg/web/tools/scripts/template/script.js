@@ -88,7 +88,7 @@ async function applyChanges() {
             selectedValues.push(checkboxes[i].value);
         }
     }
-    
+
     paths = selectedValues.reverse();
     SVGResult.innerHTML = await SVGContentMerge(paths);
 }
@@ -96,7 +96,7 @@ async function applyChanges() {
 
 // For navigation on the svg:
 
-//--- Adjustable paramters:
+//--- Adjustable parameters:
 // Speed of zoom on scroll.
 const zoomFactor = 1.1;
 // To calculate the maximum width and height of the viewbox.

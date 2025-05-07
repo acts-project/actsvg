@@ -5,4 +5,3 @@ from . import actsvg_uproot as uproot
 from actsvg import io
 
 setattr(io, "json", json)
-
