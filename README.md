@@ -13,7 +13,7 @@ This module has the core definition and plotting functionality for primitives.
 
 This module acts as a translation layer between the caller libraries (etc. `ACTS`, `detray`) and core library.
 It allows to create `proto` objects for detectors that can then be used for plotting using the `core` module.
-This module does also contain a dedicated `display` area that prepares some standard sheets, a view examples can be placed below.
+This module does also contain a dedicated `display` area that assists in displaying the objects.
 
 # Python bindings
 
@@ -35,14 +35,6 @@ A view stand-alone files that are produced by the `googletest` based unit testin
 <td width=200></td>
 </tr>
 </table>
-
-An example for an endcap sheet:
-
-<img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_endcap_sheet_module_info.svg" width=600/>
-
-An example for a barrel sheet (module info display):
-
-<img src="https://github.com/acts-project/actsvg/blob/main/docs/svg/odd_barrel_sheet_module_info.svg" width=600/>
 
 ## Getting started
 
