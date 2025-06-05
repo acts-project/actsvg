@@ -42,7 +42,7 @@ rgb gradient::rgb_from_scale(scalar s_) const {
         s_ < 0._scalar ? 0._scalar : (s_ > 1._scalar ? 1._scalar : s_);
     // find our stops
     unsigned int is = 1u;
-    for (; is <= _stops.size(); ++is) {
+    for (; is < _stops.size(); ++is) {
         if (_stops[is].first > s_reg) {
             break;
         }
