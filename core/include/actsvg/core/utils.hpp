@@ -13,10 +13,19 @@
 #include <iostream>
 #include <sstream>
 #include <tuple>
+#include <vector>
+
+#include "actsvg/core/defs.hpp"
 
 namespace actsvg {
 
 namespace utils {
+
+// How to format values in string output
+enum class value_format : unsigned int {
+    e_scientific,
+    e_default,
+};
 
 /** Helper method to run enumerate(...) with structured binding
  * over STL type containers.
@@ -135,7 +144,8 @@ std::string id_to_url(const std::string &id_);
  *
  * @return a string
  */
-std::string to_string(const scalar &s_, size_t pr_ = 4);
+std::string to_string(const scalar &s_, size_t pr_ = 4,
+                      value_format f_ = value_format::e_default);
 
 /** Helper to format point2
  *

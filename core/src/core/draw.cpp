@@ -1086,6 +1086,8 @@ svg::object gradient_box(
 
         // Create the tick value
         scalar value = std::get<1>(stops_[is]);
+        std::string val_str{
+            utils::to_string(value, 4, utils::value_format::e_scientific)};
 
         svg::object tval =
             vertical
@@ -1093,18 +1095,18 @@ svg::object gradient_box(
                       id_ + "_tick_val_" + std::to_string(is),
                       {static_cast<scalar>(p_[0] + w_ + 0.2 * font_._size),
                        p_[1] + h_ * s.first},
-                      {utils::to_string(value)}, font_)
+                      {val_str}, font_)
                 : draw::text(id_ + "_tick_val_" + std::to_string(is),
                              {p_[0] + w_ * s.first,
                               static_cast<scalar>(p_[1] - 1.2 * font_._size)},
-                             {utils::to_string(value)}, font_);
+                             {val_str}, font_);
         tval._sterile = true;
         tval._attribute_map["alignment-baseline"] = "middle";
         if (not vertical) {
             tval._attribute_map["text-anchor"] = "middle";
         }
         font_.attach_attributes(tval);
-        tval._field = {utils::to_string(value)};
+        tval._field = {std::move(val_str)};
         g.add_object(tval);
     }
 
