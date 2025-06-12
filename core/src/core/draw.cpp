@@ -1061,6 +1061,7 @@ svg::object gradient_box(
         0.5_scalar * w_, 0.5_scalar * h_);
     gbox._sterile = true;
     gbox._attribute_map["fill"] = "url(#" + gradient._id + ")";
+    gbox._attribute_map["fill-opacity"] = "1";
     gbox._transform = t_;
 
     g.add_object(gbox);
@@ -1102,6 +1103,7 @@ svg::object gradient_box(
                              {val_str}, font_);
         tval._sterile = true;
         tval._attribute_map["alignment-baseline"] = "middle";
+        tval._attribute_map["fill-opacity"] = "1";
         if (not vertical) {
             tval._attribute_map["text-anchor"] = "middle";
         }
